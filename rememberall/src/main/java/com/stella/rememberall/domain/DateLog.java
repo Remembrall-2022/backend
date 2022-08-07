@@ -1,5 +1,7 @@
 package com.stella.rememberall.domain;
 
+import com.stella.rememberall.tripLog.TripLog;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
