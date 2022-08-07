@@ -1,5 +1,7 @@
 package com.stella.rememberall.domain;
 
+import com.stella.rememberall.user.User;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

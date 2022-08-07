@@ -1,5 +1,7 @@
-package com.stella.rememberall.domain;
+package com.stella.rememberall.user;
 
+import com.stella.rememberall.domain.*;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -7,9 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "user")
+@Getter
+@Table(name = "user_tbl")
 @Entity
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,4 +53,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<ItemPurchasedByUser> itemPurchasedByUserList = new ArrayList<>();
 
+    @Builder
+    public User(AuthType authType, String email, String password, String name){
+        this.authType = authType;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
 }
