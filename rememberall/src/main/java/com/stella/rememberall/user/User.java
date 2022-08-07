@@ -1,6 +1,7 @@
 package com.stella.rememberall.user;
 
 import com.stella.rememberall.domain.*;
+import com.stella.rememberall.tripLog.TripLog;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -60,4 +61,5 @@ public class User extends BaseTimeEntity {
         this.password = password;
         this.name = name;
     }
+
 }
