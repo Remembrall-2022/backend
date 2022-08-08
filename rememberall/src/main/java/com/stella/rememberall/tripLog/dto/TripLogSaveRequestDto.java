@@ -1,7 +1,8 @@
-package com.stella.rememberall.tripLog;
+package com.stella.rememberall.tripLog.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
