@@ -3,7 +3,7 @@ package com.stella.rememberall.tripLog;
 import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.user.User;
+import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

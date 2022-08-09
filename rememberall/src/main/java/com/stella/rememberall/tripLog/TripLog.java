@@ -2,14 +2,13 @@ package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.domain.BaseTimeEntity;
 import com.stella.rememberall.domain.DateLog;
-import com.stella.rememberall.user.User;
+import com.stella.rememberall.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

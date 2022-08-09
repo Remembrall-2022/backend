@@ -1,9 +1,9 @@
 package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.user.EmailUserSaveRequestDto;
-import com.stella.rememberall.user.User;
-import com.stella.rememberall.user.UserRepository;
+import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
+import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

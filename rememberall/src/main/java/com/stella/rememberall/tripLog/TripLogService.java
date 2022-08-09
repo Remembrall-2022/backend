@@ -2,8 +2,8 @@ package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.user.User;
-import com.stella.rememberall.user.UserRepository;
+import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
