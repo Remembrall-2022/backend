@@ -1,0 +1,109 @@
+package com.stella.rememberall.tripLog;
+
+import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
+import com.stella.rememberall.tripLog.exception.TripLogException;
+import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
+import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.user.exception.TripLogErrorCode;
+import com.stella.rememberall.user.repository.UserRepository;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DataJpaTest
+class TripLogTest {
+
+    @Autowired TripLogRepository tripLogRepository;
+    @Autowired UserRepository userRepository;
+
+    String title = "title";
+    LocalDate tripStartDate = LocalDate.of(2021, 1, 1);
+    LocalDate tripEndDate = LocalDate.of(2021, 1, 3);
+
+    String email = "email..@com";
+    String password = "pw";
+    String name = "name1";
+
+    @Test
+    void 일기장생성_유효한요청은_통과한다(){
+        // given
+        User user = createAndSaveEmailUser();
+        TripLog tripLogToSave = createTripLog(user);
+        // when
+        TripLog savedTripLog = tripLogRepository.save(tripLogToSave);
+        // then
+        assertNotNull(savedTripLog);
+    }
+
+    // 일기장 title이 빈 값일때
+
+    @Test
+    void 일기장id조회_유효한id는_통과한다(){
+        // given
+        User user = createAndSaveEmailUser();
+        TripLog tripLogToSave = createTripLog(user);
+        TripLog savedTripLog = tripLogRepository.save(tripLogToSave);
+        // when
+        TripLog foundTripLog = tripLogRepository.findById(savedTripLog.getId())
+                .orElseThrow(() -> new TripLogException(TripLogErrorCode.TRIPLOG_NOT_FOUND));
+        // then
+        assertNotNull(foundTripLog);
+    }
+
+    @Test
+    void 일기장id조회_존재하지않는id는_예외발생한다(){
+        // given
+        Long invalidTripLogPk = 10L;
+        // when
+        TripLogException exception = assertThrows(TripLogException.class,
+                () -> {
+                        tripLogRepository.findById(invalidTripLogPk)
+                                .orElseThrow(() -> new TripLogException(TripLogErrorCode.TRIPLOG_NOT_FOUND));
+                }
+        );
+        // then
+        assertEquals(TripLogErrorCode.TRIPLOG_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void 일기장회원별조회_유효한user는_통과한다(){
+        // given
+        User user = createAndSaveEmailUser();
+        tripLogRepository.save(createTripLog(user));
+        tripLogRepository.save(createTripLog(user));
+        tripLogRepository.save(createTripLog(user));
+        // when
+        List<TripLog> allByUser = tripLogRepository.findAllByUser(user);
+        // then
+        assertEquals(3, allByUser.size());
+    }
+
+    @Test
+    void 일기장회원별조회_유효한user이고_생성한일기장이없을때_통과한다(){
+        // given
+        User user = createAndSaveEmailUser();
+        // when
+        List<TripLog> allByUser = tripLogRepository.findAllByUser(user);
+        // then
+        assertEquals(0, allByUser.size());
+    }
+
+    User createAndSaveEmailUser(){
+        EmailUserSaveRequestDto dto = new EmailUserSaveRequestDto(email, password, name);
+        User emailUser = dto.toEntity();
+        return userRepository.save(emailUser);
+    }
+
+    TripLog createTripLog(User user){
+        TripLogSaveRequestDto dto = new TripLogSaveRequestDto(title, tripStartDate, tripEndDate);
+        TripLog tripLog = dto.toEntityWithUser(user);
+        return tripLog;
+    }
+
+}

@@ -1,9 +1,7 @@
 package com.stella.rememberall.tripLog;
 
-import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +23,9 @@ public class TripLogController {
         return tripLogService.findTripLog(id);
     }
 
-    @GetMapping("triplog")
+    @GetMapping("triplog/list")
     public List<TripLogResponseDto> findTripLogList(){
-        User user = new User(AuthType.EMAIL, "email", "pw", "name");
-        return tripLogService.findTripLogList(user);
+        return tripLogService.findTripLogList();
     }
 
 }

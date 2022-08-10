@@ -3,6 +3,7 @@ package com.stella.rememberall.tripLog.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.stella.rememberall.tripLog.TripLog;
+import com.stella.rememberall.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,15 @@ public class TripLogSaveRequestDto {
                 .title(title)
                 .tripStartDate(tripStartDate)
                 .tripEndDate(tripEndDate)
+                .build();
+    }
+
+    public TripLog toEntityWithUser(User user) {
+        return TripLog.builder()
+                .title(title)
+                .tripStartDate(tripStartDate)
+                .tripEndDate(tripEndDate)
+                .user(user)
                 .build();
     }
 }

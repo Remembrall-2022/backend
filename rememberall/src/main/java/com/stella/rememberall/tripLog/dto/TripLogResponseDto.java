@@ -24,6 +24,7 @@ public class TripLogResponseDto {
         this.title = tripLog.getTitle();
         this.tripStartDate = tripLog.getTripStartDate();
         this.tripEndDate = tripLog.getTripEndDate();
+        this.tripLogImgUrl = "bucketsampleimage.jpg";
     }
 
 
