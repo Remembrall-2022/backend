@@ -8,6 +8,7 @@ import com.stella.rememberall.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +18,9 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
-public class TripLogSaveRequestDto {
+public class TripLogUpdateRequestDto {
+
+    @Setter private Long tripLogId;
 
     @NotEmpty(message = "일기장의 title은 빈값일 수 없습니다.")
     private String title;
@@ -30,16 +33,9 @@ public class TripLogSaveRequestDto {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate tripEndDate;
 
-    public TripLog toEntity() {
+    public TripLog toEntityWithUserAndId(User user, Long tripLogId) {
         return TripLog.builder()
-                .title(title)
-                .tripStartDate(tripStartDate)
-                .tripEndDate(tripEndDate)
-                .build();
-    }
-
-    public TripLog toEntityWithUser(User user) {
-        return TripLog.builder()
+                .id(tripLogId)
                 .title(title)
                 .tripStartDate(tripStartDate)
                 .tripEndDate(tripEndDate)

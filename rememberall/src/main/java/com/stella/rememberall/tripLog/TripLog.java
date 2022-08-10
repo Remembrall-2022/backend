@@ -38,7 +38,8 @@ public class TripLog extends BaseTimeEntity {
     private List<DateLog> dateLogList = new ArrayList<>();
 
     @Builder
-    public TripLog(String title, LocalDate tripStartDate, LocalDate tripEndDate, User user){
+    public TripLog(Long id, String title, LocalDate tripStartDate, LocalDate tripEndDate, User user){
+        this.id = id;
         this.title = title;
         this.tripStartDate = tripStartDate;
         this.tripEndDate = tripEndDate;
