@@ -7,14 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 
 @Getter
 @AllArgsConstructor
 public class EmailUserSaveRequestDto {
-    String email;
-    String password;
-    String name;
+    @Email String email;
+    @NotEmpty(message = "회원의 password는 빈값일 수 없습니다.") String password;
+    @NotEmpty(message = "회원의 name은 빈값일 수 없습니다.") String name;
 
     public User toEntityWithEncodedPassword(PasswordEncoder passwordEncoder){
         return User.builder()

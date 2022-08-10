@@ -41,13 +41,20 @@ public class JwtProvider {
     }
 
     // Jwt 생성
-    public TokenDto createTokenDto(Long userPk, List<String> roles) {
+    public TokenDto createTokenDto(Long userPk, List<String> roles, String refreshTokenValue) {
+        String accessToken = createAccessToken(userPk, roles);
+        String refreshToken = createRefreshToken(refreshTokenValue);
 
-        // Claims 에 user 구분을 위한 User pk 및 authorities 목록 삽입
+        return TokenDto.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    private String createAccessToken(Long userPk, List<String> roles){
         Claims claims = Jwts.claims().setSubject(String.valueOf(userPk));
         claims.put(ROLES, roles);
-
-        // 생성날짜, 만료날짜를 위한 Date
         Date now = new Date();
 
         String accessToken = Jwts.builder()
@@ -57,18 +64,23 @@ public class JwtProvider {
                 .setExpiration(new Date(now.getTime() + accessTokenValidMillisecond))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+        return accessToken;
+    }
+
+    private String createRefreshToken(String refreshTokenValue){
+
+        Claims claims = Jwts.claims();
+        claims.put("value", refreshTokenValue);
+        Date now = new Date();
 
         String refreshToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setClaims(claims)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        return TokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return refreshToken;
     }
 
     // Jwt 로 인증정보를 조회
@@ -84,6 +96,15 @@ public class JwtProvider {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getRefreshTokenValue(String refreshToken){
+        Claims claims = parseClaims(refreshToken);
+        if (claims.get("value") == null){
+            throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT);
+        }
+        log.info("value : "+(String) claims.get("value"));
+        return (String) claims.get("value");
     }
 
     // Jwt 토큰 복호화해서 가져오기
