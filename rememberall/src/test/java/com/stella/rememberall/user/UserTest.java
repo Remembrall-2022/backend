@@ -1,5 +1,8 @@
 package com.stella.rememberall.user;
 
+import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
+import com.stella.rememberall.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,8 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest
 class UserTest {
 
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
     String email = "email..@com";
 

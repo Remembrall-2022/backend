@@ -2,15 +2,18 @@ package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.domain.BaseTimeEntity;
 import com.stella.rememberall.domain.DateLog;
-import com.stella.rememberall.user.User;
+import com.stella.rememberall.user.domain.User;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
+@Getter
 @Table(name = "trip_log")
 @Entity
 public class TripLog extends BaseTimeEntity {
@@ -20,9 +23,6 @@ public class TripLog extends BaseTimeEntity {
     private Long id;
 
     private String title;
-
-    //Column(name="create_date")
-    //private LocalDateTime createDate;
 
     @Column(name="trip_start_date")
     private LocalDate tripStartDate;
