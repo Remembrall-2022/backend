@@ -15,12 +15,12 @@ import com.stella.rememberall.user.repository.RefreshTokenRepository;
 import com.stella.rememberall.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,10 +36,10 @@ public class UserService {
     public Long saveEmailUser(EmailUserSaveRequestDto dto) throws MemberException {
         // TODO : 이메일 인증
         checkEmailValid(dto.getEmail());
-        User user = dto.toEntityWithEncodedPassword(pwdEncorder);
+        User usertoSave = dto.toEntityWithEncodedPassword(pwdEncorder);
         // TODO : 동동이 캐릭터 생성
 
-        return userRepository.save(user).getId();
+        return userRepository.save(usertoSave).getId(); // TODO : save 공통예외 정해지면 수정하기
     }
 
     private void checkEmailValid(String email) throws MemberException {
@@ -53,7 +53,8 @@ public class UserService {
     }
 
     private void checkEmailAuthed(String email) {
-// TODO : email 인증 체크        if(isNotAuthedEmail) throw new MemberException("");
+// TODO : email 인증 체크
+//  if(isNotAuthedEmail) throw new MemberException("");
     }
 
     @Transactional
@@ -66,16 +67,23 @@ public class UserService {
     public TokenDto login(EmailUserLoginRequestDto requestDto) throws MemberException {
         User foundUser = findEmailUser(requestDto.getEmail());
         checkPassword(requestDto.getPassword(), foundUser.getPassword());
-        TokenDto tokenDto = jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles());
+        String refreshTokenValue = createRefreshTokenValue();
+        TokenDto createdTokens = jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles(), refreshTokenValue);
+        saveRefreshTokenWithTokenValue(refreshTokenValue, foundUser.getId());
 
-        // 리프레시 토큰 저장
+        return createdTokens;
+    }
+
+    private String createRefreshTokenValue() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private void saveRefreshTokenWithTokenValue(String refreshTokenValue, Long key) {
         RefreshToken refreshToken = RefreshToken.builder()
-                .key(foundUser.getId())
-                .token(tokenDto.getRefreshToken())
+                .key(key)
+                .refreshTokenValue(refreshTokenValue)
                 .build();
         refreshTokenRepository.save(refreshToken);
-
-        return tokenDto;
     }
 
     private void checkPassword(String requestPassword, String encodedOriginPassword) {
@@ -86,32 +94,44 @@ public class UserService {
 
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto, HttpServletRequest httpServletRequest) throws MemberException, AuthException {
-        // 만료된 refresh token 에러
-        jwtProvider.validationToken(tokenRequestDto.getRefreshToken(), httpServletRequest);
-//        if (!jwtProvider.validationToken(tokenRequestDto.getRefreshToken(), httpServletRequest)) {
-//            throw new AuthException(AuthErrorCode.EXPIRED_REFRESH_TOKEN);
-//        }
-        // AccessToken 에서 Username (pk) 가져오기
-        String accessToken = tokenRequestDto.getAccessToken();
-        Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
-        // user pk로 유저 검색
-        User user = userRepository.findById(Long.parseLong(authentication.getName()))
-                .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
-        // repo 에 저장된 Refresh Token이 없음
-        RefreshToken refreshToken = refreshTokenRepository.findByUserPk(user.getId())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.UNSAVED_REFRESH_TOKEN));
+        String requestedAccessToken = tokenRequestDto.getAccessToken();
+        String requestedRefreshToken = tokenRequestDto.getRefreshToken();
 
-        // 리프레시 토큰 불일치 에러
-        if (!refreshToken.getToken().equals(tokenRequestDto.getRefreshToken()))
+        jwtProvider.validationToken(requestedAccessToken, httpServletRequest);
+        User requestedUser = findUserById(getRequestedUserIdFromAccessToken(requestedAccessToken));
+
+        RefreshToken foundRefreshToken = findRefreshTokenByUserOrElseThrows(requestedUser);
+        checkRequestedRefreshTokenMatchesToFoundRefreshToken(requestedRefreshToken, foundRefreshToken);
+
+        String newRefreshTokenValue = createRefreshTokenValue();
+        TokenDto createdTokens = jwtProvider.createTokenDto(requestedUser.getId(), requestedUser.getRoles(), newRefreshTokenValue);
+        updateRefreshTokenWithNewRefreshTokenValue(foundRefreshToken, newRefreshTokenValue);
+
+        return createdTokens;
+    }
+
+    private void checkRequestedRefreshTokenMatchesToFoundRefreshToken(String requestedRefreshToken, RefreshToken foundRefreshToken) {
+        if (!foundRefreshToken.getRefreshTokenValue().equals(jwtProvider.getRefreshTokenValue(requestedRefreshToken)))
             throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+    }
 
-        // AccessToken, RefreshToken 토큰 재발급, 리프레쉬 토큰 저장
-        TokenDto newCreatedToken = jwtProvider.createTokenDto(user.getId(), user.getRoles());
-        RefreshToken updateRefreshToken = refreshToken.updateToken(newCreatedToken.getRefreshToken());
+    private RefreshToken findRefreshTokenByUserOrElseThrows(User requestedUser) {
+        return refreshTokenRepository.findByUserPk(requestedUser.getId())
+                .orElseThrow(() -> new AuthException(AuthErrorCode.UNSAVED_REFRESH_TOKEN));
+    }
+
+    private void updateRefreshTokenWithNewRefreshTokenValue(RefreshToken refreshToken, String refreshTokenValue) {
+        RefreshToken updateRefreshToken = refreshToken.updateRefreshTokenValue(refreshTokenValue);
         refreshTokenRepository.save(updateRefreshToken);
+    }
 
-        return newCreatedToken;
+    private long getRequestedUserIdFromAccessToken(String requestedAccessToken) {
+        return Long.parseLong(jwtProvider.getAuthentication(requestedAccessToken).getName());
+    }
 
+    private User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
     }
 }
