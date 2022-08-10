@@ -1,6 +1,5 @@
 package com.stella.rememberall.tripLog.exception;
 
-import com.stella.rememberall.user.exception.TripLogErrorCode;
 import lombok.Getter;
 
 @Getter

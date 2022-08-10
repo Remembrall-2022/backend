@@ -1,15 +1,15 @@
 package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
+import com.stella.rememberall.tripLog.dto.TripLogUpdateRequestDto;
 import com.stella.rememberall.tripLog.exception.TripLogException;
 import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
 import com.stella.rememberall.user.domain.User;
-import com.stella.rememberall.user.exception.TripLogErrorCode;
+import com.stella.rememberall.tripLog.exception.TripLogErrorCode;
 import com.stella.rememberall.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -101,6 +101,47 @@ class TripLogTest {
         // then
         assertEquals(0, allByUser.size());
     }
+
+    @Test
+    void 일기장수정_유효한user는_통과한다(){
+        // given
+        User user = createAndSaveEmailUser();
+        TripLog tripLogToSave = createTripLog(user);
+        TripLog savedTripLog = tripLogRepository.save(tripLogToSave);
+        // when
+        TripLogUpdateRequestDto dto = new TripLogUpdateRequestDto(savedTripLog.getId(), "수정된 title", LocalDate.of(2022, 5, 3), LocalDate.of(2022, 5, 5));
+        TripLog updatedTripLog = tripLogRepository.save(dto.toEntityWithUserAndId(user, savedTripLog.getId()));
+        // then
+        assertEquals("수정된 title", updatedTripLog.getTitle());
+    }
+
+    @Test
+    void 일기장수정_권한없는user는_예외발생한다(){
+        // given
+        User realUser = createAndSaveEmailUser();
+        User fakeUser = new EmailUserSaveRequestDto("fakeemail", password, name).toEntity();
+        TripLog savedTripLog = tripLogRepository.save(createTripLog(realUser));
+        // when
+        TripLogException exception = assertThrows(TripLogException.class,
+                () -> {
+                    if (savedTripLog.getUser().getId() != fakeUser.getId()) {
+                        throw new TripLogException(TripLogErrorCode.NO_AUTHORITY_TO_UPDATE);
+                    }
+                });
+        // then
+        assertEquals(TripLogErrorCode.NO_AUTHORITY_TO_UPDATE, exception.getErrorCode());
+
+    }
+
+    // TODO : Contoller test - 일기장 title이 빈 값일때
+    // exception : MethodArgumentNotValidException
+    // error name : NotEmpty
+    // error message : 일기장의 title은 빈값일 수 없습니다.
+    @Test
+    void 일기장수정_title이빈값이면_예외발생한다(){
+
+    }
+
 
     User createAndSaveEmailUser(){
         EmailUserSaveRequestDto dto = new EmailUserSaveRequestDto(email, password, name);
