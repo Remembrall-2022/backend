@@ -3,6 +3,7 @@ package com.stella.rememberall.tripLog.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.stella.rememberall.tripLog.TripLog;
+import com.stella.rememberall.tripLog.validation.StartAndEndDateCheck;
 import com.stella.rememberall.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
+@StartAndEndDateCheck(startDate = "tripStartDate", endDate = "tripEndDate")
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
