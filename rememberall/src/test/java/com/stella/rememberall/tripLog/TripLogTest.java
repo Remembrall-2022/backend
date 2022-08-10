@@ -9,6 +9,7 @@ import com.stella.rememberall.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,7 +42,14 @@ class TripLogTest {
         assertNotNull(savedTripLog);
     }
 
-    // 일기장 title이 빈 값일때
+    // TODO : Contoller test - 일기장 title이 빈 값일때
+    // exception : MethodArgumentNotValidException
+    // error name : NotEmpty
+    // error message : 일기장의 title은 빈값일 수 없습니다.
+    @Test
+    void 일기장생성_title이빈값이면_예외발생한다(){
+    }
+
 
     @Test
     void 일기장id조회_유효한id는_통과한다(){
@@ -102,6 +110,12 @@ class TripLogTest {
 
     TripLog createTripLog(User user){
         TripLogSaveRequestDto dto = new TripLogSaveRequestDto(title, tripStartDate, tripEndDate);
+        TripLog tripLog = dto.toEntityWithUser(user);
+        return tripLog;
+    }
+
+    TripLog createTripLogWithoutTitle(User user) {
+        TripLogSaveRequestDto dto = new TripLogSaveRequestDto("", tripStartDate, tripEndDate);
         TripLog tripLog = dto.toEntityWithUser(user);
         return tripLog;
     }

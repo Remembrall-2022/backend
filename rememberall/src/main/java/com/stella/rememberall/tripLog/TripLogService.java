@@ -25,12 +25,6 @@ public class TripLogService {
     private final TripLogRepository tripLogRepository;
     private final UserRepository userRepository;
 
-    /* TODO
-    일기장 create
-      a. 일기장 표지는 버킷에서 불러올건지? oo
-      b. 일기장 생성 날짜 잘 들어가는지?
-     */
-
     @Transactional
     public TripLogResponseDto saveTripLog(TripLogSaveRequestDto dto){
         User loginedUser = getLoginedUser();

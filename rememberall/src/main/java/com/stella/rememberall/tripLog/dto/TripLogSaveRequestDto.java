@@ -9,12 +9,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 public class TripLogSaveRequestDto {
+
+    @NotEmpty(message = "일기장의 title은 빈값일 수 없습니다.")
     private String title;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
