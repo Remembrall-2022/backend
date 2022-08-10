@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,12 +20,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup/email")
-    public Long join(@RequestBody EmailUserSaveRequestDto dto) {
+    public Long join(@RequestBody @Valid EmailUserSaveRequestDto dto) {
         return userService.saveEmailUser(dto);
     }
 
     @GetMapping("/login/email")
-    public TokenDto login(@RequestBody EmailUserLoginRequestDto requestDto){
+    public TokenDto login(@RequestBody @Valid EmailUserLoginRequestDto requestDto){
         return userService.login(requestDto);
     }
 
