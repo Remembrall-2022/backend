@@ -2,8 +2,11 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.domain.PlaceLog;
 import com.stella.rememberall.tripLog.TripLog;
+import lombok.Builder;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +19,13 @@ public class DateLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="create_date")
-    private LocalDateTime createDate;
+//    @Column(name="create_date")
+//    private LocalDateTime createDate;
+//
+//    @Column(name="update_date")
+//    private LocalDateTime updateDate;
 
-    @Column(name="update_date")
-    private LocalDateTime updateDate;
+    private LocalDate date;
 
     @Embedded
     @Column(name = "weather_info")
@@ -38,5 +43,17 @@ public class DateLog {
 
     @OneToMany(mappedBy = "dateLog")
     private List<PlaceLog> placeLogList = new ArrayList<>();
+
+    @Builder
+    public DateLog(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
+        Assert.notNull(tripLog, "TripLog must not be null");
+        Assert.notNull(date, "Date must not be null");
+
+        this.tripLog = tripLog;
+        this.date = date;
+        this.weatherInfo = weatherInfo;
+        this.question = question;
+        this.answer = answer;
+    }
 
 }
