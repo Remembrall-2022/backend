@@ -1,4 +1,4 @@
-package com.stella.rememberall.email;
+package com.stella.rememberall.common.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
