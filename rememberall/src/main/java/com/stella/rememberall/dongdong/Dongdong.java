@@ -21,5 +21,5 @@ public class Dongdong {
 
     @OneToOne
     @JoinColumn(name = "dongdong_img_id")
-    private DongDongImg dongDongImg;
+    private DongdongImg dongDongImg;
 }
