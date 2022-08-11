@@ -1,6 +1,7 @@
 package com.stella.rememberall.user.domain;
 
 import com.stella.rememberall.domain.*;
+import com.stella.rememberall.dongdong.Dongdong;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

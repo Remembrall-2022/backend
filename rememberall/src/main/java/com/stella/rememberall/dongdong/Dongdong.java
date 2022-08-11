@@ -1,4 +1,4 @@
-package com.stella.rememberall.domain;
+package com.stella.rememberall.dongdong;
 
 import com.stella.rememberall.user.domain.User;
 
