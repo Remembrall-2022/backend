@@ -1,5 +1,9 @@
 package com.stella.rememberall.user;
 
+import com.stella.rememberall.common.exception.jpa.CommonJpaErrorCode;
+import com.stella.rememberall.common.exception.jpa.CommonJpaException;
+import com.stella.rememberall.user.emailAuth.EmailAuthService;
+import com.stella.rememberall.common.redis.RedisUtil;
 import com.stella.rememberall.security.JwtProvider;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
@@ -31,30 +35,23 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder pwdEncorder;
     private final JwtProvider jwtProvider;
+    private final EmailAuthService emailService;
+    private final RedisUtil redisUtil;
 
     @Transactional
-    public Long saveEmailUser(EmailUserSaveRequestDto dto) throws MemberException {
-        // TODO : 이메일 인증
-        checkEmailValid(dto.getEmail());
-        User usertoSave = dto.toEntityWithEncodedPassword(pwdEncorder);
-        // TODO : 동동이 캐릭터 생성
+    public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
+        checkEmailDuplicate(saveRequestDto.getEmail());
 
-        return userRepository.save(usertoSave).getId(); // TODO : save 공통예외 정해지면 수정하기
-    }
+        User userToSave = saveRequestDto.toEntityWithEncodedPassword(pwdEncorder);
+        String redisKey = UUID.randomUUID().toString();
 
-    private void checkEmailValid(String email) throws MemberException {
-        checkEmailDuplicate(email);
-        checkEmailAuthed(email);
+        emailService.sendSignUpAuthEmail(redisKey, saveRequestDto.getEmail());
+        redisUtil.set(redisKey, saveRequestDto, 5);
     }
 
     private void checkEmailDuplicate(String email) {
         boolean isUserDuplicate = userRepository.existsByEmail(email);
         if(isUserDuplicate) throw new MemberException(MyErrorCode.DUPLICATED_REQUEST);
-    }
-
-    private void checkEmailAuthed(String email) {
-// TODO : email 인증 체크
-//  if(isNotAuthedEmail) throw new MemberException("");
     }
 
     @Transactional
@@ -83,11 +80,15 @@ public class UserService {
                 .key(key)
                 .refreshTokenValue(refreshTokenValue)
                 .build();
-        refreshTokenRepository.save(refreshToken);
+        try {
+            refreshTokenRepository.save(refreshToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommonJpaException(CommonJpaErrorCode.SAVE_FAIL);
+        }
     }
 
     private void checkPassword(String requestPassword, String encodedOriginPassword) {
-        String encodedRequestPassword = pwdEncorder.encode(requestPassword);
         boolean isNotCorrectPassword = !(pwdEncorder.matches(requestPassword, encodedOriginPassword));
         if(isNotCorrectPassword) throw new MemberException(MyErrorCode.WRONG_PASSWORD);
     }
@@ -123,7 +124,12 @@ public class UserService {
 
     private void updateRefreshTokenWithNewRefreshTokenValue(RefreshToken refreshToken, String refreshTokenValue) {
         RefreshToken updateRefreshToken = refreshToken.updateRefreshTokenValue(refreshTokenValue);
-        refreshTokenRepository.save(updateRefreshToken);
+        try {
+            refreshTokenRepository.save(updateRefreshToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommonJpaException(CommonJpaErrorCode.SAVE_FAIL);
+        }
     }
 
     private long getRequestedUserIdFromAccessToken(String requestedAccessToken) {
@@ -133,5 +139,31 @@ public class UserService {
     private User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
+    }
+
+    @Transactional
+    public void registerUser(String key) {
+        EmailUserSaveRequestDto foundUserInRedis = checkUserExistsInRedis(key);
+        saveUser(foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder));
+        deleteUserFromRedis(key);
+    }
+
+    private EmailUserSaveRequestDto checkUserExistsInRedis(String key) {
+        EmailUserSaveRequestDto user = (EmailUserSaveRequestDto) redisUtil.get(key);
+        if(user==null) throw new MemberException(MyErrorCode.ENTITY_NOT_FOUND_FROM_REDIS);
+        return user;
+    }
+
+    private User saveUser(User foundUserInRedis) {
+        try {
+            return userRepository.save(foundUserInRedis);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommonJpaException(CommonJpaErrorCode.SAVE_FAIL);
+        }
+    }
+
+    private void deleteUserFromRedis(String key) {
+        redisUtil.delete(key);
     }
 }

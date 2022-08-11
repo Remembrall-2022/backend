@@ -40,6 +40,12 @@ dependencies {
 
 	// 객체 유효성 검증
 	 implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// 이메일
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

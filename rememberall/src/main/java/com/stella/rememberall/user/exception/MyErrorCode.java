@@ -11,7 +11,10 @@ public enum MyErrorCode {
     DUPLICATED_REQUEST("기존 요청과 중복되어 처리할 수 없습니다."),
     INTERNAL_SERVER_ERROR("처리 중 에러가 발생했습니다."),
     ENTITY_NOT_FOUND("리소스가 존재하지 않습니다."),
-    WRONG_PASSWORD("비밀번호가 틀렸습니다.");
+    ENTITY_NOT_FOUND_FROM_REDIS("회원 가입을 요청한 회원이 아닙니다."),
+    WRONG_PASSWORD("비밀번호가 틀렸습니다."),
+    EMAIL_SEND_FAIL("이메일 전송에 실패했습니다."),
+    TIMEOUT_AUTH_REQUEST("인증 유효 시간이 지났습니다.");
 
     private String defaultErrorMessage;
 
