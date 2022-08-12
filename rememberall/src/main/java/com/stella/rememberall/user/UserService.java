@@ -43,9 +43,7 @@ public class UserService {
     public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
         checkEmailDuplicate(saveRequestDto.getEmail());
 
-        User userToSave = saveRequestDto.toEntityWithEncodedPassword(pwdEncorder);
         String redisKey = UUID.randomUUID().toString();
-
         emailService.sendSignUpAuthEmail(redisKey, saveRequestDto.getEmail());
         redisUtil.set(redisKey, saveRequestDto, 5);
     }
@@ -65,11 +63,29 @@ public class UserService {
     public TokenDto login(EmailUserLoginRequestDto requestDto) throws MemberException {
         User foundUser = findEmailUser(requestDto.getEmail());
         checkPassword(requestDto.getPassword(), foundUser.getPassword());
-        String refreshTokenValue = createRefreshTokenValue();
-        TokenDto createdTokens = jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles(), refreshTokenValue);
-        saveRefreshTokenWithTokenValue(refreshTokenValue, foundUser.getId());
 
-        return createdTokens;
+        String refreshTokenValue = createRefreshTokenValue();
+        saveOrUpdateRefreshTokenValue(foundUser, refreshTokenValue);
+
+        return jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles(), refreshTokenValue);
+    }
+
+    private void saveOrUpdateRefreshTokenValue(User foundUser, String refreshTokenValue) throws MemberException {
+        if(checkRefreshTokenExists(foundUser.getId()))
+            updateRefreshTokenIfRefreshTokenValueExists(foundUser, refreshTokenValue);
+        else
+            saveRefreshTokenWithTokenValue(refreshTokenValue, foundUser.getId());
+    }
+
+    private boolean checkRefreshTokenExists(Long userPk) {
+        return refreshTokenRepository.existsByUserPk(userPk);
+    }
+
+    private void updateRefreshTokenIfRefreshTokenValueExists(User foundUser, String refreshTokenValue) {
+        if(refreshTokenRepository.existsByUserPk(foundUser.getId())) {
+            RefreshToken foundRefreshToken = findRefreshTokenByUserOrElseThrows(foundUser);
+            updateRefreshTokenWithNewRefreshTokenValue(foundRefreshToken, refreshTokenValue);
+        }
     }
 
     private String createRefreshTokenValue() {
