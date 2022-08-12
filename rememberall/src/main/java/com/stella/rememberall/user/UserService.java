@@ -17,6 +17,7 @@ import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
 import com.stella.rememberall.user.repository.RefreshTokenRepository;
 import com.stella.rememberall.user.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,9 +43,7 @@ public class UserService {
     public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
         checkEmailDuplicate(saveRequestDto.getEmail());
 
-        User userToSave = saveRequestDto.toEntityWithEncodedPassword(pwdEncorder);
         String redisKey = UUID.randomUUID().toString();
-
         emailService.sendSignUpAuthEmail(redisKey, saveRequestDto.getEmail());
         redisUtil.set(redisKey, saveRequestDto, 5);
     }
@@ -64,11 +63,29 @@ public class UserService {
     public TokenDto login(EmailUserLoginRequestDto requestDto) throws MemberException {
         User foundUser = findEmailUser(requestDto.getEmail());
         checkPassword(requestDto.getPassword(), foundUser.getPassword());
-        String refreshTokenValue = createRefreshTokenValue();
-        TokenDto createdTokens = jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles(), refreshTokenValue);
-        saveRefreshTokenWithTokenValue(refreshTokenValue, foundUser.getId());
 
-        return createdTokens;
+        String refreshTokenValue = createRefreshTokenValue();
+        saveOrUpdateRefreshTokenValue(foundUser, refreshTokenValue);
+
+        return jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles(), refreshTokenValue);
+    }
+
+    private void saveOrUpdateRefreshTokenValue(User foundUser, String refreshTokenValue) throws MemberException {
+        if(checkRefreshTokenExists(foundUser.getId()))
+            updateRefreshTokenIfRefreshTokenValueExists(foundUser, refreshTokenValue);
+        else
+            saveRefreshTokenWithTokenValue(refreshTokenValue, foundUser.getId());
+    }
+
+    private boolean checkRefreshTokenExists(Long userPk) {
+        return refreshTokenRepository.existsByUserPk(userPk);
+    }
+
+    private void updateRefreshTokenIfRefreshTokenValueExists(User foundUser, String refreshTokenValue) {
+        if(refreshTokenRepository.existsByUserPk(foundUser.getId())) {
+            RefreshToken foundRefreshToken = findRefreshTokenByUserOrElseThrows(foundUser);
+            updateRefreshTokenWithNewRefreshTokenValue(foundRefreshToken, refreshTokenValue);
+        }
     }
 
     private String createRefreshTokenValue() {
@@ -99,9 +116,7 @@ public class UserService {
         String requestedAccessToken = tokenRequestDto.getAccessToken();
         String requestedRefreshToken = tokenRequestDto.getRefreshToken();
 
-        jwtProvider.validationToken(requestedAccessToken, httpServletRequest);
         User requestedUser = findUserById(getRequestedUserIdFromAccessToken(requestedAccessToken));
-
         RefreshToken foundRefreshToken = findRefreshTokenByUserOrElseThrows(requestedUser);
         checkRequestedRefreshTokenMatchesToFoundRefreshToken(requestedRefreshToken, foundRefreshToken);
 
@@ -112,8 +127,18 @@ public class UserService {
         return createdTokens;
     }
 
-    private void checkRequestedRefreshTokenMatchesToFoundRefreshToken(String requestedRefreshToken, RefreshToken foundRefreshToken) {
-        if (!foundRefreshToken.getRefreshTokenValue().equals(jwtProvider.getRefreshTokenValue(requestedRefreshToken)))
+    private void checkRequestedRefreshTokenMatchesToFoundRefreshToken(String requestedRefreshToken, RefreshToken foundRefreshToken) { //
+        boolean isNotValid = false;
+        try {
+            isNotValid = foundRefreshToken.getRefreshTokenValue().equals(jwtProvider.getRefreshTokenValue(requestedRefreshToken));
+        } catch (ExpiredJwtException e){
+            log.error(e.getMessage());
+            throw new AuthException(AuthErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AuthException(AuthErrorCode.WRONG_TOKEN);
+        }
+        if (isNotValid)
             throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
     }
 
@@ -132,8 +157,13 @@ public class UserService {
         }
     }
 
-    private long getRequestedUserIdFromAccessToken(String requestedAccessToken) {
-        return Long.parseLong(jwtProvider.getAuthentication(requestedAccessToken).getName());
+    private long getRequestedUserIdFromAccessToken(String requestedAccessToken) { // 여기서
+        try {
+            return Long.parseLong(jwtProvider.getAuthentication(requestedAccessToken).getName());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AuthException(AuthErrorCode.WRONG_TOKEN);
+        }
     }
 
     private User findUserById(Long id) {
@@ -166,4 +196,5 @@ public class UserService {
     private void deleteUserFromRedis(String key) {
         redisUtil.delete(key);
     }
+
 }
