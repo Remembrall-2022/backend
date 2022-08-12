@@ -59,8 +59,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    //@JoinColumn(name="dongdong_id")
+//    @PrimaryKeyJoinColumn
+//    @JoinColumn(name="dongdong_id")
     private Dongdong dongdong;
 
     @OneToMany(mappedBy = "user")

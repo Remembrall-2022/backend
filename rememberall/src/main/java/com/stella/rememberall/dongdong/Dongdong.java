@@ -1,11 +1,17 @@
 package com.stella.rememberall.dongdong;
 
 import com.stella.rememberall.user.domain.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "dongdong")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class Dongdong {
     @Id @Column(name = "user_id")
     private Long id;
