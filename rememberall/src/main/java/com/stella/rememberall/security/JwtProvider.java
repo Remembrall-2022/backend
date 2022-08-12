@@ -27,9 +27,9 @@ public class JwtProvider {
     @Value("jwt.secret")
     private String secretKey;
 //    @Value("#{new Long('${jwt.token-validity-in-seconds}')}") // "#{new Double('${item.priceFactor}')}"
-    private Long accessTokenValidMillisecond = 60 * 60 * 1000L; // 1 hour : 60 * 60 * 1000L
+    private Long accessTokenValidMillisecond = 1 * 60 * 1000L; // 1 hour : 60 * 60 * 1000L
 //    @Value("#{new Long('${jwt.refresh-token-validity-in-seconds}')}")
-    private Long refreshTokenValidMillisecond = 14 * 60 * 1000L; // 14 day : 14 * 24 * 60 * 60 * 1000L
+    private Long refreshTokenValidMillisecond = 2 * 60 * 1000L; // 14 day : 14 * 24 * 60 * 60 * 1000L
 
     private String ROLES = "roles";
     private final UserDetailsService userDetailsService;
@@ -135,6 +135,7 @@ public class JwtProvider {
         } catch (UnsupportedJwtException e) {
             log.error("지원하지 않는 토큰입니다.");
             request.setAttribute("exception", AuthErrorCode.UNSUPPORTED_TOKEN);
+            throw new AuthException(AuthErrorCode.UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
             log.error("잘못된 토큰입니다.");
             request.setAttribute("exception", AuthErrorCode.WRONG_TOKEN);
