@@ -36,10 +36,10 @@ class UserTest {
         User emailUser = createEmailUser();
         User savedEmailUser = userRepository.save(emailUser);
         // when
-        User findUser = userRepository.findByEmail(email)
+        User findUser = userRepository.findByUniqueValue(email)
                 .orElseThrow(() -> new IllegalArgumentException("no such data"));
         // then
-        assertThat(findUser.getEmail()).isEqualTo(email);
+        assertThat(findUser.getUniqueValue()).isEqualTo(email);
     }
 
     User createEmailUser(){
