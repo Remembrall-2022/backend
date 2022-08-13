@@ -2,7 +2,10 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.domain.PlaceLog;
 import com.stella.rememberall.tripLog.TripLog;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
@@ -13,6 +16,8 @@ import java.util.List;
 
 @Table(name = "date_log")
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DateLog {
     @Id
     @Column(name = "date_log_id")
