@@ -32,8 +32,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private AuthType authType;
 
-    @Column(length = 100, nullable = false, unique = true, name = "unique_value")
-    private String uniqueValue;
+    @Column(length = 100, nullable = false, unique = true)
+    private String email;
 
     @Column(length = 300, nullable = false)
     private String password;
@@ -69,9 +69,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<ItemPurchasedByUser> itemPurchasedByUserList = new ArrayList<>();
 
     @Builder
-    public User(AuthType authType, String uniqueValue, String password, String name){
+    public User(AuthType authType, String email, String password, String name){
         this.authType = authType;
-        this.uniqueValue = uniqueValue;
+        this.email = email;
         this.password = password;
         this.name = name;
     }

@@ -39,7 +39,7 @@ class UserTest {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("no such data"));
         // then
-        assertThat(findUser.getUniqueValue()).isEqualTo(email);
+        assertThat(findUser.getEmail()).isEqualTo(email);
     }
 
     User createEmailUser(){
