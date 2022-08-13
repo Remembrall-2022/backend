@@ -5,7 +5,6 @@ import com.stella.rememberall.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
@@ -22,7 +21,7 @@ public class EmailUserSaveRequestDto {
 
     public User toEntityWithEncodedPassword(PasswordEncoder passwordEncoder){
         return User.builder()
-                .email(email)
+                .uniqueValue(email)
                 .password(password)
                 .name(name)
                 .authType(AuthType.EMAIL)
@@ -33,7 +32,7 @@ public class EmailUserSaveRequestDto {
 
     public User toEntity(){
         return User.builder()
-                .email(email)
+                .uniqueValue(email)
                 .password(password)
                 .name(name)
                 .authType(AuthType.EMAIL)
