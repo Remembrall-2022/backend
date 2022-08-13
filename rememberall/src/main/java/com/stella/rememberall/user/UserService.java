@@ -49,13 +49,13 @@ public class UserService {
     }
 
     private void checkEmailDuplicate(String email) {
-        boolean isUserDuplicate = userRepository.existsByUniqueValue(email);
+        boolean isUserDuplicate = userRepository.existsByEmail(email);
         if(isUserDuplicate) throw new MemberException(MyErrorCode.DUPLICATED_REQUEST);
     }
 
     @Transactional
     public User findEmailUser(String email){
-        return userRepository.findByUniqueValue(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
     }
 
