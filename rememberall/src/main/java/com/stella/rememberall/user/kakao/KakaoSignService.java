@@ -37,7 +37,7 @@ public class KakaoSignService {
     }
 
     private void checkKakaoProfileNull(KakaoProfile kakaoProfile) {
-        if(kakaoProfile == null) throw new KakaoException(KakaoErrorCode.INVALID_TOKEN);
+        if(kakaoProfile == null) throw new KakaoException(KakaoErrorCode.INVALID_KAKAO_TOKEN);
     }
 
     private void checkKakaoProfileEmailNullThenUnlink(KakaoProfile kakaoProfile) {
@@ -48,12 +48,12 @@ public class KakaoSignService {
 
     private void checkEmailDuplicate(String email){
         if(userRepository.existsByEmail(email))
-            throw new MemberException(MyErrorCode.DUPLICATED_REQUEST); // 이미 이메일로 가입한 회원입니다.
+            throw new MemberException(MyErrorCode.DUPLICATED_EMAIL);
     }
 
     private void checkKakaoDuplicate(Long kakaoId){
         if(userRepository.existsByKakaoId(kakaoId))
-            throw new MemberException(MyErrorCode.DUPLICATED_REQUEST); // 이미 카카오로 가입한 회원입니다.
+            throw new MemberException(MyErrorCode.DUPLICATED_KAKAO);
     }
 
 

@@ -50,13 +50,13 @@ public class UserService {
 
     private void checkEmailDuplicate(String email) {
         boolean isUserDuplicate = userRepository.existsByEmail(email);
-        if(isUserDuplicate) throw new MemberException(MyErrorCode.DUPLICATED_REQUEST);
+        if(isUserDuplicate) throw new MemberException(MyErrorCode.DUPLICATED_EMAIL);
     }
 
     @Transactional
     public User findEmailUser(String email){
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
@@ -180,7 +180,7 @@ public class UserService {
 
     private User findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
@@ -192,7 +192,7 @@ public class UserService {
 
     private EmailUserSaveRequestDto checkUserExistsInRedis(String key) {
         EmailUserSaveRequestDto user = (EmailUserSaveRequestDto) redisUtil.get(key);
-        if(user==null) throw new MemberException(MyErrorCode.ENTITY_NOT_FOUND_FROM_REDIS);
+        if(user==null) throw new MemberException(MyErrorCode.USER_NOT_FOUND_FROM_REDIS);
         return user;
     }
 
