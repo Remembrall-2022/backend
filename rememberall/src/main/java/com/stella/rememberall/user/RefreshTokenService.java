@@ -23,7 +23,7 @@ public class RefreshTokenService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public String updateRefreshToken(User user){
+    public String updateRefreshToken(User user) throws MemberException, AuthException{
         String refreshTokenValue = createRefreshTokenValue();
         String refreshToken = jwtProvider.createRefreshToken(refreshTokenValue);
         saveOrUpdateRefreshTokenValue(user, refreshTokenValue);

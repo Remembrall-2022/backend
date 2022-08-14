@@ -42,6 +42,13 @@ public class UserController {
     public TokenDto login(@RequestBody @Valid EmailUserLoginRequestDto requestDto){
         return emailUserService.login(requestDto);
     }
+    @GetMapping("/login/kakao")
+    public TokenDto login(/*@RequestBody String kakaoToken*/){
+        //        KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(kakaoToken);
+        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
+        return kakaoSignService.kakaoLogin(kakaoProfile);
+    }
+
 
     @PostMapping("/reissue")
     public TokenDto reissue(@RequestBody TokenRequestDto dto){

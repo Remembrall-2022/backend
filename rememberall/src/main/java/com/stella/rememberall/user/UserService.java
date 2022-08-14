@@ -25,7 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
-    public TokenDto createTokenDtoAndUpdateRefreshTokenValue(User signUpSuccessUser) {
+    public TokenDto createTokenDtoAndUpdateRefreshTokenValue(User signUpSuccessUser) throws MemberException, AuthException {
         String accessToken = jwtProvider.createAccessToken(signUpSuccessUser.getId(), signUpSuccessUser.getRoles());
         String refreshToken = refreshTokenService.updateRefreshToken(signUpSuccessUser);
         return new TokenDto(accessToken, refreshToken);

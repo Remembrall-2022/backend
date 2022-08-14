@@ -1,9 +1,7 @@
 package com.stella.rememberall.user.kakao;
 
-import com.stella.rememberall.security.JwtProvider;
 import com.stella.rememberall.security.dto.TokenDto;
-import com.stella.rememberall.user.EmailUserService;
-import com.stella.rememberall.user.RefreshTokenService;
+import com.stella.rememberall.security.exception.AuthException;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
@@ -23,7 +21,7 @@ public class KakaoSignService {
     private final UserService userService;
 
     @Transactional
-    public TokenDto socialSignup(KakaoProfile kakaoProfile) throws MemberException {
+    public TokenDto socialSignup(KakaoProfile kakaoProfile) throws MemberException, KakaoException {
         checkKakaoProfileNull(kakaoProfile);
         checkKakaoProfileEmailNullThenUnlink(kakaoProfile);
 
@@ -60,12 +58,26 @@ public class KakaoSignService {
     }
 
     @Transactional
-    public TokenDto kakaoLoginInSignUp(User signUpSuccessUser) throws MemberException {
+    public TokenDto kakaoLoginInSignUp(User signUpSuccessUser) throws MemberException, KakaoException  {
         return userService.createTokenDtoAndUpdateRefreshTokenValue(signUpSuccessUser);
     }
 
+    @Transactional
+    public TokenDto kakaoLogin(KakaoProfile kakaoProfile) throws MemberException, AuthException {
+        Long kakaoId = kakaoProfile.getId();
+        checkKakaoUserNotExists(kakaoId);
+        return userService.createTokenDtoAndUpdateRefreshTokenValue(findKakaoUser(kakaoId));
+    }
 
+    private void checkKakaoUserNotExists(Long kakaoId){
+        if(!userRepository.existsByKakaoId(kakaoId))
+            throw new MemberException(MyErrorCode.USER_NOT_FOUND);
+    }
 
+    private User findKakaoUser(Long kakaoId) {
+        return userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+    }
 
 
 }
