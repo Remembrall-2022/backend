@@ -46,6 +46,7 @@ public class KakaoSignService {
         if(kakaoProfile.getKakao_account().getEmail() == null){
             kakaoUserService.kakaoUnlink(kakaoToken);
         }
+        // TODO : 회원 탈퇴
     }
 
     private void checkEmailDuplicate(String email){

@@ -12,9 +12,9 @@ import com.stella.rememberall.user.kakao.KakaoSignService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,10 +32,9 @@ public class UserController {
     }
 
     @PostMapping("/signup/kakao")
-    public TokenDto join(@RequestBody String kakaoToken) {
-        KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoToken);
-//        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
-        return kakaoSignService.socialSignup(kakaoProfile, kakaoToken);
+    public TokenDto join(@RequestBody Map<String, String> kakaoTokenMap) {
+        KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoTokenMap.get("kakaoToken"));
+        return kakaoSignService.socialSignup(kakaoProfile, kakaoTokenMap.get("kakaoToken"));
     }
 
     @GetMapping("/login/email")
@@ -44,10 +43,9 @@ public class UserController {
     }
 
     @GetMapping("/login/kakao")
-    public TokenDto login(@RequestBody String kakaoToken){
-        KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoToken);
-//        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
-        return kakaoSignService.kakaoLogin(kakaoProfile, kakaoToken);
+    public TokenDto login(@RequestBody Map<String, String> kakaoTokenMap){
+        KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoTokenMap.get("kakaoToken"));
+        return kakaoSignService.kakaoLogin(kakaoProfile, kakaoTokenMap.get("kakaoToken"));
     }
 
 

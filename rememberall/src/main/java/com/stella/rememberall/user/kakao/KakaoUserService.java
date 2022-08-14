@@ -1,10 +1,8 @@
 package com.stella.rememberall.user.kakao;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -15,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class KakaoUserService {
 
-    private final Environment env;
     private final RestTemplate restTemplate;
     private final Gson gson;
 
@@ -39,18 +36,8 @@ public class KakaoUserService {
         throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
     }
 
-    public KakaoProfile getFakeKakaoProfile(){
-        String json = "{'id':1860827414,'connected_at':'2021-08-22T15:22:52Z','properties':{'nickname':'최운식'},'kakao_account':{'profile_nickname_needs_agreement':false,'profile':{'nickname':'최운식'},'has_email':true,'email_needs_agreement':false,'is_email_valid':true,'is_email_verified':true,'email':'gfdgdg@gmail.com'}}";
-        try {
-           return gson.fromJson(json, KakaoProfile.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public void kakaoUnlink(String accessToken) {
-        String unlinkUrl = env.getProperty("https://kapi.kakao.com/v1/user/unlink");
+        String unlinkUrl = "https://kapi.kakao.com/v1/user/unlink";
         if (unlinkUrl == null) throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
 
         HttpHeaders headers = new HttpHeaders();
