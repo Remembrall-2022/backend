@@ -65,10 +65,22 @@ public class UserService {
         checkPassword(requestDto.getPassword(), foundUser.getPassword());
 
         String refreshTokenValue = createRefreshTokenValue();
-        saveOrUpdateRefreshTokenValue(foundUser, refreshTokenValue);
+        saveOrUpdateRefreshTokenValue(foundUser, refreshTokenValue); // TODO : 얘 id만 있으면 되니까 연관된거 고쳐
 
         return jwtProvider.createTokenDto(foundUser.getId(), foundUser.getRoles(), refreshTokenValue);
     }
+
+    // 회원가입의 소셜 로그인
+    @Transactional
+    public TokenDto kakaoLoginInSignUp(User signUpSuccessUser) throws MemberException {
+        String refreshTokenValue = createRefreshTokenValue();
+        saveOrUpdateRefreshTokenValue(signUpSuccessUser, refreshTokenValue); // TODO : 얘 id만 있으면 되니까 연관된거 고쳐
+        return jwtProvider.createTokenDto(signUpSuccessUser.getId(), signUpSuccessUser.getRoles(), refreshTokenValue);
+    }
+
+    // TODO : 소셜 로그인 : 인자는 토큰, kakaoId 찾기, 그담에 리프레시 토큰 발급
+
+
 
     private void saveOrUpdateRefreshTokenValue(User foundUser, String refreshTokenValue) throws MemberException {
         if(checkRefreshTokenExists(foundUser.getId()))
