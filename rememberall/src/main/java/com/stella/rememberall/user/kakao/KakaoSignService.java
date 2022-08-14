@@ -1,7 +1,10 @@
 package com.stella.rememberall.user.kakao;
 
+import com.stella.rememberall.security.JwtProvider;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.user.EmailUserService;
+import com.stella.rememberall.user.RefreshTokenService;
+import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
@@ -16,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class KakaoSignService {
 
-    private final EmailUserService emailUserService;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public TokenDto socialSignup(KakaoProfile kakaoProfile) throws MemberException {
@@ -33,7 +36,7 @@ public class KakaoSignService {
 
         KakaoUserSaveRequestDto saveRequestDto = new KakaoUserSaveRequestDto(email, id, name);
         User savedUser = userRepository.save(saveRequestDto.toEntity());
-        return emailUserService.kakaoLoginInSignUp(savedUser);
+        return kakaoLoginInSignUp(savedUser);
     }
 
     private void checkKakaoProfileNull(KakaoProfile kakaoProfile) {
@@ -55,6 +58,13 @@ public class KakaoSignService {
         if(userRepository.existsByKakaoId(kakaoId))
             throw new MemberException(MyErrorCode.DUPLICATED_KAKAO);
     }
+
+    @Transactional
+    public TokenDto kakaoLoginInSignUp(User signUpSuccessUser) throws MemberException {
+        return userService.createTokenDtoAndUpdateRefreshTokenValue(signUpSuccessUser);
+    }
+
+
 
 
 

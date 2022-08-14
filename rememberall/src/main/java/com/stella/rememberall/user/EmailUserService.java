@@ -25,11 +25,10 @@ import java.util.UUID;
 public class EmailUserService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder pwdEncorder;
-    private final JwtProvider jwtProvider;
     private final EmailAuthService emailService;
     private final RedisUtil redisUtil;
-    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
@@ -74,7 +73,7 @@ public class EmailUserService {
     public TokenDto login(EmailUserLoginRequestDto requestDto) throws MemberException {
         User foundUser = findEmailUser(requestDto.getEmail());
         checkPassword(requestDto.getPassword(), foundUser.getPassword());
-        return createTokenDtoAndUpdateRefreshTokenValue(foundUser);
+        return userService.createTokenDtoAndUpdateRefreshTokenValue(foundUser);
     }
 
     public User findEmailUser(String email){
@@ -87,16 +86,7 @@ public class EmailUserService {
         if(isNotCorrectPassword) throw new MemberException(MyErrorCode.WRONG_PASSWORD);
     }
 
-    @Transactional
-    public TokenDto kakaoLoginInSignUp(User signUpSuccessUser) throws MemberException {
-        return createTokenDtoAndUpdateRefreshTokenValue(signUpSuccessUser);
-    }
 
-    private TokenDto createTokenDtoAndUpdateRefreshTokenValue(User signUpSuccessUser) {
-        String accessToken = jwtProvider.createAccessToken(signUpSuccessUser.getId(), signUpSuccessUser.getRoles());
-        String refreshToken = refreshTokenService.updateRefreshToken(signUpSuccessUser);
-        return new TokenDto(accessToken, refreshToken);
-    }
 
     // TODO : 소셜 로그인 : 인자는 토큰, kakaoId 찾기, 그담에 리프레시 토큰 발급
 
