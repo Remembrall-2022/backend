@@ -52,7 +52,7 @@ public class JwtProvider {
                 .build();
     }
 
-    private String createAccessToken(Long userPk, List<String> roles){
+    public String createAccessToken(Long userPk, List<String> roles){
         Claims claims = Jwts.claims().setSubject(String.valueOf(userPk));
         claims.put(ROLES, roles);
         Date now = new Date();
@@ -67,7 +67,7 @@ public class JwtProvider {
         return accessToken;
     }
 
-    private String createRefreshToken(String refreshTokenValue){
+    public String createRefreshToken(String refreshTokenValue){
 
         Claims claims = Jwts.claims();
         claims.put("value", refreshTokenValue);
@@ -103,7 +103,6 @@ public class JwtProvider {
         if (claims.get("value") == null){
             throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT);
         }
-        log.info("value : "+(String) claims.get("value"));
         return (String) claims.get("value");
     }
 

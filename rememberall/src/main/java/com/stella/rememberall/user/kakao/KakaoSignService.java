@@ -1,7 +1,7 @@
 package com.stella.rememberall.user.kakao;
 
 import com.stella.rememberall.security.dto.TokenDto;
-import com.stella.rememberall.user.UserService;
+import com.stella.rememberall.user.EmailUserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class KakaoSignService {
 
-    private final UserService userService;
+    private final EmailUserService emailUserService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -33,7 +33,7 @@ public class KakaoSignService {
 
         KakaoUserSaveRequestDto saveRequestDto = new KakaoUserSaveRequestDto(email, id, name);
         User savedUser = userRepository.save(saveRequestDto.toEntity());
-        return userService.kakaoLoginInSignUp(savedUser);
+        return emailUserService.kakaoLoginInSignUp(savedUser);
     }
 
     private void checkKakaoProfileNull(KakaoProfile kakaoProfile) {

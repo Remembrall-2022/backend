@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class KakaoService {
+public class KakaoUserService {
 
     private final Environment env;
     private final RestTemplate restTemplate;
@@ -40,10 +40,9 @@ public class KakaoService {
     }
 
     public KakaoProfile getFakeKakaoProfile(){
-        String json = "{'id':1860827414,'connected_at':'2021-08-22T15:22:52Z','properties':{'nickname':'최운식'},'kakao_account':{'profile_nickname_needs_agreement':false,'profile':{'nickname':'최운식'},'has_email':true,'email_needs_agreement':false,'is_email_valid':true,'is_email_verified':true,'email':'minpearl0826@gmail.com'}}";
+        String json = "{'id':1860827414,'connected_at':'2021-08-22T15:22:52Z','properties':{'nickname':'최운식'},'kakao_account':{'profile_nickname_needs_agreement':false,'profile':{'nickname':'최운식'},'has_email':true,'email_needs_agreement':false,'is_email_valid':true,'is_email_verified':true,'email':'gfdgdg@gmail.com'}}";
         try {
            return gson.fromJson(json, KakaoProfile.class);
-//            log.info(kakaoProfile.getKakaoAccount().getEmail());
         } catch (Exception e) {
             e.printStackTrace();
         }
