@@ -19,11 +19,12 @@ public class KakaoSignService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final KakaoUserService kakaoUserService;
 
     @Transactional
-    public TokenDto socialSignup(KakaoProfile kakaoProfile) throws MemberException, KakaoException {
+    public TokenDto socialSignup(KakaoProfile kakaoProfile, String kakaoToken) throws MemberException, KakaoException {
         checkKakaoProfileNull(kakaoProfile);
-        checkKakaoProfileEmailNullThenUnlink(kakaoProfile);
+        checkKakaoProfileEmailNullThenUnlink(kakaoProfile, kakaoToken);
 
         String email = kakaoProfile.getKakao_account().getEmail();
         Long id = kakaoProfile.getId();
@@ -41,9 +42,9 @@ public class KakaoSignService {
         if(kakaoProfile == null) throw new KakaoException(KakaoErrorCode.INVALID_KAKAO_TOKEN);
     }
 
-    private void checkKakaoProfileEmailNullThenUnlink(KakaoProfile kakaoProfile) {
+    private void checkKakaoProfileEmailNullThenUnlink(KakaoProfile kakaoProfile, String kakaoToken) {
         if(kakaoProfile.getKakao_account().getEmail() == null){
-//            kakaoService.kakaoUnlink()
+            kakaoUserService.kakaoUnlink(kakaoToken);
         }
     }
 
@@ -63,7 +64,9 @@ public class KakaoSignService {
     }
 
     @Transactional
-    public TokenDto kakaoLogin(KakaoProfile kakaoProfile) throws MemberException, AuthException {
+    public TokenDto kakaoLogin(KakaoProfile kakaoProfile, String kakaoToken) throws MemberException, AuthException {
+        checkKakaoProfileNull(kakaoProfile);
+        checkKakaoProfileEmailNullThenUnlink(kakaoProfile, kakaoToken);
         Long kakaoId = kakaoProfile.getId();
         checkKakaoUserNotExists(kakaoId);
         return userService.createTokenDtoAndUpdateRefreshTokenValue(findKakaoUser(kakaoId));

@@ -24,7 +24,7 @@ public class KakaoUserService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("Authorization", "Bearer " + kakaoAccessToken);
 
-        String requestUrl = env.getProperty("social.kakao.url.profile"); // ??
+        String requestUrl = "https://kapi.kakao.com/v2/user/me";
         if (requestUrl == null) throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(null, headers);
@@ -34,7 +34,7 @@ public class KakaoUserService {
                 return gson.fromJson(response.getBody(), KakaoProfile.class);
         } catch (Exception e) {
             log.error(e.toString());
-            throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
+            throw new KakaoException(KakaoErrorCode.INVALID_KAKAO_TOKEN, "카카오 프로필을 가져오지 못함");
         }
         throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
     }
@@ -49,5 +49,19 @@ public class KakaoUserService {
         return null;
     }
 
+    public void kakaoUnlink(String accessToken) {
+        String unlinkUrl = env.getProperty("https://kapi.kakao.com/v1/user/unlink");
+        if (unlinkUrl == null) throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(unlinkUrl, request, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) return;
+        throw new KakaoException(KakaoErrorCode.COMMUNICATE_FAIL);
+    }
 
 }

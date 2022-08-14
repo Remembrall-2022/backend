@@ -32,21 +32,22 @@ public class UserController {
     }
 
     @PostMapping("/signup/kakao")
-    public TokenDto join(/*@RequestBody String kakaoToken*/) {
-//        KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(kakaoToken);
-        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
-        return kakaoSignService.socialSignup(kakaoProfile);
+    public TokenDto join(@RequestBody String kakaoToken) {
+        KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoToken);
+//        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
+        return kakaoSignService.socialSignup(kakaoProfile, kakaoToken);
     }
 
     @GetMapping("/login/email")
     public TokenDto login(@RequestBody @Valid EmailUserLoginRequestDto requestDto){
         return emailUserService.login(requestDto);
     }
+
     @GetMapping("/login/kakao")
-    public TokenDto login(/*@RequestBody String kakaoToken*/){
-        //        KakaoProfile kakaoProfile = kakaoService.getKakaoProfile(kakaoToken);
-        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
-        return kakaoSignService.kakaoLogin(kakaoProfile);
+    public TokenDto login(@RequestBody String kakaoToken){
+        KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoToken);
+//        KakaoProfile kakaoProfile = kakaoUserService.getFakeKakaoProfile();
+        return kakaoSignService.kakaoLogin(kakaoProfile, kakaoToken);
     }
 
 
