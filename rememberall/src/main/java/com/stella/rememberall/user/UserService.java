@@ -95,6 +95,10 @@ public class UserService {
         return new OnlyResponseString("이름 수정에 성공했습니다.");
     }
 
-
+    @Transactional
+    public OnlyResponseString updateAlarmAgree(Boolean alarmAgree){
+        getLoginedUser().updateAlarmAgree(alarmAgree);
+        return new OnlyResponseString("알람 설정 수정에 성공했습니다.");
+    }
 
 }

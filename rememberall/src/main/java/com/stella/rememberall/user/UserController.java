@@ -70,4 +70,9 @@ public class UserController {
         return userService.updateMyName(newName.get("name"));
     }
 
+    @PostMapping("/user/alarm-agree")
+    public OnlyResponseString updateAlarmAgree(@RequestBody Map<String, Boolean> newAlarmAgree){
+        return userService.updateAlarmAgree(newAlarmAgree.get("alarm-agree"));
+    }
+
 }
