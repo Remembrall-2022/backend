@@ -50,9 +50,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name="alarm_agree")
     private Boolean alarmAgree;
 
-    @Column(name="register_date")
-    private LocalDateTime registerDate;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
