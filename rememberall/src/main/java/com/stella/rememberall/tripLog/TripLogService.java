@@ -68,7 +68,7 @@ public class TripLogService {
 
     private User getLoginedUser(){
         return SecurityUtil.getCurrentUserPk().flatMap(userRepository::findById)
-                .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional

@@ -35,10 +35,10 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(length = 100, nullable = false, unique = true)
     private String email;
 
-    @Column(length = 300, nullable = false)
+    @Column(length = 300)
     private String password;
 
-    @Column(name="kakao_id")
+    @Column(name="kakao_id", unique = true)
     private Long kakaoId;
 
     @Column(length = 300, nullable = false)

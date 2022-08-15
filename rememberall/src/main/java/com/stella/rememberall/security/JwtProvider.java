@@ -26,21 +26,17 @@ public class JwtProvider {
 
     @Value("jwt.secret")
     private String secretKey;
-//    @Value("#{new Long('${jwt.token-validity-in-seconds}')}") // "#{new Double('${item.priceFactor}')}"
-    private Long accessTokenValidMillisecond = 1 * 60 * 1000L; // 1 hour : 60 * 60 * 1000L
-//    @Value("#{new Long('${jwt.refresh-token-validity-in-seconds}')}")
-    private Long refreshTokenValidMillisecond = 2 * 60 * 1000L; // 14 day : 14 * 24 * 60 * 60 * 1000L
+    private Long accessTokenValidMillisecond = 60 * 60 * 1000L; // 1 hour : 60 * 60 * 1000L
+    private Long refreshTokenValidMillisecond =14 * 24 * 60 * 1000L; // 14 day : 14 * 24 * 60 * 60 * 1000L
 
     private String ROLES = "roles";
     private final UserDetailsService userDetailsService;
 
     @PostConstruct
     protected void init() {
-        // 암호화
         secretKey = Base64UrlCodec.BASE64URL.encode(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Jwt 생성
     public TokenDto createTokenDto(Long userPk, List<String> roles, String refreshTokenValue) {
         String accessToken = createAccessToken(userPk, roles);
         String refreshToken = createRefreshToken(refreshTokenValue);
@@ -52,7 +48,7 @@ public class JwtProvider {
                 .build();
     }
 
-    private String createAccessToken(Long userPk, List<String> roles){
+    public String createAccessToken(Long userPk, List<String> roles){
         Claims claims = Jwts.claims().setSubject(String.valueOf(userPk));
         claims.put(ROLES, roles);
         Date now = new Date();
@@ -67,7 +63,7 @@ public class JwtProvider {
         return accessToken;
     }
 
-    private String createRefreshToken(String refreshTokenValue){
+    public String createRefreshToken(String refreshTokenValue){
 
         Claims claims = Jwts.claims();
         claims.put("value", refreshTokenValue);
@@ -83,17 +79,11 @@ public class JwtProvider {
         return refreshToken;
     }
 
-    // Jwt 로 인증정보를 조회
     public Authentication getAuthentication(String token) {
-
-        // Jwt 에서 claims 추출
         Claims claims = parseClaims(token);
-
-        // 권한 정보가 없음
         if (claims.get(ROLES) == null) {
             throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT);
         }
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -103,11 +93,9 @@ public class JwtProvider {
         if (claims.get("value") == null){
             throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT);
         }
-        log.info("value : "+(String) claims.get("value"));
         return (String) claims.get("value");
     }
 
-    // Jwt 토큰 복호화해서 가져오기
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
@@ -116,12 +104,10 @@ public class JwtProvider {
         }
     }
 
-    // HTTP Request 의 Header 에서 Token Parsing -> "X-AUTH-TOKEN: jwt"
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader("X-AUTH-TOKEN");
     }
 
-    // jwt 의 유효성 및 만료일자 확인
     public boolean validationToken(String token, HttpServletRequest request) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
