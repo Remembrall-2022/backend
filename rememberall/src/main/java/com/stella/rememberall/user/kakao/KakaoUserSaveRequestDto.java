@@ -24,6 +24,8 @@ public class KakaoUserSaveRequestDto {
                 .name(name)
                 .authType(AuthType.KAKAO)
                 .roles(Collections.singletonList("ROLE_USER"))
+                .alarmAgree(true)
+                .termAgree(true)
                 .build();
     }
 }
