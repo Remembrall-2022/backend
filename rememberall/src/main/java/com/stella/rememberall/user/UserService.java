@@ -1,5 +1,6 @@
 package com.stella.rememberall.user;
 
+import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.security.JwtProvider;
 import com.stella.rememberall.security.SecurityUtil;
 import com.stella.rememberall.security.dto.TokenDto;
@@ -87,5 +88,13 @@ public class UserService {
     public UserInfoResponseDto getUserInfo(){
         return UserInfoResponseDto.of(getLoginedUser());
     }
+
+    @Transactional
+    public OnlyResponseString updateMyName(String newName){
+        getLoginedUser().updateName(newName);
+        return new OnlyResponseString("이름 수정에 성공했습니다.");
+    }
+
+
 
 }

@@ -64,4 +64,10 @@ public class UserController {
     public UserInfoResponseDto getUserInfo(){
         return userService.getUserInfo();
     }
+
+    @PostMapping("/user/name")
+    public OnlyResponseString updateUsername(@RequestBody Map<String, String> newName){
+        return userService.updateMyName(newName.get("name"));
+    }
+
 }
