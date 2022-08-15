@@ -101,4 +101,10 @@ public class UserService {
         return new OnlyResponseString("알람 설정 수정에 성공했습니다.");
     }
 
+    @Transactional
+    public OnlyResponseString updateTermAgree(Boolean termAgree){
+        getLoginedUser().updateTermAgree(termAgree);
+        return new OnlyResponseString("약관 동의 설정 수정에 성공했습니다.");
+    }
+
 }

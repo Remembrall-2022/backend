@@ -117,5 +117,11 @@ public class User extends BaseTimeEntity implements UserDetails {
         return this;
     }
 
+    public User updateTermAgree(Boolean termAgree){
+        this.termAgree = termAgree;
+        return this;
+    }
+
+
 
 }

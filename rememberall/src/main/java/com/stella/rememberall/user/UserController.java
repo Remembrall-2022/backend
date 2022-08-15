@@ -75,4 +75,9 @@ public class UserController {
         return userService.updateAlarmAgree(newAlarmAgree.get("alarm-agree"));
     }
 
+    @PostMapping("/user/term-agree")
+    public OnlyResponseString updateTermAgree(@RequestBody Map<String, Boolean> newTermAgree){
+        return userService.updateTermAgree(newTermAgree.get("term-agree"));
+    }
+
 }
