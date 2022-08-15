@@ -1,6 +1,7 @@
 package com.stella.rememberall.user;
 
 import com.stella.rememberall.security.JwtProvider;
+import com.stella.rememberall.security.SecurityUtil;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
 import com.stella.rememberall.security.exception.AuthErrorCode;
@@ -24,6 +25,11 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+
+    public User getLoginedUser(){
+        return SecurityUtil.getCurrentUserPk().flatMap(userRepository::findById)
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+    }
 
     public TokenDto createTokenDtoAndUpdateRefreshTokenValue(User signUpSuccessUser) throws MemberException, AuthException {
         String accessToken = jwtProvider.createAccessToken(signUpSuccessUser.getId(), signUpSuccessUser.getRoles());
