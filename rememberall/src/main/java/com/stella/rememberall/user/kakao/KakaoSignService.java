@@ -1,5 +1,6 @@
 package com.stella.rememberall.user.kakao;
 
+import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.exception.AuthException;
 import com.stella.rememberall.user.UserService;
@@ -24,7 +25,7 @@ public class KakaoSignService {
     @Transactional
     public TokenDto socialSignup(KakaoProfile kakaoProfile, String kakaoToken) throws MemberException, KakaoException {
         checkKakaoProfileNull(kakaoProfile);
-        checkKakaoProfileEmailNullThenUnlink(kakaoProfile, kakaoToken);
+        checkKakaoProfileEmail(kakaoProfile);
 
         String email = kakaoProfile.getKakao_account().getEmail();
         Long id = kakaoProfile.getId();
@@ -42,20 +43,17 @@ public class KakaoSignService {
         if(kakaoProfile == null) throw new KakaoException(KakaoErrorCode.INVALID_KAKAO_TOKEN);
     }
 
-    private void checkKakaoProfileEmailNullThenUnlink(KakaoProfile kakaoProfile, String kakaoToken) {
-        if(kakaoProfile.getKakao_account().getEmail() == null){
-            kakaoUserService.kakaoUnlink(kakaoToken);
-        }
-        // TODO : 회원 탈퇴
+    private void checkKakaoProfileEmail(KakaoProfile kakaoProfile){
+        if(kakaoProfile.getKakao_account().getEmail() == null) throw new KakaoException(KakaoErrorCode.INVALID_KAKAO_USER);
     }
 
     private void checkEmailDuplicate(String email){
-        if(userRepository.existsByEmail(email))
-            throw new MemberException(MyErrorCode.DUPLICATED_EMAIL);
+        if(userRepository.existsByEmailAndAuthType(email, AuthType.EMAIL))
+            throw new MemberException(MyErrorCode.DUPLICATED_EMAIL, "카카오 프로필에 등록된 이메일과 동일한 이메일로 이미 회원입니다.");
     }
 
     private void checkKakaoDuplicate(Long kakaoId){
-        if(userRepository.existsByKakaoId(kakaoId))
+        if(userRepository.existsByKakaoIdAndAuthType(kakaoId, AuthType.EMAIL))
             throw new MemberException(MyErrorCode.DUPLICATED_KAKAO);
     }
 
@@ -71,6 +69,13 @@ public class KakaoSignService {
         Long kakaoId = kakaoProfile.getId();
         checkKakaoUserNotExists(kakaoId);
         return userService.createTokenDtoAndUpdateRefreshTokenValue(findKakaoUser(kakaoId));
+    }
+
+    private void checkKakaoProfileEmailNullThenUnlink(KakaoProfile kakaoProfile, String kakaoToken) {
+        if(kakaoProfile.getKakao_account().getEmail() == null){
+            kakaoUserService.kakaoUnlink(kakaoToken);
+        }
+        // TODO : 회원 탈퇴
     }
 
     private void checkKakaoUserNotExists(Long kakaoId){

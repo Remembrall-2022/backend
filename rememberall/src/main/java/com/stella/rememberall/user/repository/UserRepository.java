@@ -1,5 +1,6 @@
 package com.stella.rememberall.user.repository;
 
+import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User>  findByKakaoId(Long kakaoId);
     boolean existsByEmail(String email);
     boolean existsByKakaoId(Long kakaoId);
+    boolean existsByEmailAndAuthType(String email, AuthType authType);
+    boolean existsByKakaoIdAndAuthType(Long kakaoId, AuthType authType);
 }
