@@ -33,7 +33,7 @@ public class KakaoUserService {
                 return gson.fromJson(response.getBody(), KakaoProfile.class);
         } catch (Exception e) {
             log.error(e.toString());
-            throw new InternalServerException(InternalServerErrorCode.COMMUNICATE_FAIL, "카카오 서버와 통신할 수 없습니다.");
+            throw new KakaoException(KakaoErrorCode.INVALID_KAKAO_TOKEN);
         }
         throw new InternalServerException(InternalServerErrorCode.COMMUNICATE_FAIL, "카카오 서버와 통신할 수 없습니다.");
     }
