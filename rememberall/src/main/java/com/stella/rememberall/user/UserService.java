@@ -8,6 +8,7 @@ import com.stella.rememberall.security.exception.AuthErrorCode;
 import com.stella.rememberall.security.exception.AuthException;
 import com.stella.rememberall.user.domain.RefreshToken;
 import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.user.dto.UserInfoResponseDto;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
 import com.stella.rememberall.user.repository.UserRepository;
@@ -80,6 +81,11 @@ public class UserService {
         }
         if (isNotValid)
             throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+    }
+
+    @Transactional
+    public UserInfoResponseDto getUserInfo(){
+        return UserInfoResponseDto.of(getLoginedUser());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.stella.rememberall.user;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
+import com.stella.rememberall.user.dto.UserInfoResponseDto;
 import com.stella.rememberall.user.emailAuth.dto.EmailSendResponseDto;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
@@ -48,7 +49,6 @@ public class UserController {
         return kakaoSignService.kakaoLogin(kakaoProfile, kakaoTokenMap.get("kakaoToken"));
     }
 
-
     @PostMapping("/reissue")
     public TokenDto reissue(@RequestBody TokenRequestDto dto){
         return userService.reissue(dto);
@@ -58,5 +58,10 @@ public class UserController {
     public OnlyResponseString signupConfirm(@RequestParam("key") String key, HttpServletResponse response) {
         emailUserService.registerUser(key);
         return new OnlyResponseString("성공!");
+    }
+
+    @GetMapping("/user/info")
+    public UserInfoResponseDto getUserInfo(){
+        return userService.getUserInfo();
     }
 }
