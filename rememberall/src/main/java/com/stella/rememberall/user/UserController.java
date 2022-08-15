@@ -1,12 +1,10 @@
 package com.stella.rememberall.user;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
-import com.stella.rememberall.user.dto.UserInfoResponseDto;
+import com.stella.rememberall.user.dto.*;
 import com.stella.rememberall.user.emailAuth.dto.EmailSendResponseDto;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
-import com.stella.rememberall.user.dto.EmailUserLoginRequestDto;
-import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
 import com.stella.rememberall.user.kakao.KakaoProfile;
 import com.stella.rememberall.user.kakao.KakaoUserService;
 import com.stella.rememberall.user.kakao.KakaoSignService;
@@ -66,18 +64,18 @@ public class UserController {
     }
 
     @PostMapping("/user/name")
-    public OnlyResponseString updateUsername(@RequestBody Map<String, String> newName){
-        return userService.updateMyName(newName.get("name"));
+    public OnlyResponseString updateUsername(@RequestBody @Valid NameUpdateRequestDto newName){
+        return userService.updateMyName(newName.getName());
     }
 
-    @PostMapping("/user/alarm-agree")
-    public OnlyResponseString updateAlarmAgree(@RequestBody Map<String, Boolean> newAlarmAgree){
-        return userService.updateAlarmAgree(newAlarmAgree.get("alarm-agree"));
+    @PostMapping("/user/alarm/agree")
+    public OnlyResponseString updateAlarmAgree(@RequestBody @Valid AgreeUpdateRequestDto newAlarmAgree){
+        return userService.updateAlarmAgree(newAlarmAgree.getAgree());
     }
 
-    @PostMapping("/user/term-agree")
-    public OnlyResponseString updateTermAgree(@RequestBody Map<String, Boolean> newTermAgree){
-        return userService.updateTermAgree(newTermAgree.get("term-agree"));
+    @PostMapping("/user/term/agree")
+    public OnlyResponseString updateTermAgree(@RequestBody @Valid AgreeUpdateRequestDto newTermAgree){
+        return userService.updateTermAgree(newTermAgree.getAgree());
     }
 
 }
