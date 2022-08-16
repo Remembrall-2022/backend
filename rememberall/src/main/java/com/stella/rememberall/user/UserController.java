@@ -5,6 +5,9 @@ import com.stella.rememberall.user.dto.*;
 import com.stella.rememberall.user.emailAuth.dto.EmailSendResponseDto;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
+import com.stella.rememberall.user.emailAuth.dto.EmailUserAuthRequestDto;
+import com.stella.rememberall.user.emailAuth.dto.EmailUserPasswordUpdateRequestDto;
+import com.stella.rememberall.user.emailAuth.dto.EmailUserValidRequestDto;
 import com.stella.rememberall.user.kakao.KakaoProfile;
 import com.stella.rememberall.user.kakao.KakaoUserService;
 import com.stella.rememberall.user.kakao.KakaoSignService;
@@ -76,6 +79,22 @@ public class UserController {
     @PostMapping("/user/term/agree")
     public OnlyResponseString updateTermAgree(@RequestBody @Valid AgreeUpdateRequestDto newTermAgree){
         return userService.updateTermAgree(newTermAgree.getAgree());
+    }
+
+    @PostMapping("/user/password/request")
+    public EmailSendResponseDto requestEmailValidationForPasswordUpdate(@RequestBody @Valid EmailUserAuthRequestDto requestDto){
+        emailUserService.requestEmailValidation(requestDto);
+        return EmailSendResponseDto.of(requestDto.getEmail(), "이메일 전송에 성공했습니다.");
+    }
+
+    @PostMapping("/user/password/valid")
+    public OnlyResponseString validEmailWithAuthCode(@RequestBody @Valid EmailUserValidRequestDto requestDto){
+        return emailUserService.validEmail(requestDto);
+    }
+
+    @PostMapping("/user/password")
+    public OnlyResponseString updatePassword(@RequestBody @Valid EmailUserPasswordUpdateRequestDto requestDto){
+        return emailUserService.updatePasswordIfEmailAuthed(requestDto);
     }
 
 }

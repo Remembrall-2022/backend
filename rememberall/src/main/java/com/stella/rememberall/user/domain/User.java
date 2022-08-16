@@ -122,6 +122,9 @@ public class User extends BaseTimeEntity implements UserDetails {
         return this;
     }
 
-
+    public User updatePassword(String password){
+        this.password = password;
+        return this;
+    }
 
 }
