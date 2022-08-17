@@ -1,7 +1,10 @@
-package com.stella.rememberall.datelog;
+package com.stella.rememberall.datelog.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.datelog.domain.Question;
+import com.stella.rememberall.datelog.domain.WeatherInfo;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

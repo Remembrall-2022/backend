@@ -1,6 +1,6 @@
 package com.stella.rememberall.domain;
 
-import com.stella.rememberall.datelog.DateLog;
+import com.stella.rememberall.datelog.domain.DateLog;
 
 import javax.persistence.*;
 import java.util.ArrayList;

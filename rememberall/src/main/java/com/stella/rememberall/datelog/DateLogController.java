@@ -1,5 +1,6 @@
 package com.stella.rememberall.datelog;
 
+import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,4 +1,4 @@
-package com.stella.rememberall.datelog;
+package com.stella.rememberall.datelog.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

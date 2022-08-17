@@ -1,5 +1,6 @@
-package com.stella.rememberall.datelog;
+package com.stella.rememberall.datelog.repository;
 
+import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.tripLog.TripLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 

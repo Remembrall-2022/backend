@@ -1,5 +1,8 @@
 package com.stella.rememberall.datelog;
 
+import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
+import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.user.domain.User;
@@ -7,8 +10,6 @@ import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
 import com.stella.rememberall.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,7 +23,8 @@ public class DateLogServiceTest {
     @Autowired UserRepository userRepository;
     @Autowired TripLogRepository tripLogRepository;
     @Autowired DateLogService dateLogService;
-    @Autowired DateLogRepository dateLogRepository;
+    @Autowired
+    DateLogRepository dateLogRepository;
 
     @Test
     void createDateLog() {

@@ -1,4 +1,4 @@
-package com.stella.rememberall.datelog;
+package com.stella.rememberall.datelog.domain;
 
 import com.stella.rememberall.domain.BaseTimeEntity;
 import com.stella.rememberall.domain.PlaceLog;
@@ -11,7 +11,6 @@ import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
