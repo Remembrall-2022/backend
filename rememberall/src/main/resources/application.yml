@@ -12,8 +12,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: 이메일
-    password: 비밀번호
+    username: rememberallbystella@gmail.com
+    password: kijbjegmpylwauwe
     properties:
       mail:
         smtp:
@@ -35,11 +35,11 @@ jwt:
 cloud:
   aws:
     credentials:
-      accessKey: ${AWS_ACCESS_KEY_ID}
-      secretKey: ${AWS_SECRET_ACCESS_KEY}
+      accessKey: AKIARYSHLBR5AX7W2VFX
+      secretKey: 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
     s3:
-      bucket: 버킷 이름
-      dir: S3 디렉토리 이름
+      bucket: rememberall
+      dir: user-image
     region:
       static: ap-northeast-2
     stack:
