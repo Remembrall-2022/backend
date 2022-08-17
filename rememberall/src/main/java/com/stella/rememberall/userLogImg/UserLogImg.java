@@ -1,4 +1,4 @@
-package com.stella.rememberall.userImg;
+package com.stella.rememberall.userLogImg;
 
 import com.stella.rememberall.domain.ItemWithUserImg;
 import com.stella.rememberall.domain.PlaceLog;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Table(name = "user_img")
 @Entity
-public class UserImg {
+public class UserLogImg {
     @Id
     @Column(name = "user_img_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class UserImg {
     @JoinColumn(name = "place_log_id")
     private PlaceLog placeLog;
 
-    @OneToMany(mappedBy = "userImg")
+    @OneToMany(mappedBy = "userLogImg")
     private List<ItemWithUserImg> itemWithUserImgList = new ArrayList<>();
 
 }

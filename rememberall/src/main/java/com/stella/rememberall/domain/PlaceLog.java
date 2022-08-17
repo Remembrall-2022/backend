@@ -1,6 +1,6 @@
 package com.stella.rememberall.domain;
 
-import com.stella.rememberall.userImg.UserImg;
+import com.stella.rememberall.userLogImg.UserLogImg;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,6 +24,6 @@ public class PlaceLog {
     private Place place;
 
     @OneToMany(mappedBy = "placeLog")
-    private List<UserImg> userImgList = new ArrayList<>();
+    private List<UserLogImg> userLogImgList = new ArrayList<>();
 
 }

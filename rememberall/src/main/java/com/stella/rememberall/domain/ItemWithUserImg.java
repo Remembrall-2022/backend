@@ -1,6 +1,6 @@
 package com.stella.rememberall.domain;
 
-import com.stella.rememberall.userImg.UserImg;
+import com.stella.rememberall.userLogImg.UserLogImg;
 
 import javax.persistence.*;
 
@@ -22,6 +22,6 @@ public class ItemWithUserImg {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_img_id")
-    private UserImg userImg;
+    private UserLogImg userLogImg;
 
 }
