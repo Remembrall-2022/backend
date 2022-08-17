@@ -1,5 +1,6 @@
 package com.stella.rememberall.userLogImg;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -53,6 +55,14 @@ public class S3Util {
     private void validateFileExists(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             throw new EmptyFileException(FileErrorCode.EMPTY_FILE);
+        }
+    }
+
+    public void deleteFile(String fileKey) {
+        try {
+            amazonS3Client.deleteObject(bucketName, fileKey);
+        } catch(AmazonServiceException e) {
+            throw new S3FileException(FileErrorCode.FILE_DELETE_FAIL);
         }
     }
 
