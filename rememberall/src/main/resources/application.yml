@@ -39,8 +39,15 @@ cloud:
       secretKey: wsNhGsPvbuTFFkYeyA6LvpuYpWNw0yMCTjNA+KU+
     s3:
       bucket: rememberall
-      dir: user-image
+#      dir: user-log-image
     region:
       static: ap-northeast-2
     stack:
       auto: false
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
