@@ -50,9 +50,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name="alarm_agree")
     private Boolean alarmAgree;
 
-    @Column(name="register_date")
-    private LocalDateTime registerDate;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -108,4 +105,26 @@ public class User extends BaseTimeEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    // update
+    public User updateName(String name){
+        this.name = name;
+        return this;
+    }
+
+    public User updateAlarmAgree(Boolean alarmAgree){
+        this.alarmAgree = alarmAgree;
+        return this;
+    }
+
+    public User updateTermAgree(Boolean termAgree){
+        this.termAgree = termAgree;
+        return this;
+    }
+
+    public User updatePassword(String password){
+        this.password = password;
+        return this;
+    }
+
 }

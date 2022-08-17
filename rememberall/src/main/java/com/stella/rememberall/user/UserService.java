@@ -1,12 +1,15 @@
 package com.stella.rememberall.user;
 
+import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.security.JwtProvider;
+import com.stella.rememberall.security.SecurityUtil;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
 import com.stella.rememberall.security.exception.AuthErrorCode;
 import com.stella.rememberall.security.exception.AuthException;
 import com.stella.rememberall.user.domain.RefreshToken;
 import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.user.dto.UserInfoResponseDto;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
 import com.stella.rememberall.user.repository.UserRepository;
@@ -24,6 +27,11 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+
+    public User getLoginedUser(){
+        return SecurityUtil.getCurrentUserPk().flatMap(userRepository::findById)
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+    }
 
     public TokenDto createTokenDtoAndUpdateRefreshTokenValue(User signUpSuccessUser) throws MemberException, AuthException {
         String accessToken = jwtProvider.createAccessToken(signUpSuccessUser.getId(), signUpSuccessUser.getRoles());
@@ -74,6 +82,29 @@ public class UserService {
         }
         if (isNotValid)
             throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+    }
+
+    @Transactional
+    public UserInfoResponseDto getUserInfo(){
+        return UserInfoResponseDto.of(getLoginedUser());
+    }
+
+    @Transactional
+    public OnlyResponseString updateMyName(String newName){
+        getLoginedUser().updateName(newName);
+        return new OnlyResponseString("이름 수정에 성공했습니다.");
+    }
+
+    @Transactional
+    public OnlyResponseString updateAlarmAgree(Boolean alarmAgree){
+        getLoginedUser().updateAlarmAgree(alarmAgree);
+        return new OnlyResponseString("알람 설정 수정에 성공했습니다.");
+    }
+
+    @Transactional
+    public OnlyResponseString updateTermAgree(Boolean termAgree){
+        getLoginedUser().updateTermAgree(termAgree);
+        return new OnlyResponseString("약관 동의 설정 수정에 성공했습니다.");
     }
 
 }

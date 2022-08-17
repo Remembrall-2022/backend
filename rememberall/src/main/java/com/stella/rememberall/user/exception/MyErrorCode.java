@@ -14,7 +14,9 @@ public enum MyErrorCode {
     USER_NOT_FOUND_FROM_REDIS("회원 가입을 요청한 회원이 아닙니다."),
     WRONG_PASSWORD("비밀번호가 틀렸습니다."),
     EMAIL_SEND_FAIL("이메일 전송에 실패했습니다."),
-    TIMEOUT_AUTH_REQUEST("인증 유효 시간이 지났습니다.");
+    TIMEOUT_AUTH_REQUEST("인증 유효 시간이 지났습니다."),
+    INVALID_EMAIL("인증된 이메일이 아닙니다."),
+    WRONG_AUTH_CODE("인증 코드가 틀렸습니다.");
 
     private String defaultErrorMessage;
 

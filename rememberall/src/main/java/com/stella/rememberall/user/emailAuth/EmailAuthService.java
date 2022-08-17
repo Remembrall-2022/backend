@@ -15,7 +15,13 @@ public class EmailAuthService {
     @Async
     @Transactional
     public void sendSignUpAuthEmail(String redisKey, String email) {
-        emailUtil.sendEmail(redisKey, email);
+        emailUtil.sendSignUpEmail(redisKey, email);
+    }
+
+    @Async
+    @Transactional
+    public void sendAuthCodeEmail(String authCode, String email){
+        emailUtil.sendAuthCodeEmail(authCode, email);
     }
 
 }
