@@ -21,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DateLogServiceTest {
 
     @Autowired UserRepository userRepository;
-    @Autowired QuestionCategoryRepository questionCategoryRepository;
-    @Autowired QuestionRepository questionRepository;
     @Autowired TripLogRepository tripLogRepository;
     @Autowired DateLogService dateLogService;
     @Autowired DateLogRepository dateLogRepository;
