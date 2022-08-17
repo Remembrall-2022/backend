@@ -29,7 +29,6 @@ public class DateLogServiceTest {
 
     @Test
     void createDateLog() {
-        /**
         // 유저 생성 후 저장
         String email = "stella@gmail.com";
         String password = "stellapw";
@@ -47,38 +46,19 @@ public class DateLogServiceTest {
                 .build();
         tripLogRepository.save(tripLog);
 
-        // 질문카테고리와 질문 생성, 저장
-        QuestionCategory questionCategory = new QuestionCategory(1L, QuestionCategoryName.BEFORE);
-        questionCategoryRepository.save(questionCategory);
-        Question question = new Question(1L, questionCategory, "목적지를 정하게 된 이유는?");
-        questionRepository.save(question);
-        DateLogSaveRequestDto dateLogDto = DateLogSaveRequestDto.builder()
-                .tripLog(tripLog)
-                .date(LocalDate.now())
-                .question(question)
-                .weatherInfo(new WeatherInfo("맑음", 25))
-                .answer("대답")
+        DateLogSaveRequestDto dateLogDto = DateLogSaveRequestDto.builder(tripLog, LocalDate.now())
+                .answer("this is answer without question")
                 .build();
         dateLogService.createDateLog(dateLogDto);
         DateLog found = dateLogRepository.findByTripLogAndDate(tripLog, LocalDate.now()).get(0);
 
         Assertions.assertThat(found.getId()).isEqualTo(1L);
 
-        //같은 일기장과 같은 날짜의 일기 하나 더 생성하면 예외
+        //기존에 존재하는 dateLog와 같은 일기장, 같은 날짜를 가지는 dateLog를 생성하면 예외
 
-        DateLogSaveRequestDto dateLogDto2 = DateLogSaveRequestDto.builder()
-                .tripLog(tripLog)
-                .date(LocalDate.now())
-                .question(question)
-                .weatherInfo(new WeatherInfo("흐림", 25))
-                .answer("대답2")
-                .build();
+        DateLogSaveRequestDto dateLogDto2 = DateLogSaveRequestDto.builder(tripLog, LocalDate.now()).build();
         assertThrows(IllegalStateException.class, ()-> dateLogService.createDateLog(dateLogDto2));
-         **/
 
-        /**
-         * 동작하는 것 확인했으나 Question, QuestionCategory 생성자 없애기 위해 주석처리
-         * **/
     }
 
 

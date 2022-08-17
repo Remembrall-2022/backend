@@ -2,23 +2,24 @@ package com.stella.rememberall.datelog;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.stella.rememberall.datelog.Question;
-import com.stella.rememberall.datelog.WeatherInfo;
 import com.stella.rememberall.tripLog.TripLog;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 
 @Getter
+@Builder(builderMethodName = "innerBuilder")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateLogSaveRequestDto {
 
+    @NonNull
     private TripLog tripLog;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
+    @NonNull
     private LocalDate date;
 
     private WeatherInfo weatherInfo;
@@ -27,16 +28,10 @@ public class DateLogSaveRequestDto {
 
     private String answer;
 
-    @Builder
-    public DateLogSaveRequestDto(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
-        Assert.notNull(tripLog, "TripLog must not be null");
-        Assert.notNull(date, "Date must not be null");
-
-        this.tripLog = tripLog;
-        this.date = date;
-        this.weatherInfo = weatherInfo;
-        this.question = question;
-        this.answer = answer;
+    public static DateLogSaveRequestDtoBuilder builder(TripLog tripLog, LocalDate date) {
+        return innerBuilder()
+                .tripLog(tripLog)
+                .date(date);
     }
 
     public DateLog toEntity() {

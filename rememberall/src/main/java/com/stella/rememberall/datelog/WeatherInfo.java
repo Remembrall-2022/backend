@@ -11,5 +11,5 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 public class WeatherInfo {
     private String weather;
-    private int degree;
+    private Integer degree;
 }

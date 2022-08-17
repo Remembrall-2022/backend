@@ -1,5 +1,6 @@
 package com.stella.rememberall.datelog;
 
+import com.stella.rememberall.domain.BaseTimeEntity;
 import com.stella.rememberall.domain.PlaceLog;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.AccessLevel;
@@ -18,17 +19,11 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DateLog {
+public class DateLog extends BaseTimeEntity {
     @Id
     @Column(name = "date_log_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    @Column(name="create_date")
-//    private LocalDateTime createDate;
-//
-//    @Column(name="update_date")
-//    private LocalDateTime updateDate;
 
     private LocalDate date;
 
@@ -46,6 +41,9 @@ public class DateLog {
     @JoinColumn(name = "trip_log_id")
     private TripLog tripLog;
 
+    /**
+     * 양방향 연관관계 편의 메서드 -> PlaceLog 저장할 때
+     * */
     @OneToMany(mappedBy = "dateLog")
     private List<PlaceLog> placeLogList = new ArrayList<>();
 

@@ -23,11 +23,4 @@ public class QuestionCategory {
     @OneToMany(mappedBy = "questionCategory")
     private List<Question> questionList = new ArrayList<>();
 
-    /**
-    public QuestionCategory (Long id, QuestionCategoryName questionCategoryName){
-        this.id=id;
-        this.questionCategoryName = questionCategoryName;
-    };
-     **/
-
 }
