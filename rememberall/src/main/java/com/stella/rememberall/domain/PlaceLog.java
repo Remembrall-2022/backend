@@ -1,5 +1,7 @@
 package com.stella.rememberall.domain;
 
+import com.stella.rememberall.userImg.UserImg;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
