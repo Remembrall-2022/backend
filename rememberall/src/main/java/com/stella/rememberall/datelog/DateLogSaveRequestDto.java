@@ -6,6 +6,8 @@ import com.stella.rememberall.tripLog.TripLog;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Getter
@@ -14,12 +16,12 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateLogSaveRequestDto {
 
-    @NonNull
+    @NotEmpty
     private TripLog tripLog;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @NonNull
+    @NotEmpty
     private LocalDate date;
 
     private WeatherInfo weatherInfo;
