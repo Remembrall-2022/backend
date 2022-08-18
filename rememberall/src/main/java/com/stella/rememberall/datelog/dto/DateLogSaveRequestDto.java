@@ -14,12 +14,10 @@ import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Getter
-@Builder(builderMethodName = "innerBuilder")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateLogSaveRequestDto {
 
-    @NotEmpty
+    @Setter
     private TripLog tripLog;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -33,10 +31,13 @@ public class DateLogSaveRequestDto {
 
     private String answer;
 
-    public static DateLogSaveRequestDtoBuilder builder(TripLog tripLog, LocalDate date) {
-        return innerBuilder()
-                .tripLog(tripLog)
-                .date(date);
+    @Builder
+    public DateLogSaveRequestDto (TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer){
+        this.tripLog = tripLog;
+        this.date = date;
+        this.weatherInfo = weatherInfo;
+        this.question = question;
+        this.answer = answer;
     }
 
     public DateLog toEntity() {

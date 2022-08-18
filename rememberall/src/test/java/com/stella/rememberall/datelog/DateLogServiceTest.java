@@ -6,6 +6,7 @@ import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
+import com.stella.rememberall.tripLog.exception.TripLogException;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.dto.EmailUserSaveRequestDto;
 import com.stella.rememberall.user.repository.UserRepository;
@@ -46,18 +47,28 @@ public class DateLogServiceTest {
                 .build();
         tripLogRepository.save(tripLog);
 
-        DateLogSaveRequestDto dateLogDto = DateLogSaveRequestDto.builder(tripLog, LocalDate.now())
+        DateLogSaveRequestDto dateLogDto = DateLogSaveRequestDto.builder()
+                .date(LocalDate.now())
                 .answer("this is answer without question")
                 .build();
-        dateLogService.createDateLog(dateLogDto);
+        dateLogService.createDateLog(tripLog.getId(), dateLogDto);
         DateLog found = dateLogRepository.findByTripLogAndDate(tripLog, LocalDate.now()).get(0);
 
         Assertions.assertThat(found.getId()).isEqualTo(1L);
 
         //기존에 존재하는 dateLog와 같은 일기장, 같은 날짜를 가지는 dateLog를 생성하면 예외
 
-        DateLogSaveRequestDto dateLogDto2 = DateLogSaveRequestDto.builder(tripLog, LocalDate.now()).build();
-        assertThrows(DateLogException.class, ()-> dateLogService.createDateLog(dateLogDto2));
+        DateLogSaveRequestDto dateLogDto2 = DateLogSaveRequestDto.builder().
+                date(LocalDate.now())
+                .build();
+        assertThrows(DateLogException.class, ()-> dateLogService.createDateLog(tripLog.getId(), dateLogDto2));
+
+
+        // 존재하지 않는 일기장 id를 받아서 일기 생성하면 예외
+        DateLogSaveRequestDto dateLogDto3 = DateLogSaveRequestDto.builder().
+                date(LocalDate.of(2022, 01,22))
+                .build();
+        assertThrows(TripLogException.class, ()-> dateLogService.createDateLog(10L, dateLogDto3));
 
     }
 
