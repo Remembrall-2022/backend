@@ -2,6 +2,7 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
+import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
@@ -56,7 +57,7 @@ public class DateLogServiceTest {
         //기존에 존재하는 dateLog와 같은 일기장, 같은 날짜를 가지는 dateLog를 생성하면 예외
 
         DateLogSaveRequestDto dateLogDto2 = DateLogSaveRequestDto.builder(tripLog, LocalDate.now()).build();
-        assertThrows(IllegalStateException.class, ()-> dateLogService.createDateLog(dateLogDto2));
+        assertThrows(DateLogException.class, ()-> dateLogService.createDateLog(dateLogDto2));
 
     }
 

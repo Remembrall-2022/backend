@@ -2,6 +2,8 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
+import com.stella.rememberall.datelog.exception.DateLogExCode;
+import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class DateLogService {
     private void validateDuplicateDateLog(DateLogSaveRequestDto dateLogSaveRequestDto) {
         List<DateLog> foundDateLog = dateLogRepository.findByTripLogAndDate(dateLogSaveRequestDto.getTripLog(), dateLogSaveRequestDto.getDate());
         if (!foundDateLog.isEmpty()) {
-            throw new IllegalStateException("이미 같은 날짜의 일기가 존재합니다.");
+            throw new DateLogException(DateLogExCode.DUPLICATED_DATELOG);
         }
     }
 }
