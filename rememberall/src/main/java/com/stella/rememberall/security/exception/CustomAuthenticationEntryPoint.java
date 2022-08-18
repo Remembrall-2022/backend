@@ -21,7 +21,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             AuthenticationException authException) throws IOException, ServletException {
 
         AuthErrorCode exception = (AuthErrorCode) request.getAttribute("exception");
-        if(exception.equals(AuthErrorCode.EXPIRED_TOKEN)) {
+        if(exception == null) {
+            response.sendRedirect("/exception/entryPoint");
+        }
+        else if(exception.equals(AuthErrorCode.EXPIRED_TOKEN)) {
             response.sendRedirect("/exception/expiredToken");
         }
         else if(exception.equals(AuthErrorCode.MALFORMED_TOKEN)) {

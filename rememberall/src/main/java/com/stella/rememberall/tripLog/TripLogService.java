@@ -2,16 +2,13 @@ package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.common.exception.jpa.CommonJpaErrorCode;
 import com.stella.rememberall.common.exception.jpa.CommonJpaException;
-import com.stella.rememberall.security.SecurityUtil;
 import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
 import com.stella.rememberall.tripLog.dto.TripLogUpdateRequestDto;
 import com.stella.rememberall.tripLog.exception.TripLogException;
+import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
-import com.stella.rememberall.user.exception.MemberException;
-import com.stella.rememberall.user.exception.MyErrorCode;
 import com.stella.rememberall.tripLog.exception.TripLogErrorCode;
-import com.stella.rememberall.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,11 +23,11 @@ import java.util.stream.Collectors;
 public class TripLogService {
 
     private final TripLogRepository tripLogRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public TripLogResponseDto saveTripLog(TripLogSaveRequestDto saveRequestDto){
-        User loginedUser = getLoginedUser();
+        User loginedUser = userService.getLoginedUser();
         TripLog savedTripLog = saveTripLogWithUser(saveRequestDto, loginedUser); // TODO : save 예외 잡기는 했는데 더 좋은 방법이 없을까? save fail은 500이고 find fail은 400 에러인디
         // TODO : 디폴트 이미지 지정 방법 논의 후 이미지 setter
         return TripLogResponseDto.of(savedTripLog);
@@ -57,7 +54,7 @@ public class TripLogService {
 
     @Transactional
     public List<TripLogResponseDto> findTripLogList(){
-        User loginedUser = getLoginedUser();
+        User loginedUser = userService.getLoginedUser();
         List<TripLog> entityList = tripLogRepository.findAllByUser(loginedUser);
         return mapEntityListToDtoList(entityList);
     }
@@ -66,14 +63,11 @@ public class TripLogService {
         return foundTripLogList.stream().map(TripLogResponseDto::of).collect(Collectors.toList());
     }
 
-    private User getLoginedUser(){
-        return SecurityUtil.getCurrentUserPk().flatMap(userRepository::findById)
-                .orElseThrow(() -> new MemberException(MyErrorCode.ENTITY_NOT_FOUND));
-    }
+
 
     @Transactional
     public TripLogResponseDto updateTripLog(TripLogUpdateRequestDto updateRequestDto, Long tripLogId){
-        User loginedUser = getLoginedUser();
+        User loginedUser = userService.getLoginedUser();
         // TODO : Spring Security로 수정 권한 확인하도록 수정
         checkUserAuthorityToUpdateTripLog(loginedUser, findTripLogById(tripLogId));
         TripLog updatedTripLog = updateTripLogWithUser(updateRequestDto, loginedUser, tripLogId);

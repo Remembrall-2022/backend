@@ -4,6 +4,7 @@ import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,6 +14,7 @@ import java.util.Collections;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class EmailUserSaveRequestDto {
     @Email String email;
     @NotEmpty(message = "회원의 password는 빈값일 수 없습니다.") String password;
@@ -26,6 +28,8 @@ public class EmailUserSaveRequestDto {
                 .authType(AuthType.EMAIL)
                 .password(passwordEncoder.encode(password))
                 .roles(Collections.singletonList("ROLE_USER"))
+                .alarmAgree(true)
+                .termAgree(true)
                 .build();
     }
 
@@ -36,6 +40,8 @@ public class EmailUserSaveRequestDto {
                 .name(name)
                 .authType(AuthType.EMAIL)
                 .roles(Collections.singletonList("ROLE_USER"))
+                .alarmAgree(true)
+                .termAgree(true)
                 .build();
     }
 
