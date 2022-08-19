@@ -1,6 +1,5 @@
 package com.stella.rememberall.userLogImg;
 
-import com.stella.rememberall.domain.ItemWithUserImg;
 import com.stella.rememberall.domain.PlaceLog;
 
 import javax.persistence.*;
@@ -20,8 +19,5 @@ public class UserLogImg {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_log_id")
     private PlaceLog placeLog;
-
-    @OneToMany(mappedBy = "userLogImg")
-    private List<ItemWithUserImg> itemWithUserImgList = new ArrayList<>();
 
 }
