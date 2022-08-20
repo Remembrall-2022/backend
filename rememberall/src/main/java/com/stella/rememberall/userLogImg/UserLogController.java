@@ -16,9 +16,10 @@ public class UserLogController {
     private final UserLogService userLogService;
 
     @PostMapping("/placelog/img")
-    public List<String> uploadFile(
+    public OnlyResponseString uploadFile(
             @RequestPart(value = "file") List<MultipartFile> multipartFile) {
-        return userLogService.saveUserLogImg(multipartFile);
+        userLogService.saveUserLogImg(multipartFile);
+        return new OnlyResponseString("이미지를 저장했습니다.");
     }
 
     @DeleteMapping("/placelog/img")

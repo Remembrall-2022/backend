@@ -14,14 +14,17 @@ import java.util.List;
 @Service
 public class UserLogService {
     private final S3Util s3Util;
+    private final UserLogImgRepository userLogImgRepository;
 
     @Transactional
-    public List<String> saveUserLogImg(List<MultipartFile> multipartFileList){
-        List<String> urlList = new ArrayList<>();
+    public void saveUserLogImg(List<MultipartFile> multipartFileList){
+        // TODO : PlaceLog 조회해서 엔티티 넣기
+
         // TODO : url 받아서 UserLogImg Entity 생성하여 save
-        for(MultipartFile multipartFile : multipartFileList)
-            urlList.add(s3Util.uploadFileV1("user-log-image", multipartFile));
-        return urlList;
+        for(MultipartFile multipartFile : multipartFileList) {
+            String url = s3Util.uploadFileV1("user-log-image", multipartFile);
+            userLogImgRepository.save(UserLogImgSaveRequestVO.of(url, multipartFileList.indexOf(multipartFile)));
+        }
     }
 
     @Transactional
