@@ -48,8 +48,6 @@ public class DateLog extends BaseTimeEntity {
 
     @Builder
     public DateLog(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
-        Assert.notNull(tripLog, "TripLog must not be null");
-        Assert.notNull(date, "Date must not be null");
 
         this.tripLog = tripLog;
         this.date = date;

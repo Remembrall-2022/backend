@@ -9,8 +9,6 @@ import com.stella.rememberall.tripLog.TripLog;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -18,37 +16,30 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DateLogSaveRequestDto {
 
-    @Setter
-    private TripLog tripLog;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @NotNull
     private LocalDate date;
 
-    private WeatherInfo weatherInfo;
+    private String weather;
 
-    private Question question;
+    private Integer degree;
+
+    private Long questionId;
 
     private String answer;
 
     @Builder
-    public DateLogSaveRequestDto (TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer){
-        this.tripLog = tripLog;
+    public DateLogSaveRequestDto (LocalDate date, String weather, Integer degree, Long questionId, String answer){
         this.date = date;
-        this.weatherInfo = weatherInfo;
-        this.question = question;
+        this.weather = weather;
+        this.degree = degree;
+        this.questionId = questionId;
         this.answer = answer;
     }
 
     public DateLog toEntity() {
-        return DateLog.builder()
-                .tripLog(tripLog)
-                .date(date)
-                .weatherInfo(weatherInfo)
-                .question(question)
-                .answer(answer)
-                .build();
+        return DateLog.builder().build();
     }
 
 }
