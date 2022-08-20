@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -22,7 +23,7 @@ public class DateLogSaveRequestDto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @NotEmpty
+    @NotNull
     private LocalDate date;
 
     private WeatherInfo weatherInfo;
