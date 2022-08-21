@@ -1,5 +1,6 @@
 package com.stella.rememberall.domain;
 
+import com.stella.rememberall.placelog.Place;
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.userLogImg.UserLogImg;
 
