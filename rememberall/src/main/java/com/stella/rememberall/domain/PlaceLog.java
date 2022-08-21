@@ -1,5 +1,7 @@
 package com.stella.rememberall.domain;
 
+import com.stella.rememberall.domain.DateLog;
+import com.stella.rememberall.placelog.Place;
 import com.stella.rememberall.userLogImg.UserLogImg;
 
 import javax.persistence.*;
