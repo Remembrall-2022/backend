@@ -41,6 +41,7 @@ public class DateLog extends BaseTimeEntity {
 
     /**
      * 양방향 연관관계 편의 메서드 -> PlaceLog 저장할 때
+     * 길이 10제한 -> 어떻게 구현할까?
      * */
     @OneToMany(mappedBy = "dateLog")
     private List<PlaceLog> placeLogList = new ArrayList<>();
