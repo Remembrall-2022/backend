@@ -14,7 +14,7 @@ public class QuestionExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(QuestionException.class)
     public ErrorEntity questionException(QuestionException e) {
-        log.error("QuestionException[{}] = {}", e.getExCode(), e.getErrorMessage());
+        log.error("[QuestionException] {} - {}", e.getExCode(), e.getErrorMessage());
         return new ErrorEntity(e.getExCode().toString(), e.getErrorMessage());
     }
 }

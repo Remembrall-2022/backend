@@ -1,6 +1,5 @@
 package com.stella.rememberall.datelog.exception;
 
-import com.stella.rememberall.datelog.domain.Question;
 import lombok.Getter;
 
 @Getter

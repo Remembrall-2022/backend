@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "question")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@AllArgsConstructor
 public class Question {
     @Id
     @Column(name = "question_id")
