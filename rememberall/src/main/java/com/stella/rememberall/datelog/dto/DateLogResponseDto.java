@@ -1,6 +1,7 @@
 package com.stella.rememberall.datelog.dto;
 
 import com.stella.rememberall.datelog.domain.Question;
+import com.stella.rememberall.datelog.domain.WeatherInfo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,20 +14,21 @@ public class DateLogResponseDto {
 
     private LocalDate date;
 
-    private String weather;
+    private WeatherInfo weatherInfo;
 
-    private Integer degree;
-
-    private String questionTopic;
+    private Question question;
 
     private String answer;
 
+    /**
+     * TODO: PlaceLog 리스트로 불러와야 하는지 확인
+     * */
+
     @Builder
-    public DateLogResponseDto(LocalDate date, String weather, Integer degree, String questionTopic, String answer) {
+    public DateLogResponseDto(LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
         this.date = date;
-        this.weather = weather;
-        this.degree = degree;
-        this.questionTopic = questionTopic;
+        this.weatherInfo = weatherInfo;
+        this.question = question;
         this.answer = answer;
     }
 }

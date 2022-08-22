@@ -3,6 +3,7 @@ package com.stella.rememberall.datelog;
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
 import com.stella.rememberall.datelog.domain.WeatherInfo;
+import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import com.stella.rememberall.datelog.exception.DateLogExCode;
 import com.stella.rememberall.datelog.exception.DateLogException;
@@ -49,6 +50,7 @@ public class DateLogService {
 
 
         //dto 사용해서 datelog 엔티티 생성
+        // TODO: dto weatherinfo 객체 형태로 받기
         DateLog dateLogEntity = dateLogSaveRequestDto.toEntity().builder()
                 .date(dateLogSaveRequestDto.getDate())
                 .weatherInfo(new WeatherInfo(dateLogSaveRequestDto.getWeather(), dateLogSaveRequestDto.getDegree()))
@@ -61,10 +63,29 @@ public class DateLogService {
         return dateLogEntity.getId();
     }
 
+    // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
+
     private void validateDuplicateDateLog(DateLog dateLog) {
         List<DateLog> foundDateLog = dateLogRepository.findByTripLogAndDate(dateLog.getTripLog(), dateLog.getDate());
         if (!foundDateLog.isEmpty()) {
             throw new DateLogException(DateLogExCode.DUPLICATED_DATELOG);
         }
+    }
+
+    @Transactional
+    public DateLogResponseDto readOne(Long dateLogId) {
+        DateLog dateLogEntity = dateLogRepository.findById(dateLogId)
+                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "일기를 찾을 수 없어 조회할 수 없습니다."));
+
+        // TODO: 각 필드 null 처리 필요
+        Question question = Optional.ofNullable(dateLogEntity.getQuestion()).orElse(null);
+        String answer = Optional.ofNullable(dateLogEntity.getAnswer()).orElse(null);
+
+        return DateLogResponseDto.builder()
+                .date(dateLogEntity.getDate())
+                .weatherInfo(dateLogEntity.getWeatherInfo())
+                .question(question)
+                .answer(answer)
+                .build();
     }
 }
