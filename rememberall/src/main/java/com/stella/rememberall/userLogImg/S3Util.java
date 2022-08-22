@@ -30,18 +30,18 @@ public class S3Util {
     public String uploadFileV1(String dirName, MultipartFile multipartFile) {
         validateFileExists(multipartFile);
 
-        String uniqueFileName = createUniqueFileName(dirName, multipartFile);
+        String fileKey = createUniqueFileName(dirName, multipartFile);
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, uniqueFileName, inputStream, objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileKey, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             throw new S3FileException(FileErrorCode.FILE_UPLOAD_FAIL);
         }
-        return amazonS3Client.getUrl(bucketName, uniqueFileName).toString();
+        return fileKey;
     }
 
     private String createUniqueFileName(String dirName, MultipartFile multipartFile) {
@@ -49,6 +49,10 @@ public class S3Util {
         String s3FileName = UUID.randomUUID() + "-" + originFileName;
         String fileName = dirName + "/" + s3FileName;
         return fileName;
+    }
+
+    public String getUrl(String bucketName, String filekey){
+        return amazonS3Client.getUrl(bucketName, filekey).toString();
     }
 
     private void validateFileExists(MultipartFile multipartFile) {
@@ -65,4 +69,8 @@ public class S3Util {
         }
     }
 
+    public String updateFile(String fileKey, String dirName, MultipartFile multipartFile) {
+        deleteFile(fileKey);
+        return uploadFileV1(dirName, multipartFile);
+    }
 }
