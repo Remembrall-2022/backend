@@ -1,6 +1,7 @@
 package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.datelog.domain.WeatherInfo;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
@@ -50,8 +51,7 @@ public class DateLogServiceTest {
         DateLogSaveRequestDto dateLogDto = DateLogSaveRequestDto.builder()
                 .date(LocalDate.now())
                 .answer("this is answer without question")
-                .weather("맑음")
-                .degree(30)
+                .weatherInfo(new WeatherInfo("맑음", 30))
                 .build();
         dateLogService.createDateLog(tripLog.getId(), dateLogDto);
         DateLog found = dateLogRepository.findByTripLogAndDate(tripLog, LocalDate.now()).get(0);

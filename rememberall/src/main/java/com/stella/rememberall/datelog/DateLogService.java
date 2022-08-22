@@ -50,15 +50,14 @@ public class DateLogService {
 
 
         //dto 사용해서 datelog 엔티티 생성
-        // TODO: dto weatherinfo 객체 형태로 받기
         DateLog dateLogEntity = dateLogSaveRequestDto.toEntity().builder()
                 .date(dateLogSaveRequestDto.getDate())
-                .weatherInfo(new WeatherInfo(dateLogSaveRequestDto.getWeather(), dateLogSaveRequestDto.getDegree()))
+                .weatherInfo(dateLogSaveRequestDto.getWeatherInfo())
                 .answer(answer)
                 .tripLog(tripLogOptional.get())
                 .question(question).build();
 
-        // triplog 객체의 datelogList에 새로 생성된 datelog 저장
+        // triplog 객체의 datelogList 컬렉션 필드에 새로 생성된 datelog 저장
         tripLogOptional.get().getDateLogList().add(dateLogEntity);
         validateDuplicateDateLog(dateLogEntity);
         dateLogRepository.save(dateLogEntity);
