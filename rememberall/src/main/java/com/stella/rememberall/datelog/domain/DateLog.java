@@ -1,7 +1,7 @@
 package com.stella.rememberall.datelog.domain;
 
 import com.stella.rememberall.domain.BaseTimeEntity;
-import com.stella.rememberall.domain.PlaceLog;
+import com.stella.rememberall.placelog.PlaceLog;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.AccessLevel;
 import lombok.Builder;
