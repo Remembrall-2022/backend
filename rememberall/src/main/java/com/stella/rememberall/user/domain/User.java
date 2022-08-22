@@ -36,10 +36,10 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(length = 100, nullable = false, unique = true)
     private String email;
 
-    @Column(length = 300, nullable = false)
+    @Column(length = 300)
     private String password;
 
-    @Column(name="kakao_id")
+    @Column(name="kakao_id", unique = true)
     private Long kakaoId;
 
     @Column(length = 300, nullable = false)
@@ -50,9 +50,6 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @Column(name="alarm_agree")
     private Boolean alarmAgree;
-
-    @Column(name="register_date")
-    private LocalDateTime registerDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -109,4 +106,26 @@ public class User extends BaseTimeEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    // update
+    public User updateName(String name){
+        this.name = name;
+        return this;
+    }
+
+    public User updateAlarmAgree(Boolean alarmAgree){
+        this.alarmAgree = alarmAgree;
+        return this;
+    }
+
+    public User updateTermAgree(Boolean termAgree){
+        this.termAgree = termAgree;
+        return this;
+    }
+
+    public User updatePassword(String password){
+        this.password = password;
+        return this;
+    }
+
 }

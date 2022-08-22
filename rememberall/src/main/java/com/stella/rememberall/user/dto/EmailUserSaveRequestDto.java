@@ -28,6 +28,8 @@ public class EmailUserSaveRequestDto {
                 .authType(AuthType.EMAIL)
                 .password(passwordEncoder.encode(password))
                 .roles(Collections.singletonList("ROLE_USER"))
+                .alarmAgree(true)
+                .termAgree(true)
                 .build();
     }
 
@@ -38,6 +40,8 @@ public class EmailUserSaveRequestDto {
                 .name(name)
                 .authType(AuthType.EMAIL)
                 .roles(Collections.singletonList("ROLE_USER"))
+                .alarmAgree(true)
+                .termAgree(true)
                 .build();
     }
 

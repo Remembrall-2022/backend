@@ -1,5 +1,6 @@
 package com.stella.rememberall.common.exception;
 
+import com.stella.rememberall.common.exception.internalServer.InternalServerException;
 import com.stella.rememberall.common.exception.jpa.CommonJpaException;
 import com.stella.rememberall.common.response.ErrorEntity;
 import com.stella.rememberall.user.exception.MemberException;
@@ -28,6 +29,13 @@ public class CommonExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorEntity commonJpaException(CommonJpaException e) {
         log.error("CommonJpa Exception({}) - {}", e.getErrorCode(), e.getErrorMessage());
+        return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage()); // TODO : e.getResponseCode()로 개선 필요
+    }
+
+    @ExceptionHandler(InternalServerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorEntity commonJpaException(InternalServerException e) {
+        log.error("InternalServer Exception({}) - {}", e.getErrorCode(), e.getErrorMessage());
         return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage()); // TODO : e.getResponseCode()로 개선 필요
     }
 }
