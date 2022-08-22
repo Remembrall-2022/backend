@@ -50,6 +50,8 @@ public class DateLogServiceTest {
         DateLogSaveRequestDto dateLogDto = DateLogSaveRequestDto.builder()
                 .date(LocalDate.now())
                 .answer("this is answer without question")
+                .weather("맑음")
+                .degree(30)
                 .build();
         dateLogService.createDateLog(tripLog.getId(), dateLogDto);
         DateLog found = dateLogRepository.findByTripLogAndDate(tripLog, LocalDate.now()).get(0);
