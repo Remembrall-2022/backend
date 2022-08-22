@@ -2,7 +2,6 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
-import com.stella.rememberall.datelog.domain.WeatherInfo;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import com.stella.rememberall.datelog.exception.DateLogExCode;
@@ -11,7 +10,6 @@ import com.stella.rememberall.datelog.exception.QuestionExCode;
 import com.stella.rememberall.datelog.exception.QuestionException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
-import com.stella.rememberall.domain.PlaceLog;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
