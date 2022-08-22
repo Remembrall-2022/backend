@@ -9,7 +9,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "dongdong")
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 public class Dongdong {
@@ -28,4 +27,10 @@ public class Dongdong {
     @OneToOne
     @JoinColumn(name = "dongdong_img_id")
     private DongdongImg dongDongImg;
+
+    public Dongdong (User user) {
+        this.user = user;
+        this.point = 0L;
+        this.exp = 0L;
+    }
 }

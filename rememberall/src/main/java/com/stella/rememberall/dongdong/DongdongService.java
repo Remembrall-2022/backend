@@ -13,4 +13,10 @@ public class DongdongService {
     Dongdong readDongdong(User user) {
         return dongdongRepository.findById(user.getId()).get();
     }
+
+    Long createDongdong(User user) {
+        Dongdong dongdong = new Dongdong(user);
+        //dongdong.setDongdongImg()
+        dongdongRepository.save();
+    }
 }
