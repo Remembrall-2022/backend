@@ -1,7 +1,7 @@
 package com.stella.rememberall.placelog;
 
-import com.stella.rememberall.domain.DateLog;
 import com.stella.rememberall.placelog.Place;
+import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.userLogImg.UserLogImg;
 import lombok.Builder;
 import lombok.Getter;
