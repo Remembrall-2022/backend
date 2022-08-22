@@ -94,4 +94,9 @@ public class DateLogService {
                 .answer(answer)
                 .build();
     }
+
+    @Transactional
+    public void deleteDateLog(Long dateLogId) {
+        dateLogRepository.deleteById(dateLogId);
+    }
 }
