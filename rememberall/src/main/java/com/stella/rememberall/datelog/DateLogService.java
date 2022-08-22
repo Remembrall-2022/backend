@@ -11,6 +11,7 @@ import com.stella.rememberall.datelog.exception.QuestionExCode;
 import com.stella.rememberall.datelog.exception.QuestionException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
+import com.stella.rememberall.domain.PlaceLog;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,9 +81,11 @@ public class DateLogService {
         DateLog dateLogEntity = dateLogRepository.findById(dateLogId)
                 .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "일기를 찾을 수 없어 조회할 수 없습니다."));
 
-        // TODO: 각 필드 null 처리 필요
         Question question = Optional.ofNullable(dateLogEntity.getQuestion()).orElse(null);
         String answer = Optional.ofNullable(dateLogEntity.getAnswer()).orElse(null);
+
+        //List<PlaceLog> logList
+
 
         return DateLogResponseDto.builder()
                 .date(dateLogEntity.getDate())
