@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,10 +35,18 @@ public class PlaceLogService {
     @Transactional
     public PlaceLogResponseDto getPlaceLog(Long placeLogId) throws PlaceLogException{
         PlaceLog placeLog = findPlaceLog(placeLogId);
-        // urlImg로 바꾸기
-        List<UserLogImg> userLogImgList = placeLog.getUserLogImgList();
+        List<UserLogImg> sortedUserLogImgList = sortUserLogImgsByIndex(placeLog.getUserLogImgList());
+        return createPlaceLogResponseDto(placeLog, sortedUserLogImgList);
+    }
+
+    private List<UserLogImg> sortUserLogImgsByIndex(List<UserLogImg> userLogImgList) {
+        return userLogImgList.stream().sorted(Comparator.comparing(UserLogImg::getIndex))
+                .collect(Collectors.toList());
+    }
+
+    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> sortedUserLogImgList) {
         List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
-        for(UserLogImg userLogImg:userLogImgList){
+        for(UserLogImg userLogImg: sortedUserLogImgList){
             userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
         }
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
