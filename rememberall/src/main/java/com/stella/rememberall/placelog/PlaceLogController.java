@@ -1,19 +1,31 @@
 package com.stella.rememberall.placelog;
 
+import com.stella.rememberall.userLogImg.UserLogImgService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 public class PlaceLogController {
     private final PlaceLogService placeLogService;
+    private final UserLogImgService userLogImgService;
+
+    @PostMapping("/placeLog/{placeLogId}/{imageId}")
+    public void updateImg(@RequestPart(value = "file") MultipartFile multipartFile, @PathVariable Long imageId){
+        userLogImgService.updateUserLogImg(imageId, multipartFile);
+    }
 
     @PostMapping("/placeLog/new")
-    public Long createTripLog(@RequestBody @Valid PlaceLogSaveRequestDto dto){
-        return placeLogService.savePlaceLog(dto);
+    public Long createTripLog(
+            @RequestPart(value = "file") List<MultipartFile> multipartFile,
+            @RequestPart @Valid PlaceLogSaveRequestDto placeLogSaveRequestDto
+    ){
+        return placeLogService.savePlaceLog(placeLogSaveRequestDto, multipartFile);
     }
 
     @GetMapping("/placeLog/{placeLogId}")

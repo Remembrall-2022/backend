@@ -2,10 +2,17 @@ package com.stella.rememberall.placelog;
 
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
+import com.stella.rememberall.userLogImg.UserLogImg;
+import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
+import com.stella.rememberall.userLogImg.UserLogImgService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -13,17 +20,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlaceLogService {
     private final PlaceLogRepository placeLogRepository;
     private final PlaceService placeService;
+    private final UserLogImgService userLogImgService;
 
     @Transactional
-    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto){
+    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
-        return placeLogRepository.save(requestDto.toEntity()).getId();
+        PlaceLog placeLog = placeLogRepository.save(requestDto.toEntity());
+        userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
+        return placeLog.getId();
     }
 
     @Transactional
     public PlaceLogResponseDto getPlaceLog(Long placeLogId) throws PlaceLogException{
         PlaceLog placeLog = findPlaceLog(placeLogId);
-        return PlaceLogResponseDto.of(placeLog);
+        // urlImg로 바꾸기
+        List<UserLogImg> userLogImgList = placeLog.getUserLogImgList();
+        List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
+        for(UserLogImg userLogImg:userLogImgList){
+            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
+        }
+        PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
+        responseDto.updateUserLogImgListWithImgUrl(userLogImgResponseDtos);
+        return responseDto;
     }
 
     private PlaceLog findPlaceLog(Long placeLogId) {
@@ -52,6 +70,7 @@ public class PlaceLogService {
     public Long deletePlaceLog(Long placeLogId) throws PlaceLogException{
         PlaceLog placeLog = findPlaceLog(placeLogId);
         placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
+        userLogImgService.deleteUserLogImg(placeLog);
         placeLogRepository.deleteById(placeLogId);
         return placeLogId;
     }
