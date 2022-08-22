@@ -1,10 +1,7 @@
 package com.stella.rememberall.placeLog;
 
 
-import com.stella.rememberall.placelog.Place;
-import com.stella.rememberall.placelog.PlaceRepository;
-import com.stella.rememberall.placelog.PlaceSaveRequestDto;
-import com.stella.rememberall.placelog.PlaceService;
+import com.stella.rememberall.placelog.*;
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
 import org.assertj.core.api.Assertions;
@@ -28,6 +25,8 @@ public class PlaceServiceTest {
 
     @Mock
     PlaceRepository placeRepository;
+    @Mock
+    PlaceLogRepository placeLogRepository;
 
     PlaceSaveRequestDto createSaveRequestDto(){
         return new PlaceSaveRequestDto(126273L, "가계해변", "전라남도 진도군 고군면 신비의바닷길 47 (고군면)", 126.3547412438, 34.4354594945);
@@ -59,7 +58,7 @@ public class PlaceServiceTest {
                 Place place = placeSaveRequestDto.toEntity();
                 Mockito.when(placeRepository.save(ArgumentMatchers.any(Place.class))).thenReturn(place);
 
-                PlaceService placeService = new PlaceService(placeRepository);
+                PlaceService placeService = new PlaceService(placeRepository, placeLogRepository);
                 Place result = placeService.saveOrUpdatePlace(placeSaveRequestDto);
 
                 assertEquals(126273L, result.getId());
@@ -74,7 +73,7 @@ public class PlaceServiceTest {
             void createArticleFail1() {
                 Mockito.when(placeRepository.save(ArgumentMatchers.any(Place.class))).thenReturn(null);
 
-                PlaceService placeService = new PlaceService(placeRepository);
+                PlaceService placeService = new PlaceService(placeRepository, placeLogRepository);
                 Place result = placeService.saveOrUpdatePlace(placeSaveRequestDto);
 
                 Assertions.assertThat(result).isNull();
@@ -102,7 +101,7 @@ public class PlaceServiceTest {
             @DisplayName("관광지 조회")
             void getPlaceSuccess1() {
                 // given
-                PlaceService placeService = new PlaceService(placeRepository);
+                PlaceService placeService = new PlaceService(placeRepository, placeLogRepository);
                 Place place = saveDto.toEntity();
                 Mockito.when(placeRepository.save(ArgumentMatchers.any(Place.class))).thenReturn(place);
                 placeService.saveOrUpdatePlace(saveDto);
@@ -121,7 +120,7 @@ public class PlaceServiceTest {
             @DisplayName("반환된 게시물이 NULL인 경우")
             void getPlaceFail1() {
                 // given
-                PlaceService placeService = new PlaceService(placeRepository);
+                PlaceService placeService = new PlaceService(placeRepository, placeLogRepository);
                 Place place = saveDto.toEntity();
                 Mockito.when(placeRepository.save(ArgumentMatchers.any(Place.class))).thenReturn(place);
                 placeService.saveOrUpdatePlace(saveDto);

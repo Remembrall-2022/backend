@@ -2,7 +2,7 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
-import com.stella.rememberall.datelog.domain.WeatherInfo;
+import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import com.stella.rememberall.datelog.exception.DateLogExCode;
 import com.stella.rememberall.datelog.exception.DateLogException;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,20 +52,49 @@ public class DateLogService {
         //dto 사용해서 datelog 엔티티 생성
         DateLog dateLogEntity = dateLogSaveRequestDto.toEntity().builder()
                 .date(dateLogSaveRequestDto.getDate())
-                .weatherInfo(new WeatherInfo(dateLogSaveRequestDto.getWeather(), dateLogSaveRequestDto.getDegree()))
+                .weatherInfo(dateLogSaveRequestDto.getWeatherInfo())
                 .answer(answer)
                 .tripLog(tripLogOptional.get())
                 .question(question).build();
+
+        // triplog 객체의 datelogList 컬렉션 필드에 새로 생성된 datelog 저장
+        tripLogOptional.get().getDateLogList().add(dateLogEntity);
         validateDuplicateDateLog(dateLogEntity);
         dateLogRepository.save(dateLogEntity);
 
         return dateLogEntity.getId();
     }
 
+    // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
+
     private void validateDuplicateDateLog(DateLog dateLog) {
         List<DateLog> foundDateLog = dateLogRepository.findByTripLogAndDate(dateLog.getTripLog(), dateLog.getDate());
         if (!foundDateLog.isEmpty()) {
             throw new DateLogException(DateLogExCode.DUPLICATED_DATELOG);
         }
+    }
+
+    @Transactional
+    public DateLogResponseDto readOne(Long dateLogId) {
+        DateLog dateLogEntity = dateLogRepository.findById(dateLogId)
+                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "일기를 찾을 수 없어 조회할 수 없습니다."));
+
+        Question question = Optional.ofNullable(dateLogEntity.getQuestion()).orElse(null);
+        String answer = Optional.ofNullable(dateLogEntity.getAnswer()).orElse(null);
+
+        //List<PlaceLog> logList
+
+
+        return DateLogResponseDto.builder()
+                .date(dateLogEntity.getDate())
+                .weatherInfo(dateLogEntity.getWeatherInfo())
+                .question(question)
+                .answer(answer)
+                .build();
+    }
+
+    @Transactional
+    public void deleteDateLog(Long dateLogId) {
+        dateLogRepository.deleteById(dateLogId);
     }
 }

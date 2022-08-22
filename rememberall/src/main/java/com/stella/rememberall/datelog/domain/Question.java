@@ -1,6 +1,7 @@
 package com.stella.rememberall.datelog.domain;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Table(name = "question")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Question {
     @Id
     @Column(name = "question_id")

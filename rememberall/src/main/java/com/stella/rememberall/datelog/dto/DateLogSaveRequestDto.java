@@ -3,6 +3,7 @@ package com.stella.rememberall.datelog.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.datelog.domain.WeatherInfo;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,19 +19,16 @@ public class DateLogSaveRequestDto {
     @NotNull
     private LocalDate date;
 
-    private String weather;
-
-    private Integer degree;
+    private WeatherInfo weatherInfo;
 
     private Long questionId;
 
     private String answer;
 
     @Builder
-    public DateLogSaveRequestDto (LocalDate date, String weather, Integer degree, Long questionId, String answer){
+    public DateLogSaveRequestDto (LocalDate date, WeatherInfo weatherInfo, Long questionId, String answer){
         this.date = date;
-        this.weather = weather;
-        this.degree = degree;
+        this.weatherInfo = weatherInfo;
         this.questionId = questionId;
         this.answer = answer;
     }
