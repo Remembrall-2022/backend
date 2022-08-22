@@ -1,6 +1,6 @@
 package com.stella.rememberall.userLogImg;
 
-import com.stella.rememberall.domain.PlaceLog;
+import com.stella.rememberall.placelog.PlaceLog;
 import lombok.Builder;
 
 import javax.persistence.*;
