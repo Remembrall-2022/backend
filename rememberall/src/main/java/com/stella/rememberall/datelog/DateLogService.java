@@ -57,6 +57,9 @@ public class DateLogService {
                 .answer(answer)
                 .tripLog(tripLogOptional.get())
                 .question(question).build();
+
+        // triplog 객체의 datelogList에 새로 생성된 datelog 저장
+        tripLogOptional.get().getDateLogList().add(dateLogEntity);
         validateDuplicateDateLog(dateLogEntity);
         dateLogRepository.save(dateLogEntity);
 
