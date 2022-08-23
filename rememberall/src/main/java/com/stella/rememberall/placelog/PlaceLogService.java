@@ -34,10 +34,12 @@ public class PlaceLogService {
     }
 
     @Transactional
-    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
+    public Long savePlaceLog(int index, PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
         PlaceLog entity = requestDto.toEntity();
-        PlaceLog placeLog = placeLogRepository.save(entity.updateDateLog(dateLog));
+        entity.updateDateLog(dateLog);
+        entity.updateIndex(index);
+        PlaceLog placeLog = placeLogRepository.save(entity);
         userLogImgService.saveUserLogImg(placeLog, multipartFile);
         return placeLog.getId();
     }

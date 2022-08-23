@@ -52,6 +52,9 @@ public class DateLogService {
         String answer = getAnswerAcceptsNull(dateLogSaveRequestDto);
 
         validateUniqueDateLog(tripLog, date);
+        
+        // 길이 제한
+        if(tripLog.getDateLogList().size() == 10) return -1L;
 
         DateLogSaveRequestVo dateLogSaveRequestVo = new DateLogSaveRequestVo(date, weatherInfo, question, answer, tripLog);
         DateLog dateLog = dateLogSaveRequestVo.toEntity();
@@ -61,11 +64,8 @@ public class DateLogService {
 
         if(placeLogList == null) return -1L;
         if(placeLogList.size() != multipartFileList.size()) return -1L;
-
-//        for(PlaceLogSaveRequestDto requestDto:placeLogList)
-//            placeLogService.savePlaceLog(requestDto, dateLog);
         for(int i=0;i<placeLogList.size();i++){
-            placeLogService.savePlaceLog(placeLogList.get(i), dateLog, multipartFileList.get(i));
+            placeLogService.savePlaceLog(i, placeLogList.get(i), dateLog, multipartFileList.get(i));
         }
 
         // triplog 객체의 datelogList 컬렉션 필드에 새로 생성된 datelog 저장
