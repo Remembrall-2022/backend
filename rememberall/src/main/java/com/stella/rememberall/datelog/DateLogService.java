@@ -2,7 +2,6 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
-import com.stella.rememberall.datelog.domain.WeatherInfo;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestVo;
@@ -12,12 +11,13 @@ import com.stella.rememberall.datelog.exception.QuestionExCode;
 import com.stella.rememberall.datelog.exception.QuestionException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
-import com.stella.rememberall.placelog.PlaceLogRepository;
 import com.stella.rememberall.placelog.PlaceLogSaveRequestDto;
 import com.stella.rememberall.placelog.PlaceLogService;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
+import com.stella.rememberall.user.UserService;
+import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,53 +38,37 @@ public class DateLogService {
     private final TripLogRepository tripLogRepository;
     private final QuestionRepository questionRepository;
     private final PlaceLogService placeLogService;
+    private final UserService userService;
 
     // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
     @Transactional
     public Long createDateLog(Long tripLogId, DateLogSaveRequestDto dateLogSaveRequestDto, List<MultipartFile> multipartFileList) {
         TripLog tripLog = getTripLog(tripLogId);
-        // 로그인한 회원이 소유자가 맞는지 확인
-
+        checkLoginedUserIsTripLogOwner(tripLog.getUser());
 
         LocalDate date = dateLogSaveRequestDto.getDate();
-        WeatherInfo weatherInfo = dateLogSaveRequestDto.getWeatherInfo();
         Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
-        String answer = getAnswerAcceptsNull(dateLogSaveRequestDto);
         ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
 
         validateUniqueDateLog(tripLog, date);
         checkPlaceLogCountExceeds(placeLogList);
 
-        DateLogSaveRequestVo dateLogSaveRequestVo = new DateLogSaveRequestVo(date, weatherInfo, question, answer, tripLog);
-        DateLog dateLog = dateLogSaveRequestVo.toEntity();
+        DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
+        savePlaceLogs(multipartFileList, placeLogList, dateLog);
+        return dateLog.getId();
 
-        // placeLog - userImg
-        if(placeLogList != null) {
-            checkCountMatches(multipartFileList.size(), placeLogList.size());
-            for (int i = 0; i < placeLogList.size(); i++) {
-                placeLogService.savePlaceLog(i, placeLogList.get(i), dateLog, multipartFileList.get(i));
-            }
-        }
-
-        // triplog 객체의 datelogList 컬렉션 필드에 새로 생성된 datelog 저장
-        tripLog.getDateLogList().add(dateLog);
-        return dateLogRepository.save(dateLog).getId();
-        
         // 경험치 추가
-    }
-
-    private void checkCountMatches(int multipartFileListSize, int placeLogListSize) {
-        if (multipartFileListSize != placeLogListSize) throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH);
-    }
-
-    private void checkPlaceLogCountExceeds(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
-        if(placeLogList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED);
     }
 
     private TripLog getTripLog(Long tripLogId) {
         TripLog tripLog = tripLogRepository.findById(tripLogId)
                 .orElseThrow(() -> new TripLogException(TRIPLOG_NOT_FOUND, "일기장을 찾을 수 없어 일기를 생성할 수 없습니다."));
         return tripLog;
+    }
+
+    private void checkLoginedUserIsTripLogOwner(User tripLogOwner) {
+        if(!tripLogOwner.equals(userService.getLoginedUser()))
+            throw new DateLogException(DateLogExCode.NO_AUTHORIZATION);
     }
 
     private Question getQuestionAcceptsNull(Long questionId) {
@@ -97,15 +81,37 @@ public class DateLogService {
         return question;
     }
 
-    private String getAnswerAcceptsNull(DateLogSaveRequestDto dateLogSaveRequestDto) {
-        return Optional.ofNullable(dateLogSaveRequestDto.getAnswer()).orElse(null);
-    }
-
     private void validateUniqueDateLog(TripLog tripLog, LocalDate date) {
         if(dateLogRepository.existsByTripLogAndDate(tripLog, date))
-//        List<DateLog> foundDateLog = dateLogRepository.findByTripLogAndDate(tripLog, date);
-//        if (!foundDateLog.isEmpty()) {
             throw new DateLogException(DateLogExCode.DUPLICATED_DATELOG);
+    }
+
+    private void checkPlaceLogCountExceeds(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
+        if(placeLogList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED);
+    }
+
+    private DateLog getDateLog(DateLogSaveRequestDto dateLogSaveRequestDto, TripLog tripLog, Question question) {
+        DateLogSaveRequestVo dateLogSaveRequestVo = new DateLogSaveRequestVo(dateLogSaveRequestDto);
+        dateLogSaveRequestVo.setTripLog(tripLog);
+        dateLogSaveRequestVo.setQuestion(question);
+        return dateLogSaveRequestVo.toEntity();
+    }
+
+    private void savePlaceLogs(List<MultipartFile> multipartFileList, ArrayList<PlaceLogSaveRequestDto> placeLogList, DateLog dateLog) {
+        if(placeLogList != null) {
+            checkCountMatches(multipartFileList.size(), placeLogList.size());
+            for (int i = 0; i < placeLogList.size(); i++) {
+                placeLogService.savePlaceLog(i, placeLogList.get(i), dateLog, multipartFileList.get(i));
+            }
+        }
+    }
+
+    private void checkCountMatches(int multipartFileListSize, int placeLogListSize) {
+        if (multipartFileListSize != placeLogListSize) throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH);
+    }
+
+    private String getAnswerAcceptsNull(DateLogSaveRequestDto dateLogSaveRequestDto) {
+        return Optional.ofNullable(dateLogSaveRequestDto.getAnswer()).orElse(null);
     }
 
     @Transactional

@@ -7,8 +7,10 @@ import com.stella.rememberall.tripLog.TripLog;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,9 +19,15 @@ public class DateLogSaveRequestVo {
 
     private LocalDate date;
     private WeatherInfo weatherInfo;
-    private Question question;
+    @Setter private Question question;
     private String answer;
-    private TripLog tripLog;
+    @Setter private TripLog tripLog;
+
+    public DateLogSaveRequestVo(DateLogSaveRequestDto requestDto){
+        this.date = requestDto.getDate();
+        this.weatherInfo = requestDto.getWeatherInfo();
+        this.answer = requestDto.getAnswer();
+    }
 
     public DateLog toEntity() {
         return DateLog.builder()
@@ -28,6 +36,7 @@ public class DateLogSaveRequestVo {
                 .answer(answer)
                 .question(question)
                 .tripLog(tripLog)
+                .placeLogList(new ArrayList<>())
                 .build();
     }
 

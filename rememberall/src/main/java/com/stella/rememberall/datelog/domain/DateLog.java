@@ -15,24 +15,26 @@ import java.util.List;
 
 @Table(name = "date_log")
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DateLog extends BaseTimeEntity {
-    @Id
+    @Id @Getter
     @Column(name = "date_log_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private LocalDate date;
 
-    @Embedded
+    @Embedded @Getter
     @Column(name = "weather_info")
     private WeatherInfo weatherInfo;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
+    @Getter
     private Question question;
 
+    @Getter
     private String answer;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,13 +49,13 @@ public class DateLog extends BaseTimeEntity {
     private List<PlaceLog> placeLogList = new ArrayList<>();
 
     @Builder
-    public DateLog(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
-
+    public DateLog(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer, List<PlaceLog> placeLogList) {
         this.tripLog = tripLog;
         this.date = date;
         this.weatherInfo = weatherInfo;
         this.question = question;
         this.answer = answer;
+        this.placeLogList = placeLogList;
     }
 
 }

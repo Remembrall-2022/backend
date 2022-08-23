@@ -34,14 +34,14 @@ public class PlaceLogService {
     }
 
     @Transactional
-    public Long savePlaceLog(int index, PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
-        placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
-        PlaceLog entity = requestDto.toEntity();
-        entity.updateDateLog(dateLog);
-        entity.updateIndex(index);
-        PlaceLog placeLog = placeLogRepository.save(entity);
+    public void savePlaceLog(int index, PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
+        Place place = placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
+        PlaceLog placeLog = requestDto.toEntity();
+        placeLog.setPlace(place);
+        placeLog.setDateLog(dateLog);
+        placeLog.setIndex(index);
+        placeLogRepository.save(placeLog);
         userLogImgService.saveUserLogImg(placeLog, multipartFile);
-        return placeLog.getId();
     }
 
     @Transactional

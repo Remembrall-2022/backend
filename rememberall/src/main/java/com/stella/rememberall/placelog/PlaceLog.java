@@ -55,8 +55,16 @@ public class PlaceLog {
         return this;
     }
 
-    public PlaceLog updateIndex(int index){
+    public void setIndex(int index){
         this.index = index;
-        return this;
     }
+
+    public void setDateLog(DateLog dateLog){
+        this.dateLog = dateLog;
+    }
+
+    public void setPlace(Place place){
+        this.place = place;
+    }
+
 }
