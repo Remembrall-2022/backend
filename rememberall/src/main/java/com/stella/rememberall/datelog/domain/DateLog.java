@@ -13,38 +13,32 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Table(name = "date_log")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DateLog extends BaseTimeEntity {
-    @Id @Getter
+    @Id
     @Column(name = "date_log_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     private LocalDate date;
 
-    @Embedded @Getter
+    @Embedded
     @Column(name = "weather_info")
     private WeatherInfo weatherInfo;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    @Getter
     private Question question;
 
-    @Getter
     private String answer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_log_id")
     private TripLog tripLog;
 
-    /**
-     * 양방향 연관관계 편의 메서드 -> PlaceLog 저장할 때
-     * 길이 10제한 -> 어떻게 구현할까?
-     * */
     @OneToMany(mappedBy = "dateLog")
     private List<PlaceLog> placeLogList = new ArrayList<>();
 

@@ -11,6 +11,8 @@ import com.stella.rememberall.datelog.exception.QuestionExCode;
 import com.stella.rememberall.datelog.exception.QuestionException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
+import com.stella.rememberall.placelog.PlaceLog;
+import com.stella.rememberall.placelog.PlaceLogResponseDto;
 import com.stella.rememberall.placelog.PlaceLogSaveRequestDto;
 import com.stella.rememberall.placelog.PlaceLogService;
 import com.stella.rememberall.tripLog.TripLog;
@@ -18,6 +20,9 @@ import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
+import com.stella.rememberall.userLogImg.UserLogImg;
+import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
+import com.stella.rememberall.userLogImg.UserLogImgService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,8 +30,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.stella.rememberall.tripLog.exception.TripLogErrorCode.TRIPLOG_NOT_FOUND;
 
@@ -39,6 +46,7 @@ public class DateLogService {
     private final QuestionRepository questionRepository;
     private final PlaceLogService placeLogService;
     private final UserService userService;
+    private final UserLogImgService userLogImgService;
 
     // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
     @Transactional
@@ -115,22 +123,57 @@ public class DateLogService {
     }
 
     @Transactional
-    public DateLogResponseDto readOne(Long dateLogId) {
-        DateLog dateLogEntity = dateLogRepository.findById(dateLogId)
+    public DateLogResponseDto readDateLogFromTripLog(Long dateLogId, Long tripLogId) {
+        TripLog tripLog = getTripLog(tripLogId);
+        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        DateLog dateLog = getDateLog(dateLogId);
+        checkDateLogBelongToTripLog(dateLog, tripLog);
+        return getDateLogResponseDto(dateLog);
+    }
+
+    private DateLogResponseDto getDateLogResponseDto(DateLog dateLog) {
+        DateLogResponseDto dateLogResponseDto = DateLogResponseDto.of(dateLog);
+        dateLogResponseDto.setPlaceLogList(getPlaceLogResponseDtoList(dateLog));
+        return dateLogResponseDto;
+    }
+
+    private List<PlaceLogResponseDto> getPlaceLogResponseDtoList(DateLog dateLog) {
+        List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
+        List<PlaceLogResponseDto> placeLogResponseDtoList = new ArrayList<>();
+        if(placeLogList!=null) {
+            for (PlaceLog placeLog : placeLogList) {
+                placeLogResponseDtoList.add(
+                        createPlaceLogResponseDto(placeLog, sortUserLogImgsByIndex(placeLog.getUserLogImgList()))
+                );
+            }
+        }
+        return placeLogResponseDtoList;
+    }
+
+    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> sortedUserLogImgList) {
+        List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
+        for(UserLogImg userLogImg: sortedUserLogImgList){
+            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
+        }
+        PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
+        responseDto.updateUserLogImgListWithImgUrl(userLogImgResponseDtos);
+        return responseDto;
+    }
+
+    private List<UserLogImg> sortUserLogImgsByIndex(List<UserLogImg> userLogImgList) {
+        return userLogImgList.stream().sorted(Comparator.comparing(UserLogImg::getIndex))
+                .collect(Collectors.toList());
+    }
+
+    private DateLog getDateLog(Long dateLogId) {
+        DateLog dateLog = dateLogRepository.findById(dateLogId)
                 .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "일기를 찾을 수 없어 조회할 수 없습니다."));
+        return dateLog;
+    }
 
-        Question question = Optional.ofNullable(dateLogEntity.getQuestion()).orElse(null);
-        String answer = Optional.ofNullable(dateLogEntity.getAnswer()).orElse(null);
-
-        //List<PlaceLog> logList
-
-
-        return DateLogResponseDto.builder()
-                .date(dateLogEntity.getDate())
-                .weatherInfo(dateLogEntity.getWeatherInfo())
-                .question(question)
-                .answer(answer)
-                .build();
+    private void checkDateLogBelongToTripLog(DateLog dateLog, TripLog tripLog) {
+        if(!tripLog.getDateLogList().contains(dateLog))
+            throw new DateLogException(DateLogExCode.DATELOG_NOT_BELONG_TO_TRIPLOG);
     }
 
     @Transactional
