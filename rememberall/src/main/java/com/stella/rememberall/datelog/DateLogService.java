@@ -50,22 +50,20 @@ public class DateLogService {
         WeatherInfo weatherInfo = dateLogSaveRequestDto.getWeatherInfo();
         Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
         String answer = getAnswerAcceptsNull(dateLogSaveRequestDto);
+        ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
 
         validateUniqueDateLog(tripLog, date);
-        
-        // 길이 제한
-        if(tripLog.getDateLogList().size() == 10) return -1L;
+        checkPlaceLogCountExceeds(placeLogList);
 
         DateLogSaveRequestVo dateLogSaveRequestVo = new DateLogSaveRequestVo(date, weatherInfo, question, answer, tripLog);
         DateLog dateLog = dateLogSaveRequestVo.toEntity();
 
         // placeLog - userImg
-        ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
-
-        if(placeLogList == null) return -1L;
-        if(placeLogList.size() != multipartFileList.size()) return -1L;
-        for(int i=0;i<placeLogList.size();i++){
-            placeLogService.savePlaceLog(i, placeLogList.get(i), dateLog, multipartFileList.get(i));
+        if(placeLogList != null) {
+            checkCountMatches(multipartFileList.size(), placeLogList.size());
+            for (int i = 0; i < placeLogList.size(); i++) {
+                placeLogService.savePlaceLog(i, placeLogList.get(i), dateLog, multipartFileList.get(i));
+            }
         }
 
         // triplog 객체의 datelogList 컬렉션 필드에 새로 생성된 datelog 저장
@@ -73,6 +71,14 @@ public class DateLogService {
         return dateLogRepository.save(dateLog).getId();
         
         // 경험치 추가
+    }
+
+    private void checkCountMatches(int multipartFileListSize, int placeLogListSize) {
+        if (multipartFileListSize != placeLogListSize) throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH);
+    }
+
+    private void checkPlaceLogCountExceeds(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
+        if(placeLogList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED);
     }
 
     private TripLog getTripLog(Long tripLogId) {
