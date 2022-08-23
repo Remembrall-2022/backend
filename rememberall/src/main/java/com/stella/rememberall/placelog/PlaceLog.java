@@ -47,4 +47,8 @@ public class PlaceLog {
         return this;
     }
 
+    public PlaceLog updateDateLog(DateLog dateLog) {
+        this.dateLog = dateLog;
+        return this;
+    }
 }

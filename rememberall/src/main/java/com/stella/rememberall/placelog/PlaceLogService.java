@@ -1,5 +1,6 @@
 package com.stella.rememberall.placelog;
 
+import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.userLogImg.UserLogImg;
@@ -29,6 +30,23 @@ public class PlaceLogService {
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
         PlaceLog placeLog = placeLogRepository.save(requestDto.toEntity());
         userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
+        return placeLog.getId();
+    }
+
+    @Transactional
+    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
+        placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
+        PlaceLog entity = requestDto.toEntity();
+        PlaceLog placeLog = placeLogRepository.save(entity.updateDateLog(dateLog));
+        userLogImgService.saveUserLogImg(placeLog, multipartFile);
+        return placeLog.getId();
+    }
+
+    @Transactional
+    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog){
+        placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
+        PlaceLog entity = requestDto.toEntity();
+        PlaceLog placeLog = placeLogRepository.save(entity.updateDateLog(dateLog));
         return placeLog.getId();
     }
 
