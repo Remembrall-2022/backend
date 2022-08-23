@@ -1,5 +1,6 @@
 package com.stella.rememberall.datelog;
 
+import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class DateLogController {
 
     // 관광지도 같이 저장
     @PostMapping("/tripLog/{id}/dateLog/new")
-    public Long create(
+    public Long createDateLog(
             @PathVariable("id") Long tripLogId,
             @RequestPart @Valid DateLogSaveRequestDto saveRequestDto,
             @RequestPart(value = "file") List<MultipartFile> multipartFiles
@@ -28,6 +29,12 @@ public class DateLogController {
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
     public DateLogResponseDto readDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId);
+    }
+
+    @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
+    public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
+        dateLogService.deleteDateLog(dateLogId, tripLogId);
+        return new OnlyResponseString("날짜별 일기를 삭제했습니다.");
     }
 
 }

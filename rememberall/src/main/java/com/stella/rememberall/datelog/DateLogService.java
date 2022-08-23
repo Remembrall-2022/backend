@@ -177,7 +177,17 @@ public class DateLogService {
     }
 
     @Transactional
-    public void deleteDateLog(Long dateLogId) {
+    public void deleteDateLog(Long dateLogId, Long tripLogId) {
+        TripLog tripLog = getTripLog(tripLogId);
+        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        DateLog dateLog = getDateLog(dateLogId);
+        checkDateLogBelongToTripLog(dateLog, tripLog);
+
+        List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
+        for(PlaceLog placeLog:placeLogList){
+            placeLogService.deletePlaceLog(placeLog);
+        }
+
         dateLogRepository.deleteById(dateLogId);
     }
 }
