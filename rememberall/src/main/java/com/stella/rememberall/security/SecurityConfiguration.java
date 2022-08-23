@@ -49,7 +49,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/v1/reissue", "/v1/social/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/oauth/kakao/**").permitAll()
                 .antMatchers( "/login/**", "/signup/**", "/reissue", "/test-email", "/user/password/request", "/user/password/valid", "/user/password").permitAll()
-                .antMatchers("/placelog/img", "/placeLog/**", "/tripLog/**", "/dateLog/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/exception/**").permitAll()
                 .anyRequest().hasRole("USER")
 
