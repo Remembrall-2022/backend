@@ -23,7 +23,7 @@ public class DongdongService {
                 .exp(dongdongEntity.getExp())
                 .point(dongdongEntity.getPoint())
                 .dongdongImg(dongdongEntity.getDongdongImg())
-                .lv(calLv(dongdongEntity.getExp()))
+                .level(calLv(dongdongEntity.getExp()))
                 .build();
     }
 

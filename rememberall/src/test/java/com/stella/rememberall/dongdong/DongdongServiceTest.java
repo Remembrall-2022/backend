@@ -23,9 +23,10 @@ class DongdongServiceTest {
 
     @Test
     void 둥둥이조회() {
+        // 유저 생성 후 저장
         String email = "stella@gmail.com";
         String password = "stellapw";
-        String name = "stella";
+        String name = "stella1";
         EmailUserSaveRequestDto dto = new EmailUserSaveRequestDto(email, password, name);
         User user = dto.toEntity();
         userRepository.save(user);
@@ -36,21 +37,14 @@ class DongdongServiceTest {
         User user1 = userRepository.findById(1L).get();
         Assertions.assertThat(user1.getId()).isEqualTo(1L);
 
-        /**
-         * DongdongImg save 테스트
-         * */
-        DongdongImg img = new DongdongImg(1L, "Figure 2021-11-13 013529.png");
-        dongdongImgRepository.save(img);
+        /** DongdongImgRepository 조회 테스트
         DongdongImg dongdongImg = dongdongImgRepository.findById(1L).get();
-        Assertions.assertThat(dongdongImg.getId()).isEqualTo(img.getId());
+        Assertions.assertThat(dongdongImg.getId()).isEqualTo(1L);*/
 
-        /**
-         * Dongdong read 테스트
-        Dongdong dongdong = new Dongdong(user.getId(), user, 100L, 50L, dongdongImg);
-        dongdongRepository.save(dongdong);
-        Dongdong dongdong1 = dongdongService.readDongdong(user);
-        Assertions.assertThat(dongdong1.getPoint()).isEqualTo(100L);
-         **/
+
+        /** DongdongRepository 조회 테스트
+        Dongdong dongdong1 = dongdongRepository.findById(user.getId()).get();
+        Assertions.assertThat(dongdong1.getPoint()).isEqualTo(0L); */
 
     }
 }
