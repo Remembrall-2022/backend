@@ -16,4 +16,5 @@ public class DongdongException extends RuntimeException{
     public DongdongException(DongdongExCode code, String errorMessage) {
         this.exCode = code;
         this.errorMessage = errorMessage;
+    }
 }
