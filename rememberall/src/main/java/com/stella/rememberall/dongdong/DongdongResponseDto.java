@@ -10,14 +10,14 @@ public class DongdongResponseDto {
     private Long exp;
     private DongdongImg dongdongImg;
 
-    private Integer lv;
+    private Integer level;
 
     @Builder
-    public DongdongResponseDto(User user, Long point, Long exp, DongdongImg dongdongImg, Integer lv) {
+    public DongdongResponseDto(User user, Long point, Long exp, DongdongImg dongdongImg, Integer level) {
         this.user = user;
         this.point = point;
         this.exp = exp;
         this.dongdongImg = dongdongImg;
-        this.lv = lv;
+        this.level = level;
     }
 }
