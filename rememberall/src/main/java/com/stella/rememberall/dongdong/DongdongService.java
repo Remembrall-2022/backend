@@ -6,6 +6,8 @@ import com.stella.rememberall.user.exception.MyErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.stella.rememberall.dongdong.DongdongExCode.DONGDONG_IMG_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class DongdongService {
@@ -34,7 +36,7 @@ public class DongdongService {
     Long createDongdong(User user) {
         Dongdong dongdong = new Dongdong(user);
         //둥둥이이미지 아이디 1번 -> 둥둥이 초기 이미지 lv0
-        dongdong.setDongdongImg(dongdongImgRepository.findById(1L).orElseThrow(() -> new DongdongException()));
+        dongdong.setDongdongImg(dongdongImgRepository.findById(1L).orElseThrow(() -> new DongdongException(DONGDONG_IMG_NOT_FOUND)));
         dongdongRepository.save(dongdong);
         return user.getId();
     }
