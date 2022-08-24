@@ -1,6 +1,5 @@
 package com.stella.rememberall.dongdong;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

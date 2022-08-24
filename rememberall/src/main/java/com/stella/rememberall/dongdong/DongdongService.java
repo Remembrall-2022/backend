@@ -6,8 +6,6 @@ import com.stella.rememberall.user.exception.MyErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.stella.rememberall.dongdong.DongdongExCode.DONGDONG_IMG_NOT_FOUND;
-
 @Service
 @RequiredArgsConstructor
 public class DongdongService {
@@ -15,15 +13,17 @@ public class DongdongService {
     private final DongdongRepository dongdongRepository;
     private final DongdongImgRepository dongdongImgRepository;
 
-    DongdongResponseDto readDongdong(Long userId) {
+    public DongdongResponseDto readDongdong(Long userId) {
         Dongdong dongdongEntity = dongdongRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+        DongdongLevelRule rule = createLevelRule(dongdongEntity.getExp());
+
         return DongdongResponseDto.builder()
                 .user(dongdongEntity.getUser())
                 .exp(dongdongEntity.getExp())
                 .point(dongdongEntity.getPoint())
-                .dongdongImg(dongdongEntity.getDongdongImg())
-                .level(calLv(dongdongEntity.getExp()))
+                .level(rule.getLevel())
+                .dongdongImg(rule.getDongdongImg())
                 .build();
     }
 
@@ -33,40 +33,59 @@ public class DongdongService {
      * */
 
     /**유저 생성시 호출*/
-    Long createDongdong(User user) {
+    public Long createDongdong(User user) {
         Dongdong dongdong = new Dongdong(user);
-        //둥둥이이미지 아이디 1번 -> 둥둥이 초기 이미지 lv0
-        dongdong.setDongdongImg(dongdongImgRepository.findById(1L).orElseThrow(() -> new DongdongException(DONGDONG_IMG_NOT_FOUND)));
         dongdongRepository.save(dongdong);
         return user.getId();
     }
 
-    /**일기 생성시 호출*/
-    Long addExp(User user, Long exp) {
+    /**경험치 더하기*/
+    public Dongdong addExp(User user, Long exp) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
         Long updateExp =  dongdong.getExp() + exp;
         dongdong.setExp(updateExp);
-        return updateExp;
+        return dongdong;
     }
 
-    /**둥둥이 조회시 호출*/
-    //가독성 난리남 방법 없을까
-    Integer calLv(Long exp) {
-        Integer level = -1;
+    /**포인트 더하기*/
+    public Dongdong addPoint(User user, Long point) {
+        Dongdong dongdong = dongdongRepository.findById(user.getId())
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+        Long updatePoint = dongdong.getPoint() + point;
+        dongdong.setPoint(updatePoint);
+        return dongdong;
+    }
 
-        if (exp < 300) level = 0;
-        else if (exp < 600) level = 1;
-        else if (exp < 1200) level = 2;
-        else if (exp < 1400) level = 3;
-        else if (exp < 1600) level = 4;
-        else if (exp < 1800) level = 5;
-        else if (exp < 2000) level = 6;
-        else if (exp < 2200) level = 7;
-        else if (exp < 2400) level = 8;
-        else if (exp < 2800) level = 9;
-        else level = 10;
+    /**포인트 지불*/
+    public Dongdong payPoint(User user, Long point) {
+        Dongdong dongdong = dongdongRepository.findById(user.getId())
+                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+        if (dongdong.getPoint() >= point)
+            dongdong.setPoint(dongdong.getPoint() - point);
+        else
+            throw new DongdongException(DongdongExCode.DONGDONG_LACK_OF_POINT);
+        return dongdong;
+    }
 
-        return level;
+    /**둥둥이 조회시 호출, 서비스 내에서만 사용
+     * TODO: url 어떻게 처리할지 다시 고민
+     * */
+    DongdongLevelRule createLevelRule(Long exp) {
+        DongdongLevelRule rule;
+
+        if (exp >= 2800) rule = new DongdongLevelRule(10, 2800L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 2400) rule = new DongdongLevelRule(9, 2400L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 2200) rule = new DongdongLevelRule(8, 2200L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 2000) rule = new DongdongLevelRule(7, 2000L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1800) rule = new DongdongLevelRule(6, 1800L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1600) rule = new DongdongLevelRule(5, 1600L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1400) rule = new DongdongLevelRule(4, 1400L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1200) rule = new DongdongLevelRule(3, 1200L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 600) rule = new DongdongLevelRule(2, 600L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 300) rule = new DongdongLevelRule(1, 300L, dongdongImgRepository.findById(1L).get());
+        else rule = new DongdongLevelRule(0, 0L, dongdongImgRepository.findById(1L).get());
+
+        return rule;
     }
 }
