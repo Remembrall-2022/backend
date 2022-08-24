@@ -4,6 +4,7 @@ import com.stella.rememberall.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -20,13 +21,16 @@ public class Dongdong {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Setter
     private Long point;
 
+    @Setter
     private Long exp;
 
     @OneToOne
     @JoinColumn(name = "dongdong_img_id")
-    private DongdongImg dongDongImg;
+    @Setter
+    private DongdongImg dongdongImg;
 
     public Dongdong (User user) {
         this.user = user;

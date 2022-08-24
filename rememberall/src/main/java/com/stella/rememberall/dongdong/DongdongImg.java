@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 @Table(name = "dongdong_img")
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 public class DongdongImg {
