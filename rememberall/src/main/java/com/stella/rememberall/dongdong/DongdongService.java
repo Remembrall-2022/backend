@@ -15,7 +15,6 @@ import javax.transaction.Transactional;
 public class DongdongService {
 
     private final DongdongRepository dongdongRepository;
-    private final DongdongImgRepository dongdongImgRepository;
 
     @Transactional
     public DongdongResponseDto readDongdong(Long userId) {
@@ -28,7 +27,8 @@ public class DongdongService {
                 .exp(dongdongEntity.getExp())
                 .point(dongdongEntity.getPoint())
                 .level(rule.getLevel())
-                .dongdongImg(rule.getDongdongImg())
+                .dongdongImgUrl(rule.getDongdongImgUrl())
+                .level(rule.getLevel())
                 .build();
     }
 
@@ -57,10 +57,14 @@ public class DongdongService {
         dongdong.setExp(updatedExp);
         dongdong.setPoint(updatedPoint);
 
+        DongdongLevelRule levelRule = createLevelRule(updatedExp);
+
         return DongdongResponseDto.builder()
                 .userId(userId)
                 .exp(updatedExp)
                 .point(updatedPoint)
+                .dongdongImgUrl(levelRule.getDongdongImgUrl())
+                .level(levelRule.getLevel())
                 .build();
     }
 
@@ -84,33 +88,33 @@ public class DongdongService {
     }
 
     /**둥둥이 조회시 호출, 서비스 내에서만 사용
-     * TODO: url 어떻게 처리할지 다시 고민
+     * TODO: url 어떻게 처리할지 다시 고민 -> DongdongImgRepository랑 엔티티 아예 없애고 url만 enum type으로 넣으면?
      * */
     DongdongLevelRule createLevelRule(Long exp) {
         DongdongLevelRule rule;
 
         if (exp >= 2800)
-            rule = new DongdongLevelRule(10, 2800L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(10, 2800L, "4.png");
         else if (exp >= 2400)
-            rule = new DongdongLevelRule(9, 2400L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(9, 2400L, "3.png");
         else if (exp >= 2200)
-            rule = new DongdongLevelRule(8, 2200L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(8, 2200L, "3.png");
         else if (exp >= 2000)
-            rule = new DongdongLevelRule(7, 2000L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(7, 2000L, "3.png");
         else if (exp >= 1800)
-            rule = new DongdongLevelRule(6, 1800L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(6, 1800L, "3.png");
         else if (exp >= 1600)
-            rule = new DongdongLevelRule(5, 1600L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(5, 1600L, "3.png");
         else if (exp >= 1400)
-            rule = new DongdongLevelRule(4, 1400L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(4, 1400L, "2.png");
         else if (exp >= 1200)
-            rule = new DongdongLevelRule(3, 1200L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(3, 1200L, "2.png");
         else if (exp >= 600)
-            rule = new DongdongLevelRule(2, 600L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(2, 600L, "2.png");
         else if (exp >= 300)
-            rule = new DongdongLevelRule(1, 300L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(1, 300L, "2.png");
         else
-            rule = new DongdongLevelRule(0, 0L, dongdongImgRepository.findById(1L).get());
+            rule = new DongdongLevelRule(0, 0L, "1.png");
 
         return rule;
     }
