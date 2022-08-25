@@ -15,4 +15,7 @@ public class DongdongController {
     public DongdongResponseDto readDongdong(@PathVariable Long userId) {
         return dongdongService.readDongdong(userId);
     }
+
+    @GetMapping("/attendReward/{userId}")
+    public DongdongResponseDto requestReward(@PathVariable Long userId) {return dongdongService.reward(userId, DongdongReward.ATTENDANCE); }
 }

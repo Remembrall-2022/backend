@@ -43,14 +43,18 @@ public class DongdongService {
 
     /**리워드 지급*/
     @Transactional
-    public Dongdong reward(User user, DongdongReward dongdongReward) {
-        Dongdong dongdong = dongdongRepository.findById(user.getId())
+    public DongdongResponseDto reward(Long userId, DongdongReward dongdongReward) {
+        Dongdong dongdong = dongdongRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
         dongdong.setExp(dongdong.getExp() + dongdongReward.getExp());
         dongdong.setPoint(dongdong.getPoint() + dongdongReward.getPoint());
 
-        return dongdong;
+        return DongdongResponseDto.builder()
+                .user(dongdong.getUser())
+                .exp(dongdong.getExp())
+                .point(dongdong.getPoint())
+                .build();
     }
 
     /**포인트 지불*/
