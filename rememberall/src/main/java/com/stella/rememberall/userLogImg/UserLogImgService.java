@@ -21,14 +21,14 @@ public class UserLogImgService {
     public void saveUserLogImgList(PlaceLog placeLog, List<MultipartFile> multipartFileList){
         for(MultipartFile multipartFile : multipartFileList) {
             String url = s3Util.uploadFileV1("user-log-image", multipartFile);
-            userLogImgRepository.save(UserLogImgSaveRequestVO.of(url, multipartFileList.indexOf(multipartFile), placeLog));
+            UserLogImg userLogImg = userLogImgRepository.save(UserLogImgSaveRequestVO.of(url, multipartFileList.indexOf(multipartFile), placeLog));
         }
     }
 
     @Transactional
     public void saveUserLogImg(PlaceLog placeLog, MultipartFile multipartFile){
         String url = s3Util.uploadFileV1("user-log-image", multipartFile);
-        userLogImgRepository.save(UserLogImgSaveRequestVO.of(url, 0, placeLog));
+        UserLogImg userLogImg = userLogImgRepository.save(UserLogImgSaveRequestVO.of(url, 0, placeLog));
     }
 
     public String getImgUrl(String fileKey){

@@ -11,4 +11,5 @@ public interface DateLogRepository extends JpaRepository<DateLog, Long> {
 
     List<DateLog> findByTripLog(TripLog tripLog);
     List<DateLog> findByTripLogAndDate(TripLog tripLog, LocalDate date);
+    boolean existsByTripLogAndDate(TripLog tripLog, LocalDate date);
 }

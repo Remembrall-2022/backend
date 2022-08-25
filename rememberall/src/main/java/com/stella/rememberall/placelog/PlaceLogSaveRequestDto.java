@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +17,7 @@ public class PlaceLogSaveRequestDto {
         return PlaceLog.builder()
                 .place(placeInfo.toEntity())
                 .comment(comment)
+                .userLogImgList(new ArrayList<>())
                 .build();
     }
 
@@ -23,6 +26,7 @@ public class PlaceLogSaveRequestDto {
                 .id(placeLogId)
                 .place(placeInfo.toEntity())
                 .comment(comment)
+                .userLogImgList(new ArrayList<>())
                 .build();
     }
 

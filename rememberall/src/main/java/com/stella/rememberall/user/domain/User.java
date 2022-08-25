@@ -1,6 +1,9 @@
 package com.stella.rememberall.user.domain;
 
-import com.stella.rememberall.domain.*;
+import com.stella.rememberall.domain.AuthType;
+import com.stella.rememberall.domain.BaseTimeEntity;
+import com.stella.rememberall.domain.Dongdong;
+import com.stella.rememberall.domain.ItemPurchasedByUser;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -126,5 +128,7 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.password = password;
         return this;
     }
+
+
 
 }

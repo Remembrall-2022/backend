@@ -13,9 +13,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Table(name = "date_log")
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DateLog extends BaseTimeEntity {
     @Id
@@ -39,21 +39,17 @@ public class DateLog extends BaseTimeEntity {
     @JoinColumn(name = "trip_log_id")
     private TripLog tripLog;
 
-    /**
-     * 양방향 연관관계 편의 메서드 -> PlaceLog 저장할 때
-     * 길이 10제한 -> 어떻게 구현할까?
-     * */
     @OneToMany(mappedBy = "dateLog")
     private List<PlaceLog> placeLogList = new ArrayList<>();
 
     @Builder
-    public DateLog(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
-
+    public DateLog(TripLog tripLog, LocalDate date, WeatherInfo weatherInfo, Question question, String answer, List<PlaceLog> placeLogList) {
         this.tripLog = tripLog;
         this.date = date;
         this.weatherInfo = weatherInfo;
         this.question = question;
         this.answer = answer;
+        this.placeLogList = placeLogList;
     }
 
 }

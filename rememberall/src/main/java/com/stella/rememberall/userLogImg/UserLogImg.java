@@ -7,20 +7,19 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Getter
 @NoArgsConstructor
 @Table(name = "user_img")
 @Entity
 public class UserLogImg {
-    @Id
+    @Id @Getter
     @Column(name = "user_img_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false) @Getter
     private int index;
 
-    @Column(name = "img_url", nullable = false)
+    @Column(name = "img_url", nullable = false) @Getter
     private String fileKey;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,4 +37,5 @@ public class UserLogImg {
         this.fileKey = updatedFileKey;
         return this;
     }
+
 }

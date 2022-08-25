@@ -23,6 +23,8 @@ public class PlaceLog {
 
     private String comment;
 
+    private int index;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "date_log_id")
     private DateLog dateLog;
@@ -34,9 +36,10 @@ public class PlaceLog {
     private List<UserLogImg> userLogImgList = new ArrayList<>();
 
     @Builder
-    public PlaceLog(Long id, String comment, DateLog dateLog, Place place, List<UserLogImg> userLogImgList){
+    public PlaceLog(Long id, String comment, int index, DateLog dateLog, Place place, List<UserLogImg> userLogImgList){
         this.id = id;
         this.comment = comment;
+        this.index = index;
         this.dateLog = dateLog;
         this.place = place;
         this.userLogImgList = userLogImgList;
@@ -45,6 +48,23 @@ public class PlaceLog {
     public PlaceLog updateComment(String comment) {
         this.comment = comment;
         return this;
+    }
+
+    public PlaceLog updateDateLog(DateLog dateLog) {
+        this.dateLog = dateLog;
+        return this;
+    }
+
+    public void setIndex(int index){
+        this.index = index;
+    }
+
+    public void setDateLog(DateLog dateLog){
+        this.dateLog = dateLog;
+    }
+
+    public void setPlace(Place place){
+        this.place = place;
     }
 
 }
