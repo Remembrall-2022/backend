@@ -32,17 +32,21 @@ public class DateLogServiceTest {
     @Test
     void createDateLog() {
         // 유저 생성 후 저장
+        /**
         String email = "stella@gmail.com";
         String password = "stellapw";
         String name = "stella1";
         EmailUserSaveRequestDto dto = new EmailUserSaveRequestDto(email, password, name);
         User emailUser = dto.toEntity();
         userRepository.save(emailUser);
+         */
+
+        User user = userRepository.findById(1L).get();
 
         // 유저 사용해서 일기장 생성
         TripLog tripLog = TripLog.builder()
                 .title("Seoul Trip")
-                .user(emailUser)
+                .user(user)
                 .tripStartDate(LocalDate.now())
                 .tripEndDate(LocalDate.now().plusWeeks(1))
                 .build();

@@ -74,17 +74,28 @@ public class DongdongService {
     DongdongLevelRule createLevelRule(Long exp) {
         DongdongLevelRule rule;
 
-        if (exp >= 2800) rule = new DongdongLevelRule(10, 2800L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 2400) rule = new DongdongLevelRule(9, 2400L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 2200) rule = new DongdongLevelRule(8, 2200L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 2000) rule = new DongdongLevelRule(7, 2000L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 1800) rule = new DongdongLevelRule(6, 1800L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 1600) rule = new DongdongLevelRule(5, 1600L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 1400) rule = new DongdongLevelRule(4, 1400L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 1200) rule = new DongdongLevelRule(3, 1200L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 600) rule = new DongdongLevelRule(2, 600L, dongdongImgRepository.findById(1L).get());
-        else if (exp >= 300) rule = new DongdongLevelRule(1, 300L, dongdongImgRepository.findById(1L).get());
-        else rule = new DongdongLevelRule(0, 0L, dongdongImgRepository.findById(1L).get());
+        if (exp >= 2800)
+            rule = new DongdongLevelRule(10, 2800L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 2400)
+            rule = new DongdongLevelRule(9, 2400L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 2200)
+            rule = new DongdongLevelRule(8, 2200L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 2000)
+            rule = new DongdongLevelRule(7, 2000L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1800)
+            rule = new DongdongLevelRule(6, 1800L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1600)
+            rule = new DongdongLevelRule(5, 1600L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1400)
+            rule = new DongdongLevelRule(4, 1400L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 1200)
+            rule = new DongdongLevelRule(3, 1200L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 600)
+            rule = new DongdongLevelRule(2, 600L, dongdongImgRepository.findById(1L).get());
+        else if (exp >= 300)
+            rule = new DongdongLevelRule(1, 300L, dongdongImgRepository.findById(1L).get());
+        else
+            rule = new DongdongLevelRule(0, 0L, dongdongImgRepository.findById(1L).get());
 
         return rule;
     }
