@@ -1,10 +1,8 @@
 package com.stella.rememberall.user.domain;
 
-import com.stella.rememberall.domain.*;
 import com.stella.rememberall.dongdong.Dongdong;
 import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.domain.BaseTimeEntity;
-import com.stella.rememberall.domain.Dongdong;
 import com.stella.rememberall.domain.ItemPurchasedByUser;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.AllArgsConstructor;

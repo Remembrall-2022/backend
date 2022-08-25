@@ -41,6 +41,7 @@ public class DateLogServiceTest {
         userRepository.save(emailUser);
          */
 
+        /**
         User user = userRepository.findById(1L).get();
 
         // 유저 사용해서 일기장 생성
@@ -75,6 +76,7 @@ public class DateLogServiceTest {
                 date(LocalDate.of(2022, 01,22))
                 .build();
         assertThrows(TripLogException.class, ()-> dateLogService.createDateLog(10L, dateLogDto3));
+         */
 
     }
 

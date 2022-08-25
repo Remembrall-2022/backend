@@ -39,21 +39,14 @@ public class DongdongService {
         return user.getId();
     }
 
-    /**경험치 더하기*/
-    public Dongdong addExp(User user, Long exp) {
+    /**리워드 지급*/
+    public Dongdong reward(User user, DongdongReward dongdongReward) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
-        Long updateExp =  dongdong.getExp() + exp;
-        dongdong.setExp(updateExp);
-        return dongdong;
-    }
 
-    /**포인트 더하기*/
-    public Dongdong addPoint(User user, Long point) {
-        Dongdong dongdong = dongdongRepository.findById(user.getId())
-                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
-        Long updatePoint = dongdong.getPoint() + point;
-        dongdong.setPoint(updatePoint);
+        dongdong.setExp(dongdong.getExp() + dongdongReward.getExp());
+        dongdong.setPoint(dongdong.getPoint() + dongdongReward.getPoint());
+
         return dongdong;
     }
 

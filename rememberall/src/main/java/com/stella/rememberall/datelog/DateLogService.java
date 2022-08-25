@@ -11,6 +11,8 @@ import com.stella.rememberall.datelog.exception.QuestionExCode;
 import com.stella.rememberall.datelog.exception.QuestionException;
 import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
+import com.stella.rememberall.dongdong.DongdongReward;
+import com.stella.rememberall.dongdong.DongdongService;
 import com.stella.rememberall.placelog.PlaceLog;
 import com.stella.rememberall.placelog.PlaceLogResponseDto;
 import com.stella.rememberall.placelog.PlaceLogSaveRequestDto;
@@ -47,6 +49,7 @@ public class DateLogService {
     private final PlaceLogService placeLogService;
     private final UserService userService;
     private final UserLogImgService userLogImgService;
+    private final DongdongService dongdongService;
 
     // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
     @Transactional
@@ -63,9 +66,15 @@ public class DateLogService {
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
-        return dateLog.getId();
 
-        // 경험치 추가
+        // 리워드 지급
+        Optional<String> answerOptional = Optional.ofNullable(dateLogSaveRequestDto.getAnswer());
+        if (answerOptional.isEmpty() || answerOptional.get().length() < 150)
+            dongdongService.reward(tripLog.getUser(), DongdongReward.DATELOG_S);
+        else
+            dongdongService.reward(tripLog.getUser(), DongdongReward.DATELOG);
+
+        return dateLog.getId();
     }
 
     private TripLog getTripLog(Long tripLogId) {
