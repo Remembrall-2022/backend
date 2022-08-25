@@ -1,6 +1,5 @@
 package com.stella.rememberall.dongdong;
 
-import com.stella.rememberall.user.domain.User;
 import lombok.*;
 
 @Getter
