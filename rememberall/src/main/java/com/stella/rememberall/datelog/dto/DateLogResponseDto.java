@@ -31,7 +31,7 @@ public class DateLogResponseDto {
 
     public static DateLogResponseDto of(DateLog dateLog){
         Question question = Optional.ofNullable(dateLog.getQuestion()).orElse(null);
-        String answer = Optional.ofNullable(dateLog.getAnswer()).orElse(null);
+        String answer = Optional.ofNullable(dateLog.getAnswer()).orElse("");
 
 
 //

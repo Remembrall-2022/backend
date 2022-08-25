@@ -1,11 +1,13 @@
 package com.stella.rememberall.dongdong;
 
 import com.stella.rememberall.user.domain.User;
-import lombok.Builder;
+import lombok.*;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DongdongResponseDto {
 
-    private User user;
+    private Long userId;
     private Long point;
     private Long exp;
     private DongdongImg dongdongImg;
@@ -13,8 +15,8 @@ public class DongdongResponseDto {
     private Integer level;
 
     @Builder
-    public DongdongResponseDto(User user, Long point, Long exp, DongdongImg dongdongImg, Integer level) {
-        this.user = user;
+    public DongdongResponseDto(Long userId, Long point, Long exp, DongdongImg dongdongImg, Integer level) {
+        this.userId = userId;
         this.point = point;
         this.exp = exp;
         this.dongdongImg = dongdongImg;

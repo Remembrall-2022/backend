@@ -1,9 +1,10 @@
 package com.stella.rememberall.dongdong;
 
+import com.stella.rememberall.user.dto.UserAttendRewardDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +17,8 @@ public class DongdongController {
         return dongdongService.readDongdong(userId);
     }
 
-    @GetMapping("/attendReward/{userId}")
-    public DongdongResponseDto requestReward(@PathVariable Long userId) {return dongdongService.reward(userId, DongdongReward.ATTENDANCE); }
+    @PostMapping("/dongdong")
+    public DongdongResponseDto requestReward(@RequestBody @Valid UserAttendRewardDto dto) {
+        return dongdongService.reward(dto.getUserId(), DongdongReward.ATTENDANCE);
+    }
 }

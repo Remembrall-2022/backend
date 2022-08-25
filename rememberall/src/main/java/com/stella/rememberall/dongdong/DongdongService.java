@@ -4,24 +4,27 @@ import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DongdongService {
 
     private final DongdongRepository dongdongRepository;
     private final DongdongImgRepository dongdongImgRepository;
 
+    @Transactional
     public DongdongResponseDto readDongdong(Long userId) {
         Dongdong dongdongEntity = dongdongRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
         DongdongLevelRule rule = createLevelRule(dongdongEntity.getExp());
 
         return DongdongResponseDto.builder()
-                .user(dongdongEntity.getUser())
+                .userId(userId)
                 .exp(dongdongEntity.getExp())
                 .point(dongdongEntity.getPoint())
                 .level(rule.getLevel())
@@ -35,6 +38,7 @@ public class DongdongService {
      * */
 
     /**유저 생성시 호출*/
+    @Transactional
     public Long createDongdong(User user) {
         Dongdong dongdong = new Dongdong(user);
         dongdongRepository.save(dongdong);
@@ -47,26 +51,36 @@ public class DongdongService {
         Dongdong dongdong = dongdongRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
-        dongdong.setExp(dongdong.getExp() + dongdongReward.getExp());
-        dongdong.setPoint(dongdong.getPoint() + dongdongReward.getPoint());
+        Long updatedExp = dongdong.getExp() + dongdongReward.getExp();
+        Long updatedPoint = dongdong.getPoint() + dongdongReward.getPoint();
+
+        dongdong.setExp(updatedExp);
+        dongdong.setPoint(updatedPoint);
 
         return DongdongResponseDto.builder()
-                .user(dongdong.getUser())
-                .exp(dongdong.getExp())
-                .point(dongdong.getPoint())
+                .userId(userId)
+                .exp(updatedExp)
+                .point(updatedPoint)
                 .build();
     }
 
     /**포인트 지불*/
     @Transactional
-    public Dongdong payPoint(User user, Long point) {
+    public DongdongResponseDto payPoint(User user, Long point) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
-        if (dongdong.getPoint() >= point)
-            dongdong.setPoint(dongdong.getPoint() - point);
+        Long updatedPoint = dongdong.getPoint();
+        if (updatedPoint >= point) {
+            updatedPoint = dongdong.getPoint() - point;
+            dongdong.setPoint(updatedPoint);
+        }
         else
             throw new DongdongException(DongdongExCode.DONGDONG_LACK_OF_POINT);
-        return dongdong;
+        return DongdongResponseDto.builder()
+                .userId(user.getId())
+                .exp(dongdong.getExp())
+                .point(updatedPoint)
+                .build();
     }
 
     /**둥둥이 조회시 호출, 서비스 내에서만 사용
