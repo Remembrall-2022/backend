@@ -69,7 +69,7 @@ public class DateLogService {
 
         // 리워드 지급
         Optional<String> answerOptional = Optional.ofNullable(dateLogSaveRequestDto.getAnswer());
-        if (answerOptional.isEmpty() || answerOptional.get().length() < 150)
+        if (getAnswerAcceptsNull(dateLogSaveRequestDto).length() < 150)
             dongdongService.reward(tripLog.getUser(), DongdongReward.DATELOG_S);
         else
             dongdongService.reward(tripLog.getUser(), DongdongReward.DATELOG);
@@ -128,7 +128,7 @@ public class DateLogService {
     }
 
     private String getAnswerAcceptsNull(DateLogSaveRequestDto dateLogSaveRequestDto) {
-        return Optional.ofNullable(dateLogSaveRequestDto.getAnswer()).orElse(null);
+        return Optional.ofNullable(dateLogSaveRequestDto.getAnswer()).orElse("");
     }
 
     @Transactional

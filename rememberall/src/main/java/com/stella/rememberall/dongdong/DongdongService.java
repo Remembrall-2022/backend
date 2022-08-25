@@ -6,6 +6,8 @@ import com.stella.rememberall.user.exception.MyErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class DongdongService {
@@ -40,6 +42,7 @@ public class DongdongService {
     }
 
     /**리워드 지급*/
+    @Transactional
     public Dongdong reward(User user, DongdongReward dongdongReward) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
@@ -51,6 +54,7 @@ public class DongdongService {
     }
 
     /**포인트 지불*/
+    @Transactional
     public Dongdong payPoint(User user, Long point) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
