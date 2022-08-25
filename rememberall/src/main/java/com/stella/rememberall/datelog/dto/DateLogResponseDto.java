@@ -1,28 +1,63 @@
 package com.stella.rememberall.datelog.dto;
 
+import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
 import com.stella.rememberall.datelog.domain.WeatherInfo;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.stella.rememberall.placelog.PlaceLog;
+import com.stella.rememberall.placelog.PlaceLogResponseDto;
+import com.stella.rememberall.userLogImg.UserLogImg;
+import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DateLogResponseDto {
 
     private LocalDate date;
-
     private WeatherInfo weatherInfo;
-
     private Question question;
-
     private String answer;
+    @Setter private List<PlaceLogResponseDto> placeLogList;
 
-    /**
-     * TODO: PlaceLog 리스트로 불러와야 하는지 확인
-     * */
+    public static DateLogResponseDto of(DateLog dateLog){
+        Question question = Optional.ofNullable(dateLog.getQuestion()).orElse(null);
+        String answer = Optional.ofNullable(dateLog.getAnswer()).orElse(null);
+
+
+//
+//        List<PlaceLog> placeLogList = dateLog.getPlaceLogList().stream().sorted(Comparator.comparing(PlaceLog::getIndex))
+//                .collect(Collectors.toList());
+//        List<PlaceLogResponseDto> placeLogResponseDtoList = new ArrayList<>();
+//        for(PlaceLog placeLog:placeLogList){
+//            List<UserLogImg> userLogImgList = placeLog.getUserLogImgList();
+//            List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
+//            for(UserLogImg userLogImg:userLogImgList){
+//                userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImg.getFileKey()));
+//            }
+//
+//            PlaceLogResponseDto placeLogResponseDto = PlaceLogResponseDto.of(placeLog);
+//            placeLogResponseDto.updateUserLogImgListWithImgUrl(userLogImgList);
+//            placeLogResponseDtoList.add(placeLogResponseDto);
+//        }
+
+        return DateLogResponseDto.builder()
+                .date(dateLog.getDate())
+                .weatherInfo(dateLog.getWeatherInfo())
+                .question(question)
+                .answer(answer)
+//                .placeLogList(placeLogResponseDtoList)
+                .build();
+    }
 
     @Builder
     public DateLogResponseDto(LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {

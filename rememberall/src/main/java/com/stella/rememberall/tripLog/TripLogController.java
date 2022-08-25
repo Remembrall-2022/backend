@@ -15,22 +15,22 @@ public class TripLogController {
 
     private final TripLogService tripLogService;
 
-    @PostMapping("triplog/new")
+    @PostMapping("/tripLog/new")
     public TripLogResponseDto create(@RequestBody @Valid TripLogSaveRequestDto requestDto){
         return tripLogService.saveTripLog(requestDto);
     }
 
-    @GetMapping("triplog/{id}")
+    @GetMapping("/tripLog/{id}")
     public TripLogResponseDto findOne(@PathVariable Long id){
         return tripLogService.findTripLog(id);
     }
 
-    @GetMapping("triplog/list")
+    @GetMapping("/tripLog/list")
     public List<TripLogResponseDto> findTripLogList(){
         return tripLogService.findTripLogList();
     }
 
-    @PostMapping("/triplog/{id}")
+    @PostMapping("/tripLog/{id}")
     public TripLogResponseDto update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id){
         return tripLogService.updateTripLog(requestDto, id);
     }

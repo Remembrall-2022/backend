@@ -1,5 +1,6 @@
 package com.stella.rememberall.placelog;
 
+import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.userLogImg.UserLogImg;
@@ -29,6 +30,25 @@ public class PlaceLogService {
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
         PlaceLog placeLog = placeLogRepository.save(requestDto.toEntity());
         userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
+        return placeLog.getId();
+    }
+
+    @Transactional
+    public void savePlaceLog(int index, PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
+        Place place = placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
+        PlaceLog placeLog = requestDto.toEntity();
+        placeLog.setPlace(place);
+        placeLog.setDateLog(dateLog);
+        placeLog.setIndex(index);
+        placeLogRepository.save(placeLog);
+        userLogImgService.saveUserLogImg(placeLog, multipartFile);
+    }
+
+    @Transactional
+    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog){
+        placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
+        PlaceLog entity = requestDto.toEntity();
+        PlaceLog placeLog = placeLogRepository.save(entity.updateDateLog(dateLog));
         return placeLog.getId();
     }
 
@@ -83,6 +103,14 @@ public class PlaceLogService {
         userLogImgService.deleteUserLogImg(placeLog);
         placeLogRepository.deleteById(placeLogId);
         return placeLogId;
+    }
+
+    @Transactional
+    public Long deletePlaceLog(PlaceLog placeLog) throws PlaceLogException{
+        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
+        userLogImgService.deleteUserLogImg(placeLog);
+        placeLogRepository.deleteById(placeLog.getId());
+        return placeLog.getId();
     }
 
 }
