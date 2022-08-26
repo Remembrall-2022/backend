@@ -18,7 +18,6 @@ class DongdongServiceTest {
 
     @Autowired UserRepository userRepository;
     @Autowired DongdongRepository dongdongRepository;
-    @Autowired DongdongImgRepository dongdongImgRepository;
     @Autowired DongdongService dongdongService;
 
     @Test

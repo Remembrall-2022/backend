@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import static com.stella.rememberall.dongdong.DongdongImg.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -87,34 +89,32 @@ public class DongdongService {
                 .build();
     }
 
-    /**둥둥이 조회시 호출, 서비스 내에서만 사용
-     * TODO: url 어떻게 처리할지 다시 고민 -> DongdongImgRepository랑 엔티티 아예 없애고 url만 enum type으로 넣으면?
-     * */
+    /**둥둥이 조회시 호출, 서비스 내에서만 사용*/
     DongdongLevelRule createLevelRule(Long exp) {
         DongdongLevelRule rule;
 
         if (exp >= 2800)
-            rule = new DongdongLevelRule(10, 2800L, "4.png");
+            rule = new DongdongLevelRule(10, 2800L, STEP3.getImgUrl());
         else if (exp >= 2400)
-            rule = new DongdongLevelRule(9, 2400L, "3.png");
+            rule = new DongdongLevelRule(9, 2400L, STEP2.getImgUrl());
         else if (exp >= 2200)
-            rule = new DongdongLevelRule(8, 2200L, "3.png");
+            rule = new DongdongLevelRule(8, 2200L, STEP2.getImgUrl());
         else if (exp >= 2000)
-            rule = new DongdongLevelRule(7, 2000L, "3.png");
+            rule = new DongdongLevelRule(7, 2000L, STEP2.getImgUrl());
         else if (exp >= 1800)
-            rule = new DongdongLevelRule(6, 1800L, "3.png");
+            rule = new DongdongLevelRule(6, 1800L, STEP2.getImgUrl());
         else if (exp >= 1600)
-            rule = new DongdongLevelRule(5, 1600L, "3.png");
+            rule = new DongdongLevelRule(5, 1600L, STEP2.getImgUrl());
         else if (exp >= 1400)
-            rule = new DongdongLevelRule(4, 1400L, "2.png");
+            rule = new DongdongLevelRule(4, 1400L, STEP1.getImgUrl());
         else if (exp >= 1200)
-            rule = new DongdongLevelRule(3, 1200L, "2.png");
+            rule = new DongdongLevelRule(3, 1200L, STEP1.getImgUrl());
         else if (exp >= 600)
-            rule = new DongdongLevelRule(2, 600L, "2.png");
+            rule = new DongdongLevelRule(2, 600L, STEP1.getImgUrl());
         else if (exp >= 300)
-            rule = new DongdongLevelRule(1, 300L, "2.png");
+            rule = new DongdongLevelRule(1, 300L, STEP1.getImgUrl());
         else
-            rule = new DongdongLevelRule(0, 0L, "1.png");
+            rule = new DongdongLevelRule(0, 0L, STEP0.getImgUrl());
 
         return rule;
     }

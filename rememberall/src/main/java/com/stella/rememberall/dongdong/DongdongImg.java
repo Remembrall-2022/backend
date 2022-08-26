@@ -1,20 +1,16 @@
 package com.stella.rememberall.dongdong;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
-@Table(name = "dongdong_img")
-@Entity
-@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class DongdongImg {
-    @Id
-    @Column(name = "dongdong_img_id")
-    private Long id;
+public enum DongdongImg {
 
-    @Column(name = "dongdong_img_url")
-    private String url;
+    STEP0("0.png"),
+    STEP1("1.png"),
+    STEP2("2.png"),
+    STEP3("3.png");
 
+    private String imgUrl;
 }
