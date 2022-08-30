@@ -15,7 +15,6 @@ import static java.lang.Math.abs;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
@@ -25,7 +24,6 @@ public class QuestionService {
         Long count = questionRepository.countQuestions();
         Long randomId = abs(new Random().nextLong()%count)+1;
 
-        log.info("Count - {}// QuestionId - {}", count, randomId);
 
         return questionRepository.findById(randomId)
                 .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
