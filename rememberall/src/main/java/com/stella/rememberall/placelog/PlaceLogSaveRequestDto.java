@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class PlaceLogSaveRequestDto {
     private PlaceSaveRequestDto placeInfo;
     private String comment;
+    private String imgName;
 
     public PlaceLog toEntity(){
         return PlaceLog.builder()

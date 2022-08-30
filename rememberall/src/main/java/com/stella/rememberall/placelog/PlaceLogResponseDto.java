@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class PlaceLogResponseDto {
     private Place place;
-    private List<UserLogImgResponseDto> userLogImgList;
+    private UserLogImgResponseDto userLogImg;
     private String comment;
 
     public static PlaceLogResponseDto of(PlaceLog placeLog){
@@ -26,8 +26,14 @@ public class PlaceLogResponseDto {
                 .build();
     }
 
-    public PlaceLogResponseDto updateUserLogImgListWithImgUrl(List<UserLogImgResponseDto> userLogImgList){
-        this.userLogImgList = userLogImgList;
+//    public PlaceLogResponseDto updateUserLogImgListWithImgUrl(List<UserLogImgResponseDto> userLogImgList){
+//        this.userLogImgList = userLogImgList;
+//        return this;
+//    }
+
+    public PlaceLogResponseDto updateUserLogImgWithImgUrl(UserLogImgResponseDto userLogImg){
+        this.userLogImg = userLogImg;
         return this;
     }
+
 }

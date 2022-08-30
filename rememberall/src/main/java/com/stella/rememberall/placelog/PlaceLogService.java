@@ -41,7 +41,7 @@ public class PlaceLogService {
         placeLog.setDateLog(dateLog);
         placeLog.setIndex(index);
         placeLogRepository.save(placeLog);
-        userLogImgService.saveUserLogImg(placeLog, multipartFile);
+        if(multipartFile != null && !multipartFile.isEmpty()) userLogImgService.saveUserLogImg(placeLog, multipartFile);
     }
 
     @Transactional
@@ -55,8 +55,10 @@ public class PlaceLogService {
     @Transactional
     public PlaceLogResponseDto getPlaceLog(Long placeLogId) throws PlaceLogException{
         PlaceLog placeLog = findPlaceLog(placeLogId);
-        List<UserLogImg> sortedUserLogImgList = sortUserLogImgsByIndex(placeLog.getUserLogImgList());
-        return createPlaceLogResponseDto(placeLog, sortedUserLogImgList);
+        UserLogImg userLogImg = placeLog.getUserLogImgList().get(0);
+//        List<UserLogImg> sortedUserLogImgList = sortUserLogImgsByIndex(placeLog.getUserLogImgList());
+//        return createPlaceLogResponseDto(placeLog, sortedUserLogImgList);
+        return createPlaceLogResponseDto(placeLog, userLogImg);
     }
 
     private List<UserLogImg> sortUserLogImgsByIndex(List<UserLogImg> userLogImgList) {
@@ -64,15 +66,23 @@ public class PlaceLogService {
                 .collect(Collectors.toList());
     }
 
-    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> sortedUserLogImgList) {
-        List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
-        for(UserLogImg userLogImg: sortedUserLogImgList){
-            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
-        }
+    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, UserLogImg userLogImg) {
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
-        responseDto.updateUserLogImgListWithImgUrl(userLogImgResponseDtos);
+        UserLogImgResponseDto userLogImgResponseDto = UserLogImgResponseDto.of(0, userLogImgService.getImgUrl(userLogImg.getFileKey()));
+        responseDto.updateUserLogImgWithImgUrl(userLogImgResponseDto);
         return responseDto;
     }
+
+//    이미지 여러개
+//    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> sortedUserLogImgList) {
+//        List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
+//        for(UserLogImg userLogImg: sortedUserLogImgList){
+//            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
+//        }
+//        PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
+//        responseDto.updateUserLogImgListWithImgUrl(userLogImgResponseDtos);
+//        return responseDto;
+//    }
 
     private PlaceLog findPlaceLog(Long placeLogId) {
         return placeLogRepository.findById(placeLogId)
