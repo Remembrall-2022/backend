@@ -117,9 +117,9 @@ public class PlaceLogService {
 
     @Transactional
     public Long deletePlaceLog(PlaceLog placeLog) throws PlaceLogException{
-        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
         userLogImgService.deleteUserLogImg(placeLog);
         placeLogRepository.deleteById(placeLog.getId());
+        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
         return placeLog.getId();
     }
 

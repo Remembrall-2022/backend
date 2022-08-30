@@ -34,7 +34,7 @@ public class PlaceService {
     }
 
     private boolean isNotReferencedInPlaceLog(Place place) {
-        return placeLogRepository.findAllByPlace(place).size() == 1;
+        return placeLogRepository.findAllByPlace(place).size() == 0;
     }
 
 }
