@@ -1,8 +1,8 @@
 package com.stella.rememberall.user.domain;
 
+import com.stella.rememberall.dongdong.Dongdong;
 import com.stella.rememberall.domain.AuthType;
 import com.stella.rememberall.domain.BaseTimeEntity;
-import com.stella.rememberall.domain.Dongdong;
 import com.stella.rememberall.domain.ItemPurchasedByUser;
 import com.stella.rememberall.tripLog.TripLog;
 import lombok.AllArgsConstructor;
@@ -57,8 +57,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    //@JoinColumn(name="dongdong_id")
+//    @PrimaryKeyJoinColumn
+//    @JoinColumn(name="dongdong_id")
     private Dongdong dongdong;
 
     @OneToMany(mappedBy = "user")

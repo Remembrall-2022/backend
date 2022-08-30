@@ -3,6 +3,7 @@ package com.stella.rememberall.user;
 import com.stella.rememberall.common.exception.jpa.CommonJpaErrorCode;
 import com.stella.rememberall.common.exception.jpa.CommonJpaException;
 import com.stella.rememberall.common.response.OnlyResponseString;
+import com.stella.rememberall.dongdong.DongdongService;
 import com.stella.rememberall.user.domain.EmailAuth;
 import com.stella.rememberall.user.emailAuth.EmailAuthService;
 import com.stella.rememberall.common.redis.RedisUtil;
@@ -38,6 +39,7 @@ public class EmailUserService {
     private final EmailAuthRepository emailAuthRepository;
     private final PasswordEncoder pwdEncorder;
     private final RedisUtil redisUtil;
+    private final DongdongService dongdongService;
 
     @Transactional
     public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
@@ -55,7 +57,9 @@ public class EmailUserService {
     @Transactional
     public void registerUser(String key) {
         EmailUserSaveRequestDto foundUserInRedis = checkUserExistsInRedis(key);
-        saveUser(foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder));
+        User savedUser = foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder);
+        saveUser(savedUser);
+        dongdongService.createDongdong(savedUser);
         deleteUserFromRedis(key);
     }
 

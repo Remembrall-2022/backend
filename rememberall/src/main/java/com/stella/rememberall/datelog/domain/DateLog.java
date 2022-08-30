@@ -33,6 +33,7 @@ public class DateLog extends BaseTimeEntity {
     @JoinColumn(name = "question_id")
     private Question question;
 
+    @Column(length = 1000)
     private String answer;
 
     @ManyToOne(fetch = FetchType.LAZY)

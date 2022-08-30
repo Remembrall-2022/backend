@@ -1,6 +1,7 @@
 package com.stella.rememberall.user.kakao;
 
 import com.stella.rememberall.domain.AuthType;
+import com.stella.rememberall.dongdong.DongdongService;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.exception.AuthException;
 import com.stella.rememberall.user.UserService;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class KakaoSignService {
 
+    private final DongdongService dongdongService;
     private final UserRepository userRepository;
     private final UserService userService;
     private final KakaoUserService kakaoUserService;
@@ -36,6 +38,7 @@ public class KakaoSignService {
 
         KakaoUserSaveRequestDto saveRequestDto = new KakaoUserSaveRequestDto(email, id, name);
         User savedUser = userRepository.save(saveRequestDto.toEntity());
+        dongdongService.createDongdong(savedUser);
         return kakaoLoginInSignUp(savedUser);
     }
 
