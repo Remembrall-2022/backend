@@ -34,10 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.stella.rememberall.tripLog.exception.TripLogErrorCode.TRIPLOG_NOT_FOUND;
@@ -68,7 +65,7 @@ public class DateLogService {
         validateUniqueDateLog(tripLog, date);
         checkMultipartFileListCountExceeds(multipartFileList);
         checkPlaceLogCountExceeds(placeLogList);
-
+        checkPlaceIdDuplicate(placeLogList);
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
@@ -119,6 +116,15 @@ public class DateLogService {
 
     private void checkMultipartFileListCountExceeds(List<MultipartFile> multipartFileList) {
         if(multipartFileList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED, "파일 개수는 10개를 초과할 수 없습니다.");
+    }
+
+    private void checkPlaceIdDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
+        ArrayList<Long> placeLogIdList = new ArrayList<>();
+        for(PlaceLogSaveRequestDto dto:placeLogList) placeLogIdList.add(dto.getPlaceInfo().getPlaceId());
+        Set<Long> set = new HashSet<>(placeLogIdList);
+        if (set.size() != placeLogList.size()) {
+            throw new DateLogException(DateLogExCode.DUPLICATED_PLACEID);
+        }
     }
 
     private DateLog getDateLog(DateLogSaveRequestDto dateLogSaveRequestDto, TripLog tripLog, Question question) {
