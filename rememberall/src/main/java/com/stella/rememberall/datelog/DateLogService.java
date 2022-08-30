@@ -86,7 +86,7 @@ public class DateLogService {
 
     private TripLog getTripLog(Long tripLogId) {
         TripLog tripLog = tripLogRepository.findById(tripLogId)
-                .orElseThrow(() -> new TripLogException(TRIPLOG_NOT_FOUND, "일기장을 찾을 수 없어 일기를 생성할 수 없습니다."));
+                .orElseThrow(() -> new TripLogException(TRIPLOG_NOT_FOUND, "일기장을 찾을 수 없습니다."));
         return tripLog;
     }
 
@@ -220,7 +220,7 @@ public class DateLogService {
 
     private DateLog getDateLog(Long dateLogId) {
         DateLog dateLog = dateLogRepository.findById(dateLogId)
-                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "일기를 찾을 수 없어 조회할 수 없습니다."));
+                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "날짜별 일기를 찾을 수 없습니다."));
         return dateLog;
     }
 

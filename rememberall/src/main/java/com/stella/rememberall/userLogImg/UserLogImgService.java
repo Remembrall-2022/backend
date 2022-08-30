@@ -2,6 +2,8 @@ package com.stella.rememberall.userLogImg;
 
 import com.stella.rememberall.placelog.Place;
 import com.stella.rememberall.placelog.PlaceLog;
+import com.stella.rememberall.userLogImg.exception.EmptyFileException;
+import com.stella.rememberall.userLogImg.exception.FileErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,11 @@ public class UserLogImgService {
     }
 
     public String getImgUrl(String fileKey){
-        return s3Util.getUrl("user-log-image", fileKey);
+        try {
+            return s3Util.getUrl("user-log-image", fileKey);
+        } catch (Exception e) {
+            throw new EmptyFileException(FileErrorCode.FILE_NOT_FOUND, "버킷에서 파일 유실이 발생했습니다.");
+        }
     }
 
     @Transactional
