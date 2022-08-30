@@ -15,7 +15,7 @@ public class Question {
     @Column(name = "question_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="question_category_id")
     private QuestionCategory questionCategory;
 
