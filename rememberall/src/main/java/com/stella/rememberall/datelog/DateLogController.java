@@ -3,6 +3,7 @@ package com.stella.rememberall.datelog;
 import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
+import com.stella.rememberall.datelog.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import java.util.List;
 public class DateLogController {
 
     private final DateLogService dateLogService;
+    private final QuestionRepository questionRepository;
 
     // 관광지도 같이 저장
     @PostMapping("/tripLog/{id}/dateLog/new")
@@ -23,7 +25,7 @@ public class DateLogController {
             @RequestPart @Valid DateLogSaveRequestDto saveRequestDto,
             @RequestPart(value = "file") List<MultipartFile> multipartFiles
             ) {
-         return dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles);
+        return dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles);
     }
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")

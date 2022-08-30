@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +54,7 @@ public class DateLogServiceTest {
                 .answer("this is answer without question")
                 .weatherInfo(new WeatherInfo("맑음", 30))
                 .build();
-        dateLogService.createDateLog(tripLog.getId(), dateLogDto);
+        dateLogService.createDateLog(tripLog.getId(), dateLogDto, new ArrayList<>());
         DateLog found = dateLogRepository.findByTripLogAndDate(tripLog, LocalDate.now()).get(0);
 
         Assertions.assertThat(found.getId()).isEqualTo(1L);
@@ -63,14 +64,14 @@ public class DateLogServiceTest {
         DateLogSaveRequestDto dateLogDto2 = DateLogSaveRequestDto.builder().
                 date(LocalDate.now())
                 .build();
-        assertThrows(DateLogException.class, ()-> dateLogService.createDateLog(tripLog.getId(), dateLogDto2));
+        assertThrows(DateLogException.class, ()-> dateLogService.createDateLog(tripLog.getId(), dateLogDto2, new ArrayList<>()));
 
 
         // 존재하지 않는 일기장 id를 받아서 일기 생성하면 예외
         DateLogSaveRequestDto dateLogDto3 = DateLogSaveRequestDto.builder().
                 date(LocalDate.of(2022, 01,22))
                 .build();
-        assertThrows(TripLogException.class, ()-> dateLogService.createDateLog(10L, dateLogDto3));
+        assertThrows(TripLogException.class, ()-> dateLogService.createDateLog(10L, dateLogDto3, new ArrayList<>()));
 
     }
 
