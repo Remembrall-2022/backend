@@ -3,6 +3,7 @@ package com.stella.rememberall.placelog;
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.exception.DateLogExCode;
 import com.stella.rememberall.datelog.exception.DateLogException;
+import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.userLogImg.UserLogImg;
@@ -28,13 +29,29 @@ public class PlaceLogService {
     private final PlaceService placeService;
     private final UserLogImgService userLogImgService;
     private final UserLogImgRepository userLogImgRepository;
+    private final DateLogRepository dateLogRepository;
 
     @Transactional
-    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
+    public Long savePlaceLog(Long dateLogId, PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
+        DateLog dateLog = getDateLog(dateLogId);
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
-        PlaceLog placeLog = placeLogRepository.save(requestDto.toEntity());
+        PlaceLog placeLog = savePlaceLogWithDateLog(requestDto, dateLog);
         userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
         return placeLog.getId();
+    }
+
+    private DateLog getDateLog(Long dateLogId) {
+        DateLog dateLog = dateLogRepository.findById(dateLogId)
+                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND));
+        return dateLog;
+    }
+
+    private PlaceLog savePlaceLogWithDateLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog) {
+        PlaceLog toEntity = requestDto.toEntity();
+        toEntity.setDateLog(dateLog);
+        toEntity.setIndex(dateLog.getPlaceLogList().size());
+        PlaceLog placeLog = placeLogRepository.save(toEntity);
+        return placeLog;
     }
 
     @Transactional

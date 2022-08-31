@@ -19,7 +19,7 @@ public class DateLogController {
 
     @PostMapping("/tripLog/{tripLogId}/dateLog/new")
     public Long createDateLog(
-            @PathVariable("id") Long tripLogId,
+            @PathVariable("tripLogId") Long tripLogId,
             @RequestPart @Valid DateLogSaveRequestDto saveRequestDto,
             @RequestPart(value = "file") List<MultipartFile> multipartFiles
             ) {

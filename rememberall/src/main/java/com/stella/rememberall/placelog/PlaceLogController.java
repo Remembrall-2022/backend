@@ -14,14 +14,14 @@ import java.util.Map;
 @RestController
 public class PlaceLogController {
     private final PlaceLogService placeLogService;
-    private final UserLogImgService userLogImgService;
 
-    @PostMapping("/placeLog/new") // todo : dateLog Id 받기
+    @PostMapping("dateLog/{dateLogId}/placeLog/new")
     public Long createPlaceLog(
+            @PathVariable Long dateLogId,
             @RequestPart(value = "file") List<MultipartFile> multipartFile,
             @RequestPart @Valid PlaceLogSaveRequestDto placeLogSaveRequestDto
     ){
-        return placeLogService.savePlaceLog(placeLogSaveRequestDto, multipartFile);
+        return placeLogService.savePlaceLog(dateLogId, placeLogSaveRequestDto, multipartFile);
     }
 
     @GetMapping("/placeLog/{placeLogId}")
