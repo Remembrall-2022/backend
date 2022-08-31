@@ -1,8 +1,7 @@
 package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
-import com.stella.rememberall.datelog.dto.DateLogResponseDto;
-import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
+import com.stella.rememberall.datelog.dto.*;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,31 @@ public class DateLogController {
             @RequestPart(value = "file") List<MultipartFile> multipartFiles
             ) {
         return dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles);
+    }
+
+    @PostMapping("/dateLog/{dateLogId}/date")
+    public OnlyResponseString updateDate(@PathVariable Long dateLogId, @RequestBody @Valid DateUpdateRequestDto date){
+
+        dateLogService.updateDate(dateLogId, date);
+        return new OnlyResponseString("날짜별 일기의 날짜를 수정했습니다.");
+    }
+
+    @PostMapping("/dateLog/{dateLogId}/question-answer")
+    public OnlyResponseString updateQnA(@PathVariable Long dateLogId, @RequestBody QnAUpdateRequestDto qnA){
+        dateLogService.updateQnA(dateLogId, qnA);
+        return new OnlyResponseString("날짜별 일기의 질문과 답변을 수정했습니다.");
+    }
+
+    @PostMapping("/dateLog/{dateLogId}/weather")
+    public OnlyResponseString updateQnA(@PathVariable Long dateLogId, @RequestBody WeatherInfoUpdateRequestDto weatherInfo){
+        dateLogService.updateWeatherInfo(dateLogId, weatherInfo);
+        return new OnlyResponseString("날짜별 일기의 날씨 정보를 수정했습니다.");
+    }
+
+    @PostMapping("/dateLog/{dateLogId}/placeLog/index")
+    public OnlyResponseString updatePlaceLogIndex(@PathVariable Long dateLogId, @RequestBody @Valid PlaceLogIndexUpdateRequestDto indexInfo){
+        dateLogService.updatePlaceLogIndex(dateLogId, indexInfo);
+        return new OnlyResponseString("날짜별 일기의 날씨 정보를 수정했습니다.");
     }
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")

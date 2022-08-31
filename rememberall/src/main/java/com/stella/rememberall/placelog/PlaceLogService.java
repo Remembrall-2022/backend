@@ -68,7 +68,7 @@ public class PlaceLogService {
 
     private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, UserLogImg userLogImg) {
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
-        UserLogImgResponseDto userLogImgResponseDto = UserLogImgResponseDto.of(0, userLogImgService.getImgUrl(userLogImg.getFileKey()));
+        UserLogImgResponseDto userLogImgResponseDto = UserLogImgResponseDto.of(userLogImg.getId(), userLogImgService.getImgUrl(userLogImg.getFileKey()));
         responseDto.updateUserLogImgWithImgUrl(userLogImgResponseDto);
         return responseDto;
     }
@@ -87,6 +87,14 @@ public class PlaceLogService {
     private PlaceLog findPlaceLog(Long placeLogId) {
         return placeLogRepository.findById(placeLogId)
                 .orElseThrow(() -> new PlaceLogException(PlaceLogErrorCode.NOT_FOUND, "존재하지 않는 관광지 일기입니다."));
+    }
+
+    @Transactional
+    public void updateUserImg(Long placeLogId, Long userLogImgId, MultipartFile multipartFile) {
+        PlaceLog placeLog = findPlaceLog(placeLogId);
+        List<UserLogImg> userLogImgList = placeLog.getUserLogImgList();
+        if(userLogImgList.size()==0) userLogImgService.saveUserLogImg(placeLog, multipartFile);
+        else userLogImgService.updateUserLogImg(userLogImgId, multipartFile);
     }
 
     @Transactional
@@ -122,5 +130,4 @@ public class PlaceLogService {
         placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
         return placeLog.getId();
     }
-
 }

@@ -67,4 +67,7 @@ public class PlaceLog {
         this.place = place;
     }
 
+    public void updateIndex(Integer index) {
+        this.index = index;
+    }
 }

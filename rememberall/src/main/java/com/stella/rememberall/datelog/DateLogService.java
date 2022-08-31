@@ -2,9 +2,7 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
-import com.stella.rememberall.datelog.dto.DateLogResponseDto;
-import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
-import com.stella.rememberall.datelog.dto.DateLogSaveRequestVo;
+import com.stella.rememberall.datelog.dto.*;
 import com.stella.rememberall.datelog.exception.DateLogExCode;
 import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.datelog.exception.QuestionExCode;
@@ -13,10 +11,7 @@ import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
 import com.stella.rememberall.dongdong.DongdongReward;
 import com.stella.rememberall.dongdong.DongdongService;
-import com.stella.rememberall.placelog.PlaceLog;
-import com.stella.rememberall.placelog.PlaceLogResponseDto;
-import com.stella.rememberall.placelog.PlaceLogSaveRequestDto;
-import com.stella.rememberall.placelog.PlaceLogService;
+import com.stella.rememberall.placelog.*;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
@@ -195,7 +190,7 @@ public class DateLogService {
     private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> userLogImgList) {
         List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
         for(UserLogImg userLogImg: userLogImgList){
-            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
+            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getId(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
         }
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
         if(!userLogImgResponseDtos.isEmpty()) responseDto.updateUserLogImgWithImgUrl(userLogImgResponseDtos.get(0));
@@ -244,5 +239,58 @@ public class DateLogService {
         dateLogRepository.deleteById(dateLogId);
     }
 
+    @Transactional
+    public void updateDate(Long dateLogId, DateUpdateRequestDto requestDto) {
+        DateLog dateLog = getDateLog(dateLogId);
+        validateUniqueDateLog(dateLog.getTripLog(), requestDto.getDate());
+        dateLog.updateDate(requestDto.getDate());
+    }
+
+    @Transactional
+    public void updateQnA(Long dateLogId, QnAUpdateRequestDto requestDto) {
+        DateLog dateLog = getDateLog(dateLogId);
+        dateLog.updateQuestion(getQuestionAcceptsNull(requestDto.getQuestionId()));
+        dateLog.updateAnswer(requestDto.getAnswer());
+    }
+
+    @Transactional
+    public void updateWeatherInfo(Long dateLogId, WeatherInfoUpdateRequestDto requestDto){
+        DateLog dateLog = getDateLog(dateLogId);
+        dateLog.updateWeatherInfo(requestDto.getWeatherInfo());
+    }
+
+    @Transactional
+    public void updatePlaceLogIndex(Long dateLogId, PlaceLogIndexUpdateRequestDto indexInfo) {
+        DateLog dateLog = getDateLog(dateLogId);
+        List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
+        List<PlaceLog> responseList = new ArrayList<>();
+        Map<Long, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
+        checkPlaceLogUpdateRequestCountMatches(indexInfo, placeLogList);
+        updateIndexOfPlaceLogList(placeLogList, responseList, indexAndPlaceLogIdMap);
+        checkPlacelogIndexDuplicate(placeLogList);
+    }
+
+    private void checkPlaceLogUpdateRequestCountMatches(PlaceLogIndexUpdateRequestDto indexInfo, List<PlaceLog> placeLogList) {
+        if(indexInfo.getIndexAndPlaceLogIds().size() != placeLogList.size()){
+            throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH, "요청한 인덱스 수정 리스트의 사이즈와 실제 관광지별 일기의 개수가 일치하지 않습니다.");
+        }
+    }
+
+    private void updateIndexOfPlaceLogList(List<PlaceLog> placeLogList, List<PlaceLog> responseList, Map<Long, Integer> indexAndPlaceLogIdMap) {
+        for(PlaceLog placeLog: placeLogList){
+            Integer newIndex = indexAndPlaceLogIdMap.get(placeLog.getIndex());
+            placeLog.updateIndex(newIndex);
+            responseList.add(placeLog);
+        }
+    }
+
+    private void checkPlacelogIndexDuplicate(List<PlaceLog> placeLogList) {
+        ArrayList<Integer> placeLogIndexList = new ArrayList<>();
+        for(PlaceLog dto:placeLogList) placeLogIndexList.add(dto.getIndex());
+        Set<Integer> set = new HashSet<>(placeLogIndexList);
+        if (set.size() != placeLogList.size()) {
+            throw new DateLogException(DateLogExCode.DUPLICATED_PLACE_INDEX);
+        }
+    }
 
 }

@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AllArgsConstructor
 @Builder
 public class UserLogImgResponseDto {
-    private int index;
+    private Long userLogImgId;
     private String imgUrl;
 
-    public static UserLogImgResponseDto of(int index, String imgUrl){
+    public static UserLogImgResponseDto of(Long userLogImgId, String imgUrl){
         return UserLogImgResponseDto.builder()
-                .index(index)
+                .userLogImgId(userLogImgId)
                 .imgUrl(imgUrl)
                 .build();
     }
