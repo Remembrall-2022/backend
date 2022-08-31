@@ -8,11 +8,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum QuestionCategoryName {
-    BEFORE("여행 전"),
-    PROGRESS("여행 중"),
-    AFTER("여행 후"),
-    THOUGHT("여행에 대한 내 생각");
+    BEFORE("before"),
+    PROGRESS("progress"),
+    AFTER("after"),
+    THOUGHT("thought");
 
+    @JsonValue
     private String value;
 
 }
