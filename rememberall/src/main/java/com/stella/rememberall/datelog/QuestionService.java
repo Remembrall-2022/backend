@@ -19,11 +19,12 @@ import static java.lang.Math.abs;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final QuestionCategoryRepository questionCategoryRepository;
 
     @Transactional
     public QuestionVo readRandomQuestion() {
         Long count = questionRepository.countQuestions();
+        if (count==0) throw new QuestionException((QuestionExCode.QUESTION_NOT_EXISTED));
+
         Long randomId = abs(new Random().nextLong()%count)+1;
         Question question = questionRepository.findById(randomId)
                 .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
