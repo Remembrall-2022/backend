@@ -25,7 +25,10 @@ import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.userLogImg.UserLogImg;
 import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
 import com.stella.rememberall.userLogImg.UserLogImgService;
+import com.stella.rememberall.userLogImg.exception.EmptyFileException;
+import com.stella.rememberall.userLogImg.exception.FileErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static com.stella.rememberall.tripLog.exception.TripLogErrorCode.TRIPLOG_NOT_FOUND;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DateLogService {
@@ -62,7 +66,9 @@ public class DateLogService {
         ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
 
         validateUniqueDateLog(tripLog, date);
+        checkMultipartFileListCountExceeds(multipartFileList);
         checkPlaceLogCountExceeds(placeLogList);
+
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
@@ -111,6 +117,10 @@ public class DateLogService {
         if(placeLogList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED);
     }
 
+    private void checkMultipartFileListCountExceeds(List<MultipartFile> multipartFileList) {
+        if(multipartFileList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED, "파일 개수는 10개를 초과할 수 없습니다.");
+    }
+
     private DateLog getDateLog(DateLogSaveRequestDto dateLogSaveRequestDto, TripLog tripLog, Question question) {
         DateLogSaveRequestVo dateLogSaveRequestVo = new DateLogSaveRequestVo(dateLogSaveRequestDto);
         dateLogSaveRequestVo.setTripLog(tripLog);
@@ -119,13 +129,26 @@ public class DateLogService {
     }
 
     private void savePlaceLogs(List<MultipartFile> multipartFileList, ArrayList<PlaceLogSaveRequestDto> placeLogList, DateLog dateLog) {
-        if(placeLogList != null) {
-            checkCountMatches(multipartFileList.size(), placeLogList.size());
-            for (int i = 0; i < placeLogList.size(); i++) {
-                placeLogService.savePlaceLog(i, placeLogList.get(i), dateLog, multipartFileList.get(i));
-            }
+        for(PlaceLogSaveRequestDto placeLogSaveRequestDto:placeLogList){
+            placeLogService.savePlaceLog(
+                    placeLogList.indexOf(placeLogSaveRequestDto),
+                    placeLogSaveRequestDto,
+                    dateLog,
+                    getMultiPartFile(placeLogSaveRequestDto.getImgName(), multipartFileList)
+            );
         }
     }
+
+    private MultipartFile getMultiPartFile(String imgName, List<MultipartFile> multipartFileList) {
+        if(imgName.compareTo("")==0) return null;
+        for(MultipartFile multipartFile:multipartFileList){
+            if(multipartFile.getOriginalFilename().compareTo(imgName)==0){
+                return multipartFile;
+            }
+        }
+        throw new EmptyFileException(FileErrorCode.FILE_NOT_FOUND, "요청한 파일명을 가진 이미지를 보내지 않았습니다.");
+    }
+
 
     private void checkCountMatches(int multipartFileListSize, int placeLogListSize) {
         if (multipartFileListSize != placeLogListSize) throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH);
@@ -156,22 +179,33 @@ public class DateLogService {
         if(placeLogList!=null) {
             for (PlaceLog placeLog : placeLogList) {
                 placeLogResponseDtoList.add(
-                        createPlaceLogResponseDto(placeLog, sortUserLogImgsByIndex(placeLog.getUserLogImgList()))
+                            createPlaceLogResponseDto(placeLog, placeLog.getUserLogImgList())
                 );
             }
         }
         return placeLogResponseDtoList;
     }
 
-    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> sortedUserLogImgList) {
+    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> userLogImgList) {
         List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
-        for(UserLogImg userLogImg: sortedUserLogImgList){
+        for(UserLogImg userLogImg: userLogImgList){
             userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
         }
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
-        responseDto.updateUserLogImgListWithImgUrl(userLogImgResponseDtos);
+        if(!userLogImgResponseDtos.isEmpty()) responseDto.updateUserLogImgWithImgUrl(userLogImgResponseDtos.get(0));
         return responseDto;
     }
+
+//    이미지 여러개
+//    private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> sortedUserLogImgList) {
+//        List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
+//        for(UserLogImg userLogImg: sortedUserLogImgList){
+//            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
+//        }
+//        PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
+//        responseDto.updateUserLogImgListWithImgUrl(userLogImgResponseDtos);
+//        return responseDto;
+//    }
 
     private List<UserLogImg> sortUserLogImgsByIndex(List<UserLogImg> userLogImgList) {
         return userLogImgList.stream().sorted(Comparator.comparing(UserLogImg::getIndex))
@@ -203,4 +237,6 @@ public class DateLogService {
 
         dateLogRepository.deleteById(dateLogId);
     }
+
+
 }

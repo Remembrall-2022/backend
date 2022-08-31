@@ -40,7 +40,7 @@ public class DateLog extends BaseTimeEntity {
     @JoinColumn(name = "trip_log_id")
     private TripLog tripLog;
 
-    @OneToMany(mappedBy = "dateLog")
+    @OneToMany(mappedBy = "dateLog", cascade = CascadeType.ALL)
     private List<PlaceLog> placeLogList = new ArrayList<>();
 
     @Builder
