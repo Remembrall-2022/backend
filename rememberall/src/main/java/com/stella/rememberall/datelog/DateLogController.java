@@ -34,7 +34,7 @@ public class DateLogController {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId);
     }
 
-    @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
+    @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}/spots")
     public List<SpotResponseDto> readSpotList(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
         return dateLogService.getSpotList(tripLogId, dateLogId);
     }
