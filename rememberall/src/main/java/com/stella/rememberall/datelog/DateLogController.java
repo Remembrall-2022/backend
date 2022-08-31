@@ -4,6 +4,7 @@ import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
+import com.stella.rememberall.placelog.SpotResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +33,9 @@ public class DateLogController {
     public DateLogResponseDto readDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId);
     }
+
+    @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
+    public List<SpotResponseDto> readSpotList
 
     @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
     public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
