@@ -15,7 +15,7 @@ import java.util.Map;
 public class PlaceLogController {
     private final PlaceLogService placeLogService;
 
-    @PostMapping("dateLog/{dateLogId}/placeLog/new")
+    @PostMapping("/dateLog/{dateLogId}/placeLog/new")
     public Long createPlaceLog(
             @PathVariable Long dateLogId,
             @RequestPart(value = "file") List<MultipartFile> multipartFile,

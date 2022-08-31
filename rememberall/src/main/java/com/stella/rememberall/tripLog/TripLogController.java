@@ -1,5 +1,6 @@
 package com.stella.rememberall.tripLog;
 
+import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
 import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
 import com.stella.rememberall.tripLog.dto.TripLogUpdateRequestDto;
@@ -16,7 +17,7 @@ public class TripLogController {
     private final TripLogService tripLogService;
 
     @PostMapping("/tripLog/new")
-    public TripLogResponseDto create(@RequestBody @Valid TripLogSaveRequestDto requestDto){
+    public Long create(@RequestBody @Valid TripLogSaveRequestDto requestDto){
         return tripLogService.saveTripLog(requestDto);
     }
 
@@ -31,8 +32,14 @@ public class TripLogController {
     }
 
     @PostMapping("/tripLog/{id}")
-    public TripLogResponseDto update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id){
+    public Long update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id){
         return tripLogService.updateTripLog(requestDto, id);
+    }
+
+    @DeleteMapping("/tripLog/{id}")
+    public OnlyResponseString deleteTripLog(@PathVariable Long id){
+        tripLogService.deleteTripLog(id);
+        return new OnlyResponseString("일기장 삭제에 성공했습니다.");
     }
 
 
