@@ -19,8 +19,9 @@ public class QuestionController {
         return questionService.readRandomQuestion();
     }
 
+    /**
     @GetMapping("/question/category/{categoryName}")
     public ListQuestionDto readQuestionByCategory(@PathVariable QuestionCategoryName questionCategoryName) {
         return questionService.readQuestionByCategory(questionCategoryName);
-    }
+    }*/
 }

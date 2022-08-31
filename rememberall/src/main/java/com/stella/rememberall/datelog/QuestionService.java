@@ -29,11 +29,11 @@ public class QuestionService {
         Long count = questionRepository.countQuestions();
         Long randomId = abs(new Random().nextLong()%count)+1;
 
-
         return questionRepository.findById(randomId)
                 .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
     }
 
+    /**
     @Transactional
     public ListQuestionDto readQuestionByCategory(QuestionCategoryName questionCategoryName) {
         QuestionCategory category = questionCategoryRepository.findByQuestionCategoryName(questionCategoryName)
@@ -41,4 +41,5 @@ public class QuestionService {
         List<Question> questionList = questionRepository.findByQuestionCategory(category);
         return new ListQuestionDto(questionList);
     }
+    */
 }
