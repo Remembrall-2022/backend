@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class QuestionController {
@@ -15,5 +17,8 @@ public class QuestionController {
     public QuestionVo readRandomQuestion() {
         return questionService.readRandomQuestion();
     }
+
+    @GetMapping("/questions")
+    public List<QuestionVo> readAllQuestions() {return questionService.readAllQuestions();}
 
 }

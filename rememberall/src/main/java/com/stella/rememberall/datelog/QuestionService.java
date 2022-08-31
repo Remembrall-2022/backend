@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static java.lang.Math.abs;
@@ -30,6 +32,15 @@ public class QuestionService {
                 .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
 
         return QuestionVo.of(question.getId(), question.getTopic());
+    }
+
+    @Transactional
+    public List<QuestionVo> readAllQuestions() {
+        List<QuestionVo> result = new ArrayList<>();
+        questionRepository.findAll().stream()
+                .forEach(q -> result.add(QuestionVo.of(q.getId(), q.getTopic())));
+
+        return result;
     }
 
 }
