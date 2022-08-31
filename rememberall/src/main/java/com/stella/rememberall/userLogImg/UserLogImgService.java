@@ -28,14 +28,16 @@ public class UserLogImgService {
     }
 
     @Transactional
-    public void saveUserLogImg(PlaceLog placeLog, MultipartFile multipartFile){
-        String url = s3Util.uploadFileV1("user-log-image", multipartFile);
+    public void saveUserLogImgAllowsNull(PlaceLog placeLog, MultipartFile multipartFile){
+        String url = null;
+        if(multipartFile != null && !multipartFile.isEmpty())
+            url = s3Util.uploadFileV1("user-log-image", multipartFile);
         UserLogImg userLogImg = userLogImgRepository.save(UserLogImgSaveRequestVO.of(url, 0, placeLog));
     }
 
     public String getImgUrl(String fileKey){
         try {
-            return s3Util.getUrl("user-log-image", fileKey);
+            return s3Util.getUrl(fileKey);
         } catch (Exception e) {
             throw new EmptyFileException(FileErrorCode.FILE_NOT_FOUND, "버킷에서 파일 유실이 발생했습니다.");
         }
@@ -51,9 +53,7 @@ public class UserLogImgService {
     }
 
     @Transactional
-    public void updateUserLogImg(Long userLogImgId, MultipartFile multipartFile){
-        UserLogImg userLogImg = userLogImgRepository.findById(userLogImgId)
-                .orElseThrow();
+    public void updateUserLogImg(UserLogImg userLogImg, MultipartFile multipartFile){
         String updatedFileKey = s3Util.updateFile(userLogImg.getFileKey(), "user-log-image", multipartFile);
         userLogImgRepository.save(userLogImg.updateFileKey(updatedFileKey));
     }

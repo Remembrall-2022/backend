@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 public class PlaceLogResponseDto {
     private Long placeLogId;
+    private Integer placeLogIndex;
     private Place place;
     private UserLogImgResponseDto userLogImg;
     private String comment;
@@ -23,6 +24,7 @@ public class PlaceLogResponseDto {
     public static PlaceLogResponseDto of(PlaceLog placeLog){
         return PlaceLogResponseDto.builder()
                 .placeLogId(placeLog.getId())
+                .placeLogIndex(placeLog.getIndex())
                 .place(placeLog.getPlace())
                 .comment(placeLog.getComment())
                 .build();

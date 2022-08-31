@@ -8,5 +8,5 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 public class PlaceLogIndexUpdateRequestDto {
-    Map<Long, Integer> indexAndPlaceLogIds;
+    Map<String, Integer> indexAndPlaceLogIds;
 }

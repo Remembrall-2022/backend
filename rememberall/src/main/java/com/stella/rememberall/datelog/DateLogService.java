@@ -59,8 +59,11 @@ public class DateLogService {
 
         validateUniqueDateLog(tripLog, date);
         checkMultipartFileListCountExceeds(multipartFileList);
-        checkPlaceLogCountExceeds(placeLogList);
-        checkPlaceIdDuplicate(placeLogList);
+
+        if(placeLogList != null) {
+            checkPlaceLogCountExceeds(placeLogList);
+            checkPlaceIdDuplicate(placeLogList);
+        }
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
@@ -130,6 +133,7 @@ public class DateLogService {
     }
 
     private void savePlaceLogs(List<MultipartFile> multipartFileList, ArrayList<PlaceLogSaveRequestDto> placeLogList, DateLog dateLog) {
+        if(placeLogList == null) return;
         for(PlaceLogSaveRequestDto placeLogSaveRequestDto:placeLogList){
             placeLogService.savePlaceLog(
                     placeLogList.indexOf(placeLogSaveRequestDto),
@@ -177,13 +181,13 @@ public class DateLogService {
     private List<PlaceLogResponseDto> getPlaceLogResponseDtoList(DateLog dateLog) {
         List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
         List<PlaceLogResponseDto> placeLogResponseDtoList = new ArrayList<>();
-        if(placeLogList!=null) {
-            for (PlaceLog placeLog : placeLogList) {
-                placeLogResponseDtoList.add(
-                            createPlaceLogResponseDto(placeLog, placeLog.getUserLogImgList())
-                );
-            }
+        if(placeLogList.size()==0) return null;
+
+        for (PlaceLog placeLog : placeLogList) {
+            placeLogResponseDtoList.add(createPlaceLogResponseDto(placeLog, placeLog.getUserLogImgList()));
         }
+        Collections.sort(placeLogResponseDtoList, new ListIndexComparator());
+
         return placeLogResponseDtoList;
     }
 
@@ -264,10 +268,9 @@ public class DateLogService {
         DateLog dateLog = getDateLog(dateLogId);
         List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
         List<PlaceLog> responseList = new ArrayList<>();
-        Map<Long, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
+        Map<String, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
         checkPlaceLogUpdateRequestCountMatches(indexInfo, placeLogList);
         updateIndexOfPlaceLogList(placeLogList, responseList, indexAndPlaceLogIdMap);
-        checkPlacelogIndexDuplicate(placeLogList);
     }
 
     private void checkPlaceLogUpdateRequestCountMatches(PlaceLogIndexUpdateRequestDto indexInfo, List<PlaceLog> placeLogList) {
@@ -276,20 +279,11 @@ public class DateLogService {
         }
     }
 
-    private void updateIndexOfPlaceLogList(List<PlaceLog> placeLogList, List<PlaceLog> responseList, Map<Long, Integer> indexAndPlaceLogIdMap) {
+    private void updateIndexOfPlaceLogList(List<PlaceLog> placeLogList, List<PlaceLog> responseList, Map<String, Integer> indexAndPlaceLogIdMap) {
         for(PlaceLog placeLog: placeLogList){
-            Integer newIndex = indexAndPlaceLogIdMap.get(placeLog.getIndex());
+            Integer newIndex = indexAndPlaceLogIdMap.get(placeLog.getId().toString());
             placeLog.updateIndex(newIndex);
             responseList.add(placeLog);
-        }
-    }
-
-    private void checkPlacelogIndexDuplicate(List<PlaceLog> placeLogList) {
-        ArrayList<Integer> placeLogIndexList = new ArrayList<>();
-        for(PlaceLog dto:placeLogList) placeLogIndexList.add(dto.getIndex());
-        Set<Integer> set = new HashSet<>(placeLogIndexList);
-        if (set.size() != placeLogList.size()) {
-            throw new DateLogException(DateLogExCode.DUPLICATED_PLACE_INDEX);
         }
     }
 

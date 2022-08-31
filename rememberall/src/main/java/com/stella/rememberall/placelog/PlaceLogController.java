@@ -16,12 +16,7 @@ public class PlaceLogController {
     private final PlaceLogService placeLogService;
     private final UserLogImgService userLogImgService;
 
-    @PostMapping("/placeLog/{placeLogId}/{imageId}")
-    public void updateImg(@RequestPart(value = "file") MultipartFile multipartFile, @PathVariable Long imageId){
-        userLogImgService.updateUserLogImg(imageId, multipartFile);
-    }
-
-    @PostMapping("/placeLog/new")
+    @PostMapping("/placeLog/new") // todo : dateLog Id 받기
     public Long createPlaceLog(
             @RequestPart(value = "file") List<MultipartFile> multipartFile,
             @RequestPart @Valid PlaceLogSaveRequestDto placeLogSaveRequestDto
@@ -55,12 +50,12 @@ public class PlaceLogController {
         return new OnlyResponseString("관광지별 일기의 관광지 정보를 수정했습니다.");
     }
 
-    @PostMapping("/placeLog/{placeLogId}/userImg/{userLogImgId}")
+    @PostMapping("/userImg/{userLogImgId}")
     public OnlyResponseString updatePlaceLogUserImg(
-            @PathVariable Long placeLogId, @PathVariable Long userLogImgId,
+            @PathVariable Long userLogImgId,
             @RequestPart(value = "file") MultipartFile multipartFile
     ){
-        placeLogService.updateUserImg(placeLogId, userLogImgId, multipartFile);
+        placeLogService.updateUserImg(userLogImgId, multipartFile);
         return new OnlyResponseString("관광지별 일기의 이미지를 수정했습니다.");
     }
 

@@ -1,9 +1,12 @@
 package com.stella.rememberall.placelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.datelog.exception.DateLogExCode;
+import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.userLogImg.UserLogImg;
+import com.stella.rememberall.userLogImg.UserLogImgRepository;
 import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
 import com.stella.rememberall.userLogImg.UserLogImgService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class PlaceLogService {
     private final PlaceLogRepository placeLogRepository;
     private final PlaceService placeService;
     private final UserLogImgService userLogImgService;
+    private final UserLogImgRepository userLogImgRepository;
 
     @Transactional
     public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
@@ -41,7 +45,7 @@ public class PlaceLogService {
         placeLog.setDateLog(dateLog);
         placeLog.setIndex(index);
         placeLogRepository.save(placeLog);
-        if(multipartFile != null && !multipartFile.isEmpty()) userLogImgService.saveUserLogImg(placeLog, multipartFile);
+        userLogImgService.saveUserLogImgAllowsNull(placeLog, multipartFile);
     }
 
     @Transactional
@@ -90,11 +94,14 @@ public class PlaceLogService {
     }
 
     @Transactional
-    public void updateUserImg(Long placeLogId, Long userLogImgId, MultipartFile multipartFile) {
-        PlaceLog placeLog = findPlaceLog(placeLogId);
-        List<UserLogImg> userLogImgList = placeLog.getUserLogImgList();
-        if(userLogImgList.size()==0) userLogImgService.saveUserLogImg(placeLog, multipartFile);
-        else userLogImgService.updateUserLogImg(userLogImgId, multipartFile);
+    public void updateUserImg(Long userLogImgId, MultipartFile multipartFile) {
+        UserLogImg userLogImg = findUserLogImg(userLogImgId);
+        userLogImgService.updateUserLogImg(userLogImg, multipartFile);
+    }
+
+    private UserLogImg findUserLogImg(Long userLogImgId) {
+        return userLogImgRepository.findById(userLogImgId)
+                .orElseThrow(()->new PlaceLogException(PlaceLogErrorCode.NOT_FOUND, "존재하지 않는 이미지 정보입니다."));
     }
 
     @Transactional

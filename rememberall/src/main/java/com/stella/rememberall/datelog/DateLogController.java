@@ -17,8 +17,7 @@ public class DateLogController {
     private final DateLogService dateLogService;
     private final QuestionRepository questionRepository;
 
-    // 관광지도 같이 저장
-    @PostMapping("/tripLog/{id}/dateLog/new")
+    @PostMapping("/tripLog/{tripLogId}/dateLog/new")
     public Long createDateLog(
             @PathVariable("id") Long tripLogId,
             @RequestPart @Valid DateLogSaveRequestDto saveRequestDto,
@@ -49,7 +48,7 @@ public class DateLogController {
     @PostMapping("/dateLog/{dateLogId}/placeLog/index")
     public OnlyResponseString updatePlaceLogIndex(@PathVariable Long dateLogId, @RequestBody @Valid PlaceLogIndexUpdateRequestDto indexInfo){
         dateLogService.updatePlaceLogIndex(dateLogId, indexInfo);
-        return new OnlyResponseString("날짜별 일기의 날씨 정보를 수정했습니다.");
+        return new OnlyResponseString("날짜별 일기의 관광지별 일기 인덱스를 수정했습니다.");
     }
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
