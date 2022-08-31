@@ -33,13 +33,4 @@ public class QuestionService {
                 .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
     }
 
-    /**
-    @Transactional
-    public ListQuestionDto readQuestionByCategory(QuestionCategoryName questionCategoryName) {
-        QuestionCategory category = questionCategoryRepository.findByQuestionCategoryName(questionCategoryName)
-                .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
-        List<Question> questionList = questionRepository.findByQuestionCategory(category);
-        return new ListQuestionDto(questionList);
-    }
-    */
 }

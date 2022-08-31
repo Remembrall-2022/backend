@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-    List<Question> findByQuestionCategory(QuestionCategory category);
-
     @Query("SELECT count(q.id) FROM Question q")
     Long countQuestions();
 }
