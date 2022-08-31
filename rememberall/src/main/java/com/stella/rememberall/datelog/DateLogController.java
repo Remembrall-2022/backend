@@ -35,7 +35,9 @@ public class DateLogController {
     }
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
-    public List<SpotResponseDto> readSpotList
+    public List<SpotResponseDto> readSpotList(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
+        return dateLogService.getSpotList(tripLogId, dateLogId);
+    }
 
     @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
     public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
