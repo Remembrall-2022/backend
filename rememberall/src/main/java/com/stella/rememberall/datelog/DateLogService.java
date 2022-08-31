@@ -13,10 +13,7 @@ import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
 import com.stella.rememberall.dongdong.DongdongReward;
 import com.stella.rememberall.dongdong.DongdongService;
-import com.stella.rememberall.placelog.PlaceLog;
-import com.stella.rememberall.placelog.PlaceLogResponseDto;
-import com.stella.rememberall.placelog.PlaceLogSaveRequestDto;
-import com.stella.rememberall.placelog.PlaceLogService;
+import com.stella.rememberall.placelog.*;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
@@ -85,6 +82,24 @@ public class DateLogService {
             dongdongService.reward(userId, DongdongReward.DATELOG_S);
         else
             dongdongService.reward(userId, DongdongReward.DATELOG);
+    }
+
+    public List<SpotResponseDto> getSpotList(Long tripLogId, Long dateLogId) {
+        TripLog tripLog = getTripLog(tripLogId);
+        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        DateLog dateLog = getDateLog(dateLogId);
+        checkDateLogBelongToTripLog(dateLog, tripLog);
+
+        return getSpotResponseDtos(dateLog.getPlaceLogList());
+    }
+
+    private List<SpotResponseDto> getSpotResponseDtos(List<PlaceLog> placeLogList) {
+        List<SpotResponseDto> result = new ArrayList<>();
+        for (PlaceLog placeLog : placeLogList) {
+            Place spot = placeLog.getPlace();
+            result.add(SpotResponseDto.of(spot.getId(), spot.getLongitude(), spot.getLatitude(), placeLog.getIndex()));
+        }
+        return result;
     }
 
     private TripLog getTripLog(Long tripLogId) {
