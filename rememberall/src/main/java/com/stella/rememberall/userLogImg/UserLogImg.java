@@ -16,7 +16,7 @@ public class UserLogImg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false) @Getter
+    @Column(nullable = false, name = "user_img_index") @Getter
     private int index;
 
     @Column(name = "img_url") @Getter

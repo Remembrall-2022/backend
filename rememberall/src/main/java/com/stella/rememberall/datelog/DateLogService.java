@@ -50,18 +50,18 @@ public class DateLogService {
     private final UserLogImgService userLogImgService;
     private final DongdongService dongdongService;
 
-    // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
     @Transactional
     public Long createDateLog(Long tripLogId, DateLogSaveRequestDto dateLogSaveRequestDto, List<MultipartFile> multipartFileList) {
         TripLog tripLog = getTripLog(tripLogId);
         checkLoginedUserIsTripLogOwner(tripLog.getUser());
 
         LocalDate date = dateLogSaveRequestDto.getDate();
-        Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
-        ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
-
         validateUniqueDateLog(tripLog, date);
         checkMultipartFileListCountExceeds(multipartFileList);
+        checkRequestDateIsBetweenTripLogDate(tripLog, date);
+
+        Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
+        ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
 
         if(placeLogList != null) {
             checkPlaceLogCountExceeds(placeLogList);
@@ -160,6 +160,14 @@ public class DateLogService {
         if(multipartFileList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED, "파일 개수는 10개를 초과할 수 없습니다.");
     }
 
+    private void checkRequestDateIsBetweenTripLogDate(TripLog tripLog, LocalDate requestDate) {
+        LocalDate tripStartDate = tripLog.getTripStartDate();
+        LocalDate tripEndDate = tripLog.getTripEndDate();
+        DateRangeValidator checker = new DateRangeValidator(tripStartDate, tripEndDate);
+        if(!checker.isWithinRange(requestDate))
+            throw new DateLogException(DateLogExCode.INVALID_DATE);
+    }
+
     private void checkPlaceIdDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
         ArrayList<Long> placeLogIdList = new ArrayList<>();
         for(PlaceLogSaveRequestDto dto:placeLogList) placeLogIdList.add(dto.getPlaceInfo().getPlaceId());
@@ -242,7 +250,7 @@ public class DateLogService {
 
     private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> userLogImgList) {
         List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
-        for(UserLogImg userLogImg: userLogImgList){
+        for(UserLogImg userLogImg: userLogImgList) {
             userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getId(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
         }
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
@@ -296,6 +304,7 @@ public class DateLogService {
     public void updateDate(Long dateLogId, DateUpdateRequestDto requestDto) {
         DateLog dateLog = getDateLog(dateLogId);
         validateUniqueDateLog(dateLog.getTripLog(), requestDto.getDate());
+        checkRequestDateIsBetweenTripLogDate(dateLog.getTripLog(), requestDto.getDate());
         dateLog.updateDate(requestDto.getDate());
     }
 
@@ -319,6 +328,9 @@ public class DateLogService {
         List<PlaceLog> responseList = new ArrayList<>();
         Map<String, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
         checkPlaceLogUpdateRequestCountMatches(indexInfo, placeLogList);
+
+        ArrayList<Integer> indexes = new ArrayList<>(indexAndPlaceLogIdMap.values());
+        checkIndexInfoValid(indexes);
         updateIndexOfPlaceLogList(placeLogList, responseList, indexAndPlaceLogIdMap);
     }
 
@@ -326,6 +338,37 @@ public class DateLogService {
         if(indexInfo.getIndexAndPlaceLogIds().size() != placeLogList.size()){
             throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH, "요청한 인덱스 수정 리스트의 사이즈와 실제 관광지별 일기의 개수가 일치하지 않습니다.");
         }
+    }
+
+    private void checkIndexInfoValid(ArrayList<Integer> indexInfo) {
+        if (indexInfo.size() <= 1) {
+            return;
+        }
+        
+        // 정렬
+        Integer min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for (int i: indexInfo){
+            if (i < min) { min = i; }
+            if (i > max) { max = i; }
+        }
+
+        // 최소값이 0
+        if(min != 0) throw new DateLogException(DateLogExCode.INDEX_ERROR, "요청한 인덱스가 0으로 시작하지 않습니다.");
+
+        // 중복 없음
+        Set<Integer> visited = new HashSet<>();
+        for (int i: indexInfo) {
+            if (visited.contains(i)) {
+                throw new DateLogException(DateLogExCode.INDEX_ERROR, "요청한 인덱스에 중복이 있습니다.");
+            }
+            visited.add(i);
+        }
+
+        // 최대-최소 == n-1
+        if (max - min != indexInfo.size() - 1) {
+            throw new DateLogException(DateLogExCode.INDEX_ERROR, "요청한 인덱스의 끝값을 다시 확인해주세요.");
+        }
+
     }
 
     private void updateIndexOfPlaceLogList(List<PlaceLog> placeLogList, List<PlaceLog> responseList, Map<String, Integer> indexAndPlaceLogIdMap) {

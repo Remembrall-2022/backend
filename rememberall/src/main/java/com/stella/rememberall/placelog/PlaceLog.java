@@ -23,6 +23,7 @@ public class PlaceLog {
 
     private String comment;
 
+    @Column(name = "place_log_index")
     private int index;
 
     @ManyToOne(fetch = FetchType.LAZY)

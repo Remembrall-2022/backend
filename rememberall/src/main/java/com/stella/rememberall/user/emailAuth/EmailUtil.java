@@ -22,6 +22,9 @@ public class EmailUtil {
     @Value("${spring.mail.password}")
     private String fromEmailpassword;
 
+    @Value("${cloud.ec2.server}")
+    private String ec2ServerAddress;
+
     private final JavaMailSender emailSender;
 
     @Async
@@ -41,7 +44,7 @@ public class EmailUtil {
 
     private String createSignUpEmailContent(String data) {
         return String.format(
-            "<h1>[이메일 인증]</h1> <p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p><br><form action=\"http://localhost:8080/signup/confirm?key=%s\" method=\"POST\" enctype=\"text/plain\" name=\"EmailForm\">" +
+            "<h1>[이메일 인증]</h1> <p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p><br><form action=\""+ec2ServerAddress+"\" method=\"POST\" enctype=\"text/plain\" name=\"EmailForm\">" +
                     "<button type=\"submit\" value=\"이메일 인증하기\" style=\"background-color: turquoise; border: none; border-radius: 5px; color: #ffffff;; padding: 15px 32px\">이메일 인증하기</button></form>"
                 , data
         );

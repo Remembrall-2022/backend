@@ -26,8 +26,11 @@ dependencies {
 	// spring data jpa
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	// db
+	// h2 db
 	implementation 'com.h2database:h2:1.4.199'
+
+	// maria db
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
