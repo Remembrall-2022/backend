@@ -88,15 +88,15 @@ public class TripLogService {
 
     // 이미지를 인덱스별로 지정
     private List<TripLogSimpleResponseDto> mapEntityListToDtoListWithDefaultImg(List<TripLog> foundTripLogList) {
-
+        List<TripLogSimpleResponseDto> responseDtoList = new ArrayList<>();
+        TripLogDefaultImageUtil imageUtil = new TripLogDefaultImageUtil();
         for(int i=0;i<foundTripLogList.size();i++){
-            if(i%6==0){
-                
-            }
+            String imgUrl = imageUtil.getImgUrl(i % imageUtil.getImgListSize());
+            TripLogSimpleResponseDto responseDto = TripLogSimpleResponseDto.of(foundTripLogList.get(i));
+            responseDto.setTripLogImgUrl(imgUrl);
+            responseDtoList.add(responseDto);
         }
-
-
-        return foundTripLogList.stream().map(TripLogSimpleResponseDto::of).collect(Collectors.toList());
+        return responseDtoList;
     }
 
     @Transactional
