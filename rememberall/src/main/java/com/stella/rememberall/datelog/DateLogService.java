@@ -279,6 +279,9 @@ public class DateLogService {
         List<PlaceLog> responseList = new ArrayList<>();
         Map<String, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
         checkPlaceLogUpdateRequestCountMatches(indexInfo, placeLogList);
+
+        ArrayList<Integer> indexes = new ArrayList<>(indexAndPlaceLogIdMap.values());
+        checkIndexInfoValid(indexes);
         updateIndexOfPlaceLogList(placeLogList, responseList, indexAndPlaceLogIdMap);
     }
 
@@ -286,6 +289,37 @@ public class DateLogService {
         if(indexInfo.getIndexAndPlaceLogIds().size() != placeLogList.size()){
             throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH, "요청한 인덱스 수정 리스트의 사이즈와 실제 관광지별 일기의 개수가 일치하지 않습니다.");
         }
+    }
+
+    private void checkIndexInfoValid(ArrayList<Integer> indexInfo) {
+        if (indexInfo.size() <= 1) {
+            return;
+        }
+        
+        // 정렬
+        Integer min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for (int i: indexInfo){
+            if (i < min) { min = i; }
+            if (i > max) { max = i; }
+        }
+
+        // 최소값이 0
+        if(min != 0) throw new DateLogException(DateLogExCode.INDEX_ERROR, "요청한 인덱스가 0으로 시작하지 않습니다.");
+
+        // 중복 없음
+        Set<Integer> visited = new HashSet<>();
+        for (int i: indexInfo) {
+            if (visited.contains(i)) {
+                throw new DateLogException(DateLogExCode.INDEX_ERROR, "요청한 인덱스에 중복이 있습니다.");
+            }
+            visited.add(i);
+        }
+
+        // 최대-최소 == n-1
+        if (max - min != indexInfo.size() - 1) {
+            throw new DateLogException(DateLogExCode.INDEX_ERROR, "요청한 인덱스의 끝값을 다시 확인해주세요.");
+        }
+
     }
 
     private void updateIndexOfPlaceLogList(List<PlaceLog> placeLogList, List<PlaceLog> responseList, Map<String, Integer> indexAndPlaceLogIdMap) {

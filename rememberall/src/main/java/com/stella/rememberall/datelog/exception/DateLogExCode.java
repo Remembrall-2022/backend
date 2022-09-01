@@ -15,7 +15,8 @@ public enum DateLogExCode {
     COUNT_NOT_MATCH("이미지 파일 개수와 관광지 일기 개수가 일치하지 않습니다."),
     NO_AUTHORIZATION("접근 권한이 없습니다."),
     DATELOG_NOT_BELONG_TO_TRIPLOG("해당 날짜별 일기는 해당 일기장에 속하지 않습니다."),
-    INVALID_DATE("요청한 날짜가 일기장에 설정된 시작 날짜와 끝 날짜를 벗어납니다.");
+    INVALID_DATE("요청한 날짜가 일기장에 설정된 시작 날짜와 끝 날짜를 벗어납니다."),
+    INDEX_ERROR("요청한 인덱스에 문제가 있습니다.");
 
     private String defaultMessage;
 }
