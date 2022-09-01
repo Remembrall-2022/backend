@@ -16,7 +16,6 @@ import java.util.List;
 public class DateLogController {
 
     private final DateLogService dateLogService;
-    private final QuestionRepository questionRepository;
 
     @PostMapping("/tripLog/{tripLogId}/dateLog/new")
     public Long createDateLog(
@@ -57,10 +56,25 @@ public class DateLogController {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId);
     }
 
+    //별자리 지도 api -> 지워도 됨
+
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}/spots")
-    public List<SpotResponseDto> readSpotList(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
-        return dateLogService.getSpotList(tripLogId, dateLogId);
+    public List<SpotResponseDto> readSpotListFromDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
+        return dateLogService.getSpotListFromDateLog(tripLogId, dateLogId);
     }
+
+    @GetMapping("/tripLog/{tripLogId}/spots")
+    public List<SpotResponseDto> readSpotListFromTripLog(@PathVariable Long tripLogId) {
+        return dateLogService.getSpotListFromTripLog(tripLogId);
+    }
+
+    @GetMapping("/tripLog/{tripLogId}/spots/distinct")
+    public List<SpotResponseDto> readDistinctSpotListFromTripLog(@PathVariable Long tripLogId) {
+        return dateLogService.getDistinctSpotListFromTripLog(tripLogId);
+    }
+
+
+    //별자리 지도 api 끝
 
     @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
     public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {

@@ -5,6 +5,7 @@ import com.stella.rememberall.datelog.domain.Question;
 import com.stella.rememberall.datelog.domain.WeatherInfo;
 import com.stella.rememberall.placelog.PlaceLog;
 import com.stella.rememberall.placelog.PlaceLogResponseDto;
+import com.stella.rememberall.placelog.SpotResponseDto;
 import com.stella.rememberall.userLogImg.UserLogImg;
 import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
 import lombok.*;
@@ -28,6 +29,8 @@ public class DateLogResponseDto {
     private Question question;
     private String answer;
     @Setter private List<PlaceLogResponseDto> placeLogList;
+
+    @Setter private List<SpotResponseDto> constellationMapFromDateLog;
 
     public static DateLogResponseDto of(DateLog dateLog){
         Question question = Optional.ofNullable(dateLog.getQuestion()).orElse(null);

@@ -1,11 +1,9 @@
 package com.stella.rememberall.tripLog.dto;
 
 import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.placelog.SpotResponseDto;
 import com.stella.rememberall.tripLog.TripLog;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,6 +23,9 @@ public class TripLogWithPlaceLogIdListResponseDto {
 
     // PlaceLogId
     private List<Long> placeLogIdList;
+
+    @Setter private List<SpotResponseDto> constellationMapFromTripLog;
+    @Setter private List<SpotResponseDto> distinctConstellationMapFromTripLog;
 
     public static TripLogWithPlaceLogIdListResponseDto of(TripLog tripLog) {
         return TripLogWithPlaceLogIdListResponseDto.builder()
