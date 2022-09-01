@@ -31,11 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.stella.rememberall.tripLog.exception.TripLogErrorCode.TRIPLOG_NOT_FOUND;
 
@@ -84,7 +82,20 @@ public class DateLogService {
             dongdongService.reward(userId, DongdongReward.DATELOG);
     }
 
-    public List<SpotResponseDto> getSpotList(Long tripLogId, Long dateLogId) {
+    public List<SpotResponseDto> getSpotListFromTripLog(Long tripLogId) {
+        TripLog tripLog = getTripLog(tripLogId);
+        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        List<SpotResponseDto> tripLogResult = new ArrayList<>();
+        for (DateLog dateLog : tripLog.getDateLogList()) {
+            List<SpotResponseDto> spotListFromDateLog = getSpotListFromDateLog(tripLogId, dateLog.getId());
+            tripLogResult = Stream.of(tripLogResult, spotListFromDateLog)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+        }
+        return tripLogResult;
+    }
+
+    public List<SpotResponseDto> getSpotListFromDateLog(Long tripLogId, Long dateLogId) {
         TripLog tripLog = getTripLog(tripLogId);
         checkLoginedUserIsTripLogOwner(tripLog.getUser());
         DateLog dateLog = getDateLog(dateLogId);
@@ -97,7 +108,7 @@ public class DateLogService {
         List<SpotResponseDto> result = new ArrayList<>();
         for (PlaceLog placeLog : placeLogList) {
             Place spot = placeLog.getPlace();
-            result.add(SpotResponseDto.of(spot.getId(), spot.getLongitude(), spot.getLatitude(), placeLog.getIndex()));
+            result.add(SpotResponseDto.of(placeLog.getId(), spot.getLongitude(), spot.getLatitude(), placeLog.getIndex()));
         }
         return result;
     }

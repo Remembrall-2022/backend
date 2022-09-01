@@ -34,10 +34,25 @@ public class DateLogController {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId);
     }
 
+    //별자리 지도 api -> 지워도 됨
+
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}/spots")
-    public List<SpotResponseDto> readSpotList(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
-        return dateLogService.getSpotList(tripLogId, dateLogId);
+    public List<SpotResponseDto> readSpotListFromDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
+        return dateLogService.getSpotListFromDateLog(tripLogId, dateLogId);
     }
+
+    @GetMapping("/tripLog/{tripLogId}/spots")
+    public List<SpotResponseDto> readSpotListFromTripLog(@PathVariable Long tripLogId) {
+        return dateLogService.getSpotListFromTripLog(tripLogId);
+    }
+
+    @GetMapping("/tripLog/{tripLogId}/spots/distinct")
+    public List<SpotResponseDto> readDistinctSpotListFromTripLog(@PathVariable Long tripLogId) {
+        return dateLogService.getSpotListFromTripLog(tripLogId);
+    }
+
+
+    //별자리 지도 api
 
     @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
     public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {

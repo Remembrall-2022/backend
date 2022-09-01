@@ -8,12 +8,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SpotResponseDto {
 
-    private Long placeId;
+    private Long placeLogId;
     private Double longitude;
     private Double latitude;
     private int index;
 
-    public static SpotResponseDto of(Long placeId, Double longitude, Double latitude, int index) {
-        return new SpotResponseDto(placeId, longitude, latitude, index);
+    public static SpotResponseDto of(Long placeLogId, Double longitude, Double latitude, int index) {
+        return new SpotResponseDto(placeLogId, longitude, latitude, index);
     }
 }
