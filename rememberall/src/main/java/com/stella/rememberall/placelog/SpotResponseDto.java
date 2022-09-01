@@ -8,12 +8,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SpotResponseDto {
 
-    private Long placeLogId;
+    private Long dateLogId;
     private Double longitude;
     private Double latitude;
     private int index;
 
-    public static SpotResponseDto of(Long placeLogId, Double longitude, Double latitude, int index) {
-        return new SpotResponseDto(placeLogId, longitude, latitude, index);
+    public static SpotResponseDto of(PlaceLog placeLog) {
+        Place place = placeLog.getPlace();
+        return new SpotResponseDto(placeLog.getDateLog().getId(), place.getLongitude(), place.getLatitude(), placeLog.getIndex());
     }
 }

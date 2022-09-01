@@ -108,9 +108,9 @@ public class DateLogService {
     private List<SpotResponseDto> getSpotResponseDtos(List<PlaceLog> placeLogList) {
         List<SpotResponseDto> result = new ArrayList<>();
         for (PlaceLog placeLog : placeLogList) {
-            Place spot = placeLog.getPlace();
-            result.add(SpotResponseDto.of(placeLog.getId(), spot.getLongitude(), spot.getLatitude(), placeLog.getIndex()));
+            result.add(SpotResponseDto.of(placeLog));
         }
+        Collections.sort(result, new SpotListIndexComparator());
         return result;
     }
 
