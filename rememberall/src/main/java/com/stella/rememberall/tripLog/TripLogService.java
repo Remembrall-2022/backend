@@ -4,10 +4,8 @@ import com.stella.rememberall.common.exception.jpa.CommonJpaErrorCode;
 import com.stella.rememberall.common.exception.jpa.CommonJpaException;
 import com.stella.rememberall.datelog.DateLogService;
 import com.stella.rememberall.datelog.domain.DateLog;
-import com.stella.rememberall.tripLog.dto.CreatedDateListComparator;
-import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
-import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.tripLog.dto.TripLogUpdateRequestDto;
+import com.stella.rememberall.datelog.dto.DateLogResponseDto;
+import com.stella.rememberall.tripLog.dto.*;
 import com.stella.rememberall.tripLog.exception.TripLogException;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
@@ -17,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,9 +46,31 @@ public class TripLogService {
         }
     }
 
+    // 오래된 날짜 순으로 정렬
     @Transactional
-    public TripLogResponseDto findTripLog(Long id){
-        return TripLogResponseDto.of(findTripLogById(id));
+    public TripLogWithPlaceLogIdListResponseDto findTripLogWithPlaceLogIdList(Long id){
+        TripLogWithPlaceLogIdListResponseDto responseDto = TripLogWithPlaceLogIdListResponseDto.of(findTripLogById(id));
+
+        return responseDto;
+    }
+
+    // 오래된 날짜 순으로 정렬
+    @Transactional
+    public TripLogWithWholePlaceLogListResponseDto findTripLogWithWholePlaceLogList(Long tripLogId){
+        TripLog tripLogById = findTripLogById(tripLogId);
+        TripLogWithWholePlaceLogListResponseDto responseDto = TripLogWithWholePlaceLogListResponseDto.of(tripLogById);
+        List<DateLogResponseDto> dateLogResponseDtoList = getDateLogResponseDtoList(tripLogId, tripLogById);
+        responseDto.setDateLogResponseDtoList(dateLogResponseDtoList);
+        return responseDto;
+    }
+
+    private List<DateLogResponseDto> getDateLogResponseDtoList(Long tripLogId, TripLog tripLogById) {
+        Collections.sort(tripLogById.getDateLogList(), new OldCreatedDateListComparator());
+        List<DateLogResponseDto> dateLogResponseDtoList = new ArrayList<>();
+        for(DateLog dateLog: tripLogById.getDateLogList()) {
+            dateLogResponseDtoList.add(dateLogService.readDateLogFromTripLog(dateLog.getId(), tripLogId));
+        }
+        return dateLogResponseDtoList;
     }
 
     private TripLog findTripLogById(Long id) {
@@ -58,15 +79,15 @@ public class TripLogService {
     }
 
     @Transactional
-    public List<TripLogResponseDto> findTripLogList(){
+    public List<TripLogSimpleResponseDto> findTripLogList(){
         User loginedUser = userService.getLoginedUser();
         List<TripLog> entityList = tripLogRepository.findAllByUser(loginedUser);
-        Collections.sort(entityList, new CreatedDateListComparator());
+        Collections.sort(entityList, new RecentCreatedDateListComparator());
         return mapEntityListToDtoListWithDefaultImg(entityList);
     }
 
     // 이미지를 인덱스별로 지정
-    private List<TripLogResponseDto> mapEntityListToDtoListWithDefaultImg(List<TripLog> foundTripLogList) {
+    private List<TripLogSimpleResponseDto> mapEntityListToDtoListWithDefaultImg(List<TripLog> foundTripLogList) {
 
         for(int i=0;i<foundTripLogList.size();i++){
             if(i%6==0){
@@ -75,7 +96,7 @@ public class TripLogService {
         }
 
 
-        return foundTripLogList.stream().map(TripLogResponseDto::of).collect(Collectors.toList());
+        return foundTripLogList.stream().map(TripLogSimpleResponseDto::of).collect(Collectors.toList());
     }
 
     @Transactional

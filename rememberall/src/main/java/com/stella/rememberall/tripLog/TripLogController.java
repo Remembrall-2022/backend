@@ -1,9 +1,7 @@
 package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
-import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
-import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.tripLog.dto.TripLogUpdateRequestDto;
+import com.stella.rememberall.tripLog.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +19,18 @@ public class TripLogController {
         return tripLogService.saveTripLog(requestDto);
     }
 
+    @GetMapping("/tripLog/{id}/onlyId")
+    public TripLogWithPlaceLogIdListResponseDto findOneOnlyId(@PathVariable Long id){
+        return tripLogService.findTripLogWithPlaceLogIdList(id);
+    }
+
     @GetMapping("/tripLog/{id}")
-    public TripLogResponseDto findOne(@PathVariable Long id){
-        return tripLogService.findTripLog(id);
+    public TripLogWithWholePlaceLogListResponseDto findOneWholeData(@PathVariable Long id){
+        return tripLogService.findTripLogWithWholePlaceLogList(id);
     }
 
     @GetMapping("/tripLog/list")
-    public List<TripLogResponseDto> findTripLogList(){
+    public List<TripLogSimpleResponseDto> findTripLogList(){
         return tripLogService.findTripLogList();
     }
 

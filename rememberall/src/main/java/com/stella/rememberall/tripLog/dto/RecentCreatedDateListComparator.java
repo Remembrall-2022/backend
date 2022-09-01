@@ -1,15 +1,15 @@
 package com.stella.rememberall.tripLog.dto;
 
-import com.stella.rememberall.tripLog.TripLog;
+import com.stella.rememberall.datelog.domain.DateLog;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Comparator;
 
-public class CreatedDateListComparator implements Comparator {
+public class RecentCreatedDateListComparator implements Comparator {
     @Override
     public int compare(Object o1, Object o2) {
-        LocalDateTime createdDate1 = ((TripLog) o1).getCreatedDate();
-        LocalDateTime createdDate2 = ((TripLog) o2).getCreatedDate();
+        LocalDate createdDate1 = ((DateLog) o1).getDate();
+        LocalDate createdDate2 = ((DateLog) o2).getDate();
 
         if (createdDate1.isAfter(createdDate2))
             return -1;
