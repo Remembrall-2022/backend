@@ -47,18 +47,18 @@ public class DateLogService {
     private final UserLogImgService userLogImgService;
     private final DongdongService dongdongService;
 
-    // TODO: 일기 추가하면 경험치, 포인트 주는 로직 개발
     @Transactional
     public Long createDateLog(Long tripLogId, DateLogSaveRequestDto dateLogSaveRequestDto, List<MultipartFile> multipartFileList) {
         TripLog tripLog = getTripLog(tripLogId);
         checkLoginedUserIsTripLogOwner(tripLog.getUser());
 
         LocalDate date = dateLogSaveRequestDto.getDate();
-        Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
-        ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
-
         validateUniqueDateLog(tripLog, date);
         checkMultipartFileListCountExceeds(multipartFileList);
+        checkRequestDateIsBetweenTripLogDate(tripLog, date);
+
+        Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
+        ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
 
         if(placeLogList != null) {
             checkPlaceLogCountExceeds(placeLogList);
@@ -114,6 +114,14 @@ public class DateLogService {
 
     private void checkMultipartFileListCountExceeds(List<MultipartFile> multipartFileList) {
         if(multipartFileList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED, "파일 개수는 10개를 초과할 수 없습니다.");
+    }
+
+    private void checkRequestDateIsBetweenTripLogDate(TripLog tripLog, LocalDate requestDate) {
+        LocalDate tripStartDate = tripLog.getTripStartDate();
+        LocalDate tripEndDate = tripLog.getTripEndDate();
+        DateRangeValidator checker = new DateRangeValidator(tripStartDate, tripEndDate);
+        if(!checker.isWithinRange(requestDate))
+            throw new DateLogException(DateLogExCode.INVALID_DATE);
     }
 
     private void checkPlaceIdDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
@@ -193,7 +201,7 @@ public class DateLogService {
 
     private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> userLogImgList) {
         List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
-        for(UserLogImg userLogImg: userLogImgList){
+        for(UserLogImg userLogImg: userLogImgList) {
             userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getId(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
         }
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
@@ -247,6 +255,7 @@ public class DateLogService {
     public void updateDate(Long dateLogId, DateUpdateRequestDto requestDto) {
         DateLog dateLog = getDateLog(dateLogId);
         validateUniqueDateLog(dateLog.getTripLog(), requestDto.getDate());
+        checkRequestDateIsBetweenTripLogDate(dateLog.getTripLog(), requestDto.getDate());
         dateLog.updateDate(requestDto.getDate());
     }
 
