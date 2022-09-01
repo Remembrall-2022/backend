@@ -71,11 +71,11 @@ public class DateLogController {
 
     @GetMapping("/tripLog/{tripLogId}/spots/distinct")
     public List<SpotResponseDto> readDistinctSpotListFromTripLog(@PathVariable Long tripLogId) {
-        return dateLogService.getSpotListFromTripLog(tripLogId);
+        return dateLogService.getDistinctSpotListFromTripLog(tripLogId);
     }
 
 
-    //별자리 지도 api
+    //별자리 지도 api 끝
 
     @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
     public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {

@@ -30,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -95,6 +97,16 @@ public class DateLogService {
         }
         return tripLogResult;
     }
+
+    public List<SpotResponseDto> getDistinctSpotListFromTripLog(Long tripLogId) {
+        //중복 존재하는 별자리지도 찍기
+        List<SpotResponseDto> spotListFromTripLog = getSpotListFromTripLog(tripLogId);
+
+        //중복제거
+        return spotListFromTripLog.stream().distinct().collect(Collectors.toList());
+    }
+
+
 
     public List<SpotResponseDto> getSpotListFromDateLog(Long tripLogId, Long dateLogId) {
         TripLog tripLog = getTripLog(tripLogId);
