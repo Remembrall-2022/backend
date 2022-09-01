@@ -53,4 +53,20 @@ public class DateLog extends BaseTimeEntity {
         this.placeLogList = placeLogList;
     }
 
+    public void updateDate(LocalDate date){
+        this.date = date;
+    }
+
+    public void updateQuestion(Question question){
+        this.question = question;
+    }
+
+    public void updateAnswer(String answer){
+        this.answer = answer;
+    }
+
+    public void updateWeatherInfo(WeatherInfo weatherInfo){
+        this.weatherInfo = weatherInfo;
+    }
+
 }

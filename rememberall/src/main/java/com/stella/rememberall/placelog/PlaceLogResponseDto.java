@@ -15,17 +15,22 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class PlaceLogResponseDto {
+    private Long placeLogId;
+    private Integer placeLogIndex;
     private Place place;
     private UserLogImgResponseDto userLogImg;
     private String comment;
 
     public static PlaceLogResponseDto of(PlaceLog placeLog){
         return PlaceLogResponseDto.builder()
+                .placeLogId(placeLog.getId())
+                .placeLogIndex(placeLog.getIndex())
                 .place(placeLog.getPlace())
                 .comment(placeLog.getComment())
                 .build();
     }
 
+//    이미지 여러개
 //    public PlaceLogResponseDto updateUserLogImgListWithImgUrl(List<UserLogImgResponseDto> userLogImgList){
 //        this.userLogImgList = userLogImgList;
 //        return this;

@@ -2,9 +2,7 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.domain.Question;
-import com.stella.rememberall.datelog.dto.DateLogResponseDto;
-import com.stella.rememberall.datelog.dto.DateLogSaveRequestDto;
-import com.stella.rememberall.datelog.dto.DateLogSaveRequestVo;
+import com.stella.rememberall.datelog.dto.*;
 import com.stella.rememberall.datelog.exception.DateLogExCode;
 import com.stella.rememberall.datelog.exception.DateLogException;
 import com.stella.rememberall.datelog.exception.QuestionExCode;
@@ -62,8 +60,11 @@ public class DateLogService {
 
         validateUniqueDateLog(tripLog, date);
         checkMultipartFileListCountExceeds(multipartFileList);
-        checkPlaceLogCountExceeds(placeLogList);
 
+        if(placeLogList != null) {
+            checkPlaceLogCountExceeds(placeLogList);
+            checkPlaceIdDuplicate(placeLogList);
+        }
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
@@ -115,7 +116,7 @@ public class DateLogService {
 
     private TripLog getTripLog(Long tripLogId) {
         TripLog tripLog = tripLogRepository.findById(tripLogId)
-                .orElseThrow(() -> new TripLogException(TRIPLOG_NOT_FOUND, "일기장을 찾을 수 없어 일기를 생성할 수 없습니다."));
+                .orElseThrow(() -> new TripLogException(TRIPLOG_NOT_FOUND, "일기장을 찾을 수 없습니다."));
         return tripLog;
     }
 
@@ -147,6 +148,15 @@ public class DateLogService {
         if(multipartFileList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED, "파일 개수는 10개를 초과할 수 없습니다.");
     }
 
+    private void checkPlaceIdDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
+        ArrayList<Long> placeLogIdList = new ArrayList<>();
+        for(PlaceLogSaveRequestDto dto:placeLogList) placeLogIdList.add(dto.getPlaceInfo().getPlaceId());
+        Set<Long> set = new HashSet<>(placeLogIdList);
+        if (set.size() != placeLogList.size()) {
+            throw new DateLogException(DateLogExCode.DUPLICATED_PLACEID);
+        }
+    }
+
     private DateLog getDateLog(DateLogSaveRequestDto dateLogSaveRequestDto, TripLog tripLog, Question question) {
         DateLogSaveRequestVo dateLogSaveRequestVo = new DateLogSaveRequestVo(dateLogSaveRequestDto);
         dateLogSaveRequestVo.setTripLog(tripLog);
@@ -155,6 +165,7 @@ public class DateLogService {
     }
 
     private void savePlaceLogs(List<MultipartFile> multipartFileList, ArrayList<PlaceLogSaveRequestDto> placeLogList, DateLog dateLog) {
+        if(placeLogList == null) return;
         for(PlaceLogSaveRequestDto placeLogSaveRequestDto:placeLogList){
             placeLogService.savePlaceLog(
                     placeLogList.indexOf(placeLogSaveRequestDto),
@@ -202,20 +213,20 @@ public class DateLogService {
     private List<PlaceLogResponseDto> getPlaceLogResponseDtoList(DateLog dateLog) {
         List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
         List<PlaceLogResponseDto> placeLogResponseDtoList = new ArrayList<>();
-        if(placeLogList!=null) {
-            for (PlaceLog placeLog : placeLogList) {
-                placeLogResponseDtoList.add(
-                            createPlaceLogResponseDto(placeLog, placeLog.getUserLogImgList())
-                );
-            }
+        if(placeLogList.size()==0) return null;
+
+        for (PlaceLog placeLog : placeLogList) {
+            placeLogResponseDtoList.add(createPlaceLogResponseDto(placeLog, placeLog.getUserLogImgList()));
         }
+        Collections.sort(placeLogResponseDtoList, new ListIndexComparator());
+
         return placeLogResponseDtoList;
     }
 
     private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, List<UserLogImg> userLogImgList) {
         List<UserLogImgResponseDto> userLogImgResponseDtos = new ArrayList<>();
         for(UserLogImg userLogImg: userLogImgList){
-            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getIndex(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
+            userLogImgResponseDtos.add(UserLogImgResponseDto.of(userLogImg.getId(), userLogImgService.getImgUrl(userLogImg.getFileKey())));
         }
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
         if(!userLogImgResponseDtos.isEmpty()) responseDto.updateUserLogImgWithImgUrl(userLogImgResponseDtos.get(0));
@@ -240,7 +251,7 @@ public class DateLogService {
 
     private DateLog getDateLog(Long dateLogId) {
         DateLog dateLog = dateLogRepository.findById(dateLogId)
-                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "일기를 찾을 수 없어 조회할 수 없습니다."));
+                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND, "날짜별 일기를 찾을 수 없습니다."));
         return dateLog;
     }
 
@@ -264,5 +275,48 @@ public class DateLogService {
         dateLogRepository.deleteById(dateLogId);
     }
 
+    @Transactional
+    public void updateDate(Long dateLogId, DateUpdateRequestDto requestDto) {
+        DateLog dateLog = getDateLog(dateLogId);
+        validateUniqueDateLog(dateLog.getTripLog(), requestDto.getDate());
+        dateLog.updateDate(requestDto.getDate());
+    }
+
+    @Transactional
+    public void updateQnA(Long dateLogId, QnAUpdateRequestDto requestDto) {
+        DateLog dateLog = getDateLog(dateLogId);
+        dateLog.updateQuestion(getQuestionAcceptsNull(requestDto.getQuestionId()));
+        dateLog.updateAnswer(requestDto.getAnswer());
+    }
+
+    @Transactional
+    public void updateWeatherInfo(Long dateLogId, WeatherInfoUpdateRequestDto requestDto){
+        DateLog dateLog = getDateLog(dateLogId);
+        dateLog.updateWeatherInfo(requestDto.getWeatherInfo());
+    }
+
+    @Transactional
+    public void updatePlaceLogIndex(Long dateLogId, PlaceLogIndexUpdateRequestDto indexInfo) {
+        DateLog dateLog = getDateLog(dateLogId);
+        List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
+        List<PlaceLog> responseList = new ArrayList<>();
+        Map<String, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
+        checkPlaceLogUpdateRequestCountMatches(indexInfo, placeLogList);
+        updateIndexOfPlaceLogList(placeLogList, responseList, indexAndPlaceLogIdMap);
+    }
+
+    private void checkPlaceLogUpdateRequestCountMatches(PlaceLogIndexUpdateRequestDto indexInfo, List<PlaceLog> placeLogList) {
+        if(indexInfo.getIndexAndPlaceLogIds().size() != placeLogList.size()){
+            throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH, "요청한 인덱스 수정 리스트의 사이즈와 실제 관광지별 일기의 개수가 일치하지 않습니다.");
+        }
+    }
+
+    private void updateIndexOfPlaceLogList(List<PlaceLog> placeLogList, List<PlaceLog> responseList, Map<String, Integer> indexAndPlaceLogIdMap) {
+        for(PlaceLog placeLog: placeLogList){
+            Integer newIndex = indexAndPlaceLogIdMap.get(placeLog.getId().toString());
+            placeLog.updateIndex(newIndex);
+            responseList.add(placeLog);
+        }
+    }
 
 }
