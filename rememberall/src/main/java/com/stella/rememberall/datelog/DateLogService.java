@@ -214,6 +214,7 @@ public class DateLogService {
         DateLog dateLog = getDateLog(dateLogId);
         checkDateLogBelongToTripLog(dateLog, tripLog);
 
+        //별자리지도 setting
         DateLogResponseDto dateLogResponseDto = getDateLogResponseDto(dateLog);
         dateLogResponseDto.setConstellationMapFromDateLog(getSpotListFromDateLog(tripLogId, dateLogId));
 
