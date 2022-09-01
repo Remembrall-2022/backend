@@ -213,7 +213,11 @@ public class DateLogService {
         checkLoginedUserIsTripLogOwner(tripLog.getUser());
         DateLog dateLog = getDateLog(dateLogId);
         checkDateLogBelongToTripLog(dateLog, tripLog);
-        return getDateLogResponseDto(dateLog);
+
+        DateLogResponseDto dateLogResponseDto = getDateLogResponseDto(dateLog);
+        dateLogResponseDto.setConstellationMapFromDateLog(getSpotListFromDateLog(tripLogId, dateLogId));
+
+        return dateLogResponseDto;
     }
 
     private DateLogResponseDto getDateLogResponseDto(DateLog dateLog) {
