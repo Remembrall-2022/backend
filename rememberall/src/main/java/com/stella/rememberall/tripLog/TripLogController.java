@@ -1,8 +1,7 @@
 package com.stella.rememberall.tripLog;
 
-import com.stella.rememberall.tripLog.dto.TripLogResponseDto;
-import com.stella.rememberall.tripLog.dto.TripLogSaveRequestDto;
-import com.stella.rememberall.tripLog.dto.TripLogUpdateRequestDto;
+import com.stella.rememberall.common.response.OnlyResponseString;
+import com.stella.rememberall.tripLog.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,23 +15,34 @@ public class TripLogController {
     private final TripLogService tripLogService;
 
     @PostMapping("/tripLog/new")
-    public TripLogResponseDto create(@RequestBody @Valid TripLogSaveRequestDto requestDto){
+    public Long create(@RequestBody @Valid TripLogSaveRequestDto requestDto){
         return tripLogService.saveTripLog(requestDto);
     }
 
+    @GetMapping("/tripLog/{id}/onlyId")
+    public TripLogWithPlaceLogIdListResponseDto findOneOnlyId(@PathVariable Long id){
+        return tripLogService.findTripLogWithPlaceLogIdList(id);
+    }
+
     @GetMapping("/tripLog/{id}")
-    public TripLogResponseDto findOne(@PathVariable Long id){
-        return tripLogService.findTripLog(id);
+    public TripLogWithWholePlaceLogListResponseDto findOneWholeData(@PathVariable Long id){
+        return tripLogService.findTripLogWithWholePlaceLogList(id);
     }
 
     @GetMapping("/tripLog/list")
-    public List<TripLogResponseDto> findTripLogList(){
+    public List<TripLogSimpleResponseDto> findTripLogList(){
         return tripLogService.findTripLogList();
     }
 
     @PostMapping("/tripLog/{id}")
-    public TripLogResponseDto update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id){
+    public Long update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id){
         return tripLogService.updateTripLog(requestDto, id);
+    }
+
+    @DeleteMapping("/tripLog/{id}")
+    public OnlyResponseString deleteTripLog(@PathVariable Long id){
+        tripLogService.deleteTripLog(id);
+        return new OnlyResponseString("일기장 삭제에 성공했습니다.");
     }
 
 

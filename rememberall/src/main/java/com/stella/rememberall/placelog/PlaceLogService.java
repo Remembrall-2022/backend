@@ -1,9 +1,13 @@
 package com.stella.rememberall.placelog;
 
 import com.stella.rememberall.datelog.domain.DateLog;
+import com.stella.rememberall.datelog.exception.DateLogExCode;
+import com.stella.rememberall.datelog.exception.DateLogException;
+import com.stella.rememberall.datelog.repository.DateLogRepository;
 import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
 import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.userLogImg.UserLogImg;
+import com.stella.rememberall.userLogImg.UserLogImgRepository;
 import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
 import com.stella.rememberall.userLogImg.UserLogImgService;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +28,30 @@ public class PlaceLogService {
     private final PlaceLogRepository placeLogRepository;
     private final PlaceService placeService;
     private final UserLogImgService userLogImgService;
+    private final UserLogImgRepository userLogImgRepository;
+    private final DateLogRepository dateLogRepository;
 
     @Transactional
-    public Long savePlaceLog(PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
+    public Long savePlaceLog(Long dateLogId, PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
+        DateLog dateLog = getDateLog(dateLogId);
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
-        PlaceLog placeLog = placeLogRepository.save(requestDto.toEntity());
+        PlaceLog placeLog = savePlaceLogWithDateLog(requestDto, dateLog);
         userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
         return placeLog.getId();
+    }
+
+    private DateLog getDateLog(Long dateLogId) {
+        DateLog dateLog = dateLogRepository.findById(dateLogId)
+                .orElseThrow(() -> new DateLogException(DateLogExCode.DATELOG_NOT_FOUND));
+        return dateLog;
+    }
+
+    private PlaceLog savePlaceLogWithDateLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog) {
+        PlaceLog toEntity = requestDto.toEntity();
+        toEntity.setDateLog(dateLog);
+        toEntity.setIndex(dateLog.getPlaceLogList().size());
+        PlaceLog placeLog = placeLogRepository.save(toEntity);
+        return placeLog;
     }
 
     @Transactional
@@ -41,7 +62,7 @@ public class PlaceLogService {
         placeLog.setDateLog(dateLog);
         placeLog.setIndex(index);
         placeLogRepository.save(placeLog);
-        if(multipartFile != null && !multipartFile.isEmpty()) userLogImgService.saveUserLogImg(placeLog, multipartFile);
+        userLogImgService.saveUserLogImgAllowsNull(placeLog, multipartFile);
     }
 
     @Transactional
@@ -68,7 +89,7 @@ public class PlaceLogService {
 
     private PlaceLogResponseDto createPlaceLogResponseDto(PlaceLog placeLog, UserLogImg userLogImg) {
         PlaceLogResponseDto responseDto = PlaceLogResponseDto.of(placeLog);
-        UserLogImgResponseDto userLogImgResponseDto = UserLogImgResponseDto.of(0, userLogImgService.getImgUrl(userLogImg.getFileKey()));
+        UserLogImgResponseDto userLogImgResponseDto = UserLogImgResponseDto.of(userLogImg.getId(), userLogImgService.getImgUrl(userLogImg.getFileKey()));
         responseDto.updateUserLogImgWithImgUrl(userLogImgResponseDto);
         return responseDto;
     }
@@ -87,6 +108,17 @@ public class PlaceLogService {
     private PlaceLog findPlaceLog(Long placeLogId) {
         return placeLogRepository.findById(placeLogId)
                 .orElseThrow(() -> new PlaceLogException(PlaceLogErrorCode.NOT_FOUND, "존재하지 않는 관광지 일기입니다."));
+    }
+
+    @Transactional
+    public void updateUserImg(Long userLogImgId, MultipartFile multipartFile) {
+        UserLogImg userLogImg = findUserLogImg(userLogImgId);
+        userLogImgService.updateUserLogImg(userLogImg, multipartFile);
+    }
+
+    private UserLogImg findUserLogImg(Long userLogImgId) {
+        return userLogImgRepository.findById(userLogImgId)
+                .orElseThrow(()->new PlaceLogException(PlaceLogErrorCode.NOT_FOUND, "존재하지 않는 이미지 정보입니다."));
     }
 
     @Transactional
@@ -117,10 +149,9 @@ public class PlaceLogService {
 
     @Transactional
     public Long deletePlaceLog(PlaceLog placeLog) throws PlaceLogException{
-        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
         userLogImgService.deleteUserLogImg(placeLog);
         placeLogRepository.deleteById(placeLog.getId());
+        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
         return placeLog.getId();
     }
-
 }

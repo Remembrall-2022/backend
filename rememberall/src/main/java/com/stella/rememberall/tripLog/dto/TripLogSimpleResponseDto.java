@@ -8,18 +8,18 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TripLogResponseDto {
+public class TripLogSimpleResponseDto {
     private Long triplogId;
     private String title;
     private LocalDate tripStartDate;
     private LocalDate tripEndDate;
     @Setter private String tripLogImgUrl;
 
-    public static TripLogResponseDto of(TripLog tripLog) {
-        return new TripLogResponseDto(tripLog);
+    public static TripLogSimpleResponseDto of(TripLog tripLog) {
+        return new TripLogSimpleResponseDto(tripLog);
     }
 
-    public TripLogResponseDto(TripLog tripLog){
+    public TripLogSimpleResponseDto(TripLog tripLog){
         this.triplogId = tripLog.getId();
         this.title = tripLog.getTitle();
         this.tripStartDate = tripLog.getTripStartDate();

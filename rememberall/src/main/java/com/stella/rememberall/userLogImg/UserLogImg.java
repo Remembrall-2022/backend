@@ -19,7 +19,7 @@ public class UserLogImg {
     @Column(nullable = false) @Getter
     private int index;
 
-    @Column(name = "img_url", nullable = false) @Getter
+    @Column(name = "img_url") @Getter
     private String fileKey;
 
     @ManyToOne(fetch = FetchType.LAZY)

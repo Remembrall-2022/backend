@@ -51,7 +51,8 @@ public class S3Util {
         return fileName;
     }
 
-    public String getUrl(String bucketName, String filekey){
+    public String getUrl(String filekey){
+        if(filekey == null) return "";
         return amazonS3Client.getUrl(bucketName, filekey).toString();
     }
 
@@ -63,7 +64,7 @@ public class S3Util {
 
     public void deleteFile(String fileKey) {
         try {
-            amazonS3Client.deleteObject(bucketName, fileKey);
+            if(fileKey != null) amazonS3Client.deleteObject(bucketName, fileKey);
         } catch(AmazonServiceException e) {
             throw new S3FileException(FileErrorCode.FILE_DELETE_FAIL);
         }
