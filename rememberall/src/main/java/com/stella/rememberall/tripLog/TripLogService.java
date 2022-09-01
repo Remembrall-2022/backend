@@ -51,6 +51,9 @@ public class TripLogService {
     public TripLogWithPlaceLogIdListResponseDto findTripLogWithPlaceLogIdList(Long id){
         TripLogWithPlaceLogIdListResponseDto responseDto = TripLogWithPlaceLogIdListResponseDto.of(findTripLogById(id));
 
+        //별자리지도 setting
+        responseDto.setConstellationMapFromTripLog(dateLogService.getSpotListFromTripLog(id));
+        responseDto.setDistinctConstellationMapFromTripLog(dateLogService.getDistinctSpotListFromTripLog(id));
         return responseDto;
     }
 
@@ -61,6 +64,11 @@ public class TripLogService {
         TripLogWithWholePlaceLogListResponseDto responseDto = TripLogWithWholePlaceLogListResponseDto.of(tripLogById);
         List<DateLogResponseDto> dateLogResponseDtoList = getDateLogResponseDtoList(tripLogId, tripLogById);
         responseDto.setDateLogResponseDtoList(dateLogResponseDtoList);
+
+        //별자리지도 setting
+        responseDto.setConstellationMapFromTripLog(dateLogService.getSpotListFromTripLog(tripLogId));
+        responseDto.setDistinctConstellationMapFromTripLog(dateLogService.getDistinctSpotListFromTripLog(tripLogId));
+
         return responseDto;
     }
 

@@ -16,7 +16,6 @@ import java.util.List;
 public class DateLogController {
 
     private final DateLogService dateLogService;
-    private final QuestionRepository questionRepository;
 
     @PostMapping("/tripLog/{tripLogId}/dateLog/new")
     public Long createDateLog(
