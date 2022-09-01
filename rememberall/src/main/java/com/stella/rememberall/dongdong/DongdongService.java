@@ -1,5 +1,6 @@
 package com.stella.rememberall.dongdong;
 
+import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
@@ -17,15 +18,15 @@ import static com.stella.rememberall.dongdong.DongdongImg.*;
 public class DongdongService {
 
     private final DongdongRepository dongdongRepository;
+    private final UserService userService;
 
     @Transactional
-    public DongdongResponseDto readDongdong(Long userId) {
-        Dongdong dongdongEntity = dongdongRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
+    public DongdongResponseDto readDongdong() {
+        Dongdong dongdongEntity = userService.getLoginedUser().getDongdong();
         DongdongLevelRule rule = createLevelRule(dongdongEntity.getExp());
 
         return DongdongResponseDto.builder()
-                .userId(userId)
+                .userId(dongdongEntity.getId())
                 .exp(dongdongEntity.getExp())
                 .point(dongdongEntity.getPoint())
                 .level(rule.getLevel())

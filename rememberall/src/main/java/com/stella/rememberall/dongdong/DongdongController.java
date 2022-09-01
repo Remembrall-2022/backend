@@ -12,12 +12,12 @@ public class DongdongController {
 
     private final DongdongService dongdongService;
 
-    @GetMapping("/dongdong/{userId}")
-    public DongdongResponseDto readDongdong(@PathVariable Long userId) {
-        return dongdongService.readDongdong(userId);
+    @GetMapping("/dongdong")
+    public DongdongResponseDto readDongdong() {
+        return dongdongService.readDongdong();
     }
 
-    @PostMapping("/dongdong")
+    @PostMapping("/dongdong/attendance")
     public DongdongResponseDto requestReward(@RequestBody @Valid UserAttendRewardDto dto) {
         return dongdongService.reward(dto.getUserId(), DongdongReward.ATTENDANCE);
     }
