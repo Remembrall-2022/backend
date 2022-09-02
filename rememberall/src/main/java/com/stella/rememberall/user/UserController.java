@@ -36,7 +36,7 @@ public class UserController {
         return EmailSendResponseDto.of(requestDto.getEmail(), "이메일 전송에 성공했습니다.");
     }
 
-    @GetMapping("/signup/email/authcode")
+    @PostMapping("/signup/email/authcode")
     public OnlyResponseString authEmail(@RequestBody @Valid EmailUserValidRequestDto requestDto){
         return emailUserService.validEmail(requestDto);
     }
