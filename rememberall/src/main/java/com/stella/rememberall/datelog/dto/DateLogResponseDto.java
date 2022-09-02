@@ -26,7 +26,7 @@ public class DateLogResponseDto {
 
     private LocalDate date;
     private WeatherInfo weatherInfo;
-    private Question question;
+    private QuestionVo question;
     private String answer;
     @Setter private List<PlaceLogResponseDto> placeLogList;
 
@@ -56,14 +56,14 @@ public class DateLogResponseDto {
         return DateLogResponseDto.builder()
                 .date(dateLog.getDate())
                 .weatherInfo(dateLog.getWeatherInfo())
-                .question(question)
+                .question(QuestionVo.of(question.getId(), question.getTopic()))
                 .answer(answer)
 //                .placeLogList(placeLogResponseDtoList)
                 .build();
     }
 
     @Builder
-    public DateLogResponseDto(LocalDate date, WeatherInfo weatherInfo, Question question, String answer) {
+    public DateLogResponseDto(LocalDate date, WeatherInfo weatherInfo, QuestionVo question, String answer) {
         this.date = date;
         this.weatherInfo = weatherInfo;
         this.question = question;
