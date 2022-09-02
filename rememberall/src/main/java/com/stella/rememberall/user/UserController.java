@@ -76,11 +76,11 @@ public class UserController {
         return userService.reissue(dto);
     }
 
-    @PostMapping("/signup/confirm")
-    public OnlyResponseString signupConfirm(@RequestParam("key") String key, HttpServletResponse response) {
-        emailUserService.registerUser(key);
-        return new OnlyResponseString("성공!");
-    }
+//    @PostMapping("/signup/confirm")
+//    public OnlyResponseString signupConfirm(@RequestParam("key") String key, HttpServletResponse response) {
+//        emailUserService.registerUser(key);
+//        return new OnlyResponseString("성공!");
+//    }
 
     @GetMapping("/user/info")
     public UserInfoResponseDto getUserInfo(){

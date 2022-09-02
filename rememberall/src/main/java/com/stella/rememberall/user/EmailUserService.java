@@ -6,7 +6,7 @@ import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.dongdong.DongdongService;
 import com.stella.rememberall.user.domain.EmailAuth;
 import com.stella.rememberall.user.emailAuth.EmailAuthService;
-import com.stella.rememberall.common.redis.RedisUtil;
+//import com.stella.rememberall.common.redis.RedisUtil;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.dto.EmailUserLoginRequestDto;
@@ -40,7 +40,7 @@ public class EmailUserService {
     private final EmailAuthService emailAuthService;
     private final EmailAuthRepository emailAuthRepository;
     private final PasswordEncoder pwdEncorder;
-    private final RedisUtil redisUtil;
+//    private final RedisUtil redisUtil;
     private final DongdongService dongdongService;
 
     @Transactional
@@ -55,7 +55,7 @@ public class EmailUserService {
         checkEmailDuplicate(saveRequestDto.getEmail());
         String redisKey = UUID.randomUUID().toString();
         emailAuthService.sendSignUpAuthEmail(redisKey, saveRequestDto.getEmail());
-        redisUtil.set(redisKey, saveRequestDto, 5);
+//        redisUtil.set(redisKey, saveRequestDto, 5);
     }
 
     private void checkEmailDuplicate(String email) {
@@ -72,20 +72,20 @@ public class EmailUserService {
         dongdongService.createDongdong(user);
     }
 
-    @Transactional
-    public void registerUser(String key) {
-        EmailUserSaveRequestDto foundUserInRedis = checkUserExistsInRedis(key);
-        User savedUser = foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder);
-        saveUser(savedUser);
-        dongdongService.createDongdong(savedUser);
-        deleteUserFromRedis(key);
-    }
-
-    private EmailUserSaveRequestDto checkUserExistsInRedis(String key) {
-        EmailUserSaveRequestDto user = (EmailUserSaveRequestDto) redisUtil.get(key);
-        if(user==null) throw new MemberException(MyErrorCode.USER_NOT_FOUND_FROM_REDIS);
-        return user;
-    }
+//    @Transactional
+//    public void registerUser(String key) {
+//        EmailUserSaveRequestDto foundUserInRedis = checkUserExistsInRedis(key);
+//        User savedUser = foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder);
+//        saveUser(savedUser);
+//        dongdongService.createDongdong(savedUser);
+//        deleteUserFromRedis(key);
+//    }
+//
+//    private EmailUserSaveRequestDto checkUserExistsInRedis(String key) {
+//        EmailUserSaveRequestDto user = (EmailUserSaveRequestDto) redisUtil.get(key);
+//        if(user==null) throw new MemberException(MyErrorCode.USER_NOT_FOUND_FROM_REDIS);
+//        return user;
+//    }
 
     private User saveUser(User foundUserInRedis) {
         try {
@@ -96,9 +96,9 @@ public class EmailUserService {
         }
     }
 
-    private void deleteUserFromRedis(String key) {
-        redisUtil.delete(key);
-    }
+//    private void deleteUserFromRedis(String key) {
+//        redisUtil.delete(key);
+//    }
 
     @Transactional
     public TokenDto login(EmailUserLoginRequestDto requestDto) throws MemberException {
