@@ -18,7 +18,7 @@ public class DongdongController {
     }
 
     @PostMapping("/dongdong/attendance")
-    public DongdongResponseDto requestReward(@RequestBody @Valid UserAttendRewardDto dto) {
-        return dongdongService.reward(dto.getUserId(), DongdongReward.ATTENDANCE);
+    public DongdongResponseDto requestReward() {
+        return dongdongService.reward(DongdongReward.ATTENDANCE);
     }
 }

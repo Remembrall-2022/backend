@@ -50,8 +50,9 @@ public class DongdongService {
 
     /**리워드 지급*/
     @Transactional
-    public DongdongResponseDto reward(Long userId, DongdongReward dongdongReward) {
-        Dongdong dongdong = dongdongRepository.findById(userId)
+    public DongdongResponseDto reward(DongdongReward dongdongReward) {
+        User loginedUser = userService.getLoginedUser();
+        Dongdong dongdong = dongdongRepository.findById(loginedUser.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
         Long updatedExp = dongdong.getExp() + dongdongReward.getExp();
@@ -63,7 +64,7 @@ public class DongdongService {
         DongdongLevelRule levelRule = createLevelRule(updatedExp);
 
         return DongdongResponseDto.builder()
-                .userId(userId)
+                .userId(loginedUser.getId())
                 .exp(updatedExp)
                 .point(updatedPoint)
                 .dongdongImgUrl(levelRule.getDongdongImgUrl())
