@@ -14,7 +14,10 @@ public class QuestionVo {
     private Long id;
     private String questionName;
 
-    public static QuestionVo of(Long id, String questionName) {
-        return new QuestionVo(id, questionName);
+    public static QuestionVo of(Question question) {
+        if (question != null)
+            return new QuestionVo(question.getId(), question.getTopic());
+        else
+            return null;
     }
 }
