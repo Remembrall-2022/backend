@@ -45,7 +45,6 @@ public class EmailUserService {
 
     @Transactional
     public void sendAuthCode(EmailUserAuthRequestDto requestDto) {
-        checkEmailUserExists(requestDto.getEmail());
         String authCode = createCode();
         saveOrUpdateEmailAuth(requestDto, authCode);
         emailAuthService.sendAuthCodeEmail(authCode, requestDto.getEmail());
@@ -66,7 +65,9 @@ public class EmailUserService {
 
     @Transactional
     public void registerUser(EmailUserSaveRequestDto requestDto) {
-        User user = requestDto.toEntity();
+        checkEmailDuplicate(requestDto.getEmail());
+        checkEmailAuthed(requestDto.getEmail());
+        User user = requestDto.toEntityWithEncodedPassword(pwdEncorder);
         saveUser(user);
         dongdongService.createDongdong(user);
     }
@@ -172,7 +173,6 @@ public class EmailUserService {
         String requestedEmail = requestDto.getEmail();
         String requestedAuthCode = requestDto.getAuthCode();
 
-        checkEmailUserExists(requestedEmail);
         EmailAuth emailAuth = getEmailAuth(requestedEmail);
         updateAuthedIfAuthCodeIsCorrect(emailAuth, requestedAuthCode);
         return new OnlyResponseString("이메일 인증에 성공했습니다.");
