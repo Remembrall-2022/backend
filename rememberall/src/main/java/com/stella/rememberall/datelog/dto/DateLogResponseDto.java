@@ -33,7 +33,7 @@ public class DateLogResponseDto {
     @Setter private List<SpotResponseDto> constellationMapFromDateLog;
 
     public static DateLogResponseDto of(DateLog dateLog){
-        Question question = Optional.ofNullable(dateLog.getQuestion()).orElse(null);
+        QuestionVo question = Optional.ofNullable(QuestionVo.of(dateLog.getQuestion())).orElse(null);
         String answer = Optional.ofNullable(dateLog.getAnswer()).orElse("");
 
 
@@ -56,7 +56,7 @@ public class DateLogResponseDto {
         return DateLogResponseDto.builder()
                 .date(dateLog.getDate())
                 .weatherInfo(dateLog.getWeatherInfo())
-                .question(QuestionVo.of(question.getId(), question.getTopic()))
+                .question(question)
                 .answer(answer)
 //                .placeLogList(placeLogResponseDtoList)
                 .build();

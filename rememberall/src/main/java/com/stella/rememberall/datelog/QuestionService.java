@@ -31,14 +31,14 @@ public class QuestionService {
         Question question = questionRepository.findById(randomId)
                 .orElseThrow(() -> new QuestionException(QuestionExCode.QUESTION_NOT_FOUND));
 
-        return QuestionVo.of(question.getId(), question.getTopic());
+        return QuestionVo.of(question);
     }
 
     @Transactional
     public List<QuestionVo> readAllQuestions() {
         List<QuestionVo> result = new ArrayList<>();
         questionRepository.findAll().stream()
-                .forEach(q -> result.add(QuestionVo.of(q.getId(), q.getTopic())));
+                .forEach(q -> result.add(QuestionVo.of(q)));
 
         return result;
     }
