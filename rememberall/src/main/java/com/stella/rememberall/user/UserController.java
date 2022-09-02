@@ -39,12 +39,12 @@ public class UserController {
         return kakaoSignService.socialSignup(kakaoProfile, kakaoTokenMap.get("kakaoToken"));
     }
 
-    @GetMapping("/login/email")
+    @PostMapping("/login/email")
     public TokenDto login(@RequestBody @Valid EmailUserLoginRequestDto requestDto){
         return emailUserService.login(requestDto);
     }
 
-    @GetMapping("/login/kakao")
+    @PostMapping("/login/kakao")
     public TokenDto login(@RequestBody Map<String, String> kakaoTokenMap){
         KakaoProfile kakaoProfile = kakaoUserService.getKakaoProfile(kakaoTokenMap.get("kakaoToken"));
         return kakaoSignService.kakaoLogin(kakaoProfile, kakaoTokenMap.get("kakaoToken"));
