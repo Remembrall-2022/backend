@@ -71,18 +71,18 @@ public class DateLogService {
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
 
-        chooseRewards(dateLogSaveRequestDto, tripLog.getUser().getId());
+        chooseRewards(dateLogSaveRequestDto);
 
         return dateLog.getId();
     }
 
-    private void chooseRewards(DateLogSaveRequestDto dateLogSaveRequestDto, Long userId) {
+    private void chooseRewards(DateLogSaveRequestDto dateLogSaveRequestDto) {
         // 리워드 지급
         Optional<String> answerOptional = Optional.ofNullable(dateLogSaveRequestDto.getAnswer());
         if (getAnswerAcceptsNull(dateLogSaveRequestDto).length() < 150)
-            dongdongService.reward(userId, DongdongReward.DATELOG_S);
+            dongdongService.reward(DongdongReward.DATELOG_S);
         else
-            dongdongService.reward(userId, DongdongReward.DATELOG);
+            dongdongService.reward(DongdongReward.DATELOG);
     }
 
     public List<SpotResponseDto> getSpotListFromTripLog(Long tripLogId) {
