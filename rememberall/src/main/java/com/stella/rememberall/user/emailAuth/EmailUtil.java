@@ -44,7 +44,10 @@ public class EmailUtil {
 
     private String createSignUpEmailContent(String data) {
         return String.format(
-            "<h1>[이메일 인증]</h1> <p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p><br><form action=\""+ec2ServerAddress+"\" method=\"POST\" enctype=\"text/plain\" name=\"EmailForm\">" +
+            "<h1>[이메일 인증]</h1> <p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p><br><form action=\""
+//                    +ec2ServerAddress+
+                    +"localhost:8080/"+
+                    "\" method=\"POST\" enctype=\"text/plain\" name=\"EmailForm\">" +
                     "<button type=\"submit\" value=\"이메일 인증하기\" style=\"background-color: turquoise; border: none; border-radius: 5px; color: #ffffff;; padding: 15px 32px\">이메일 인증하기</button></form>"
                 , data
         );
@@ -56,7 +59,7 @@ public class EmailUtil {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             message.addRecipients(MimeMessage.RecipientType.TO, email);
-            message.setSubject("Rememberall 비밀번호 변경을 위한 인증 번호");
+            message.setSubject("Rememberall 이메일 인증을 위한 인증 번호");
             message.setContent(createAuthCodeEmailContent(authCode),"text/html;charset=euc-kr");
             emailSender.send(message);
         } catch (Exception e) {

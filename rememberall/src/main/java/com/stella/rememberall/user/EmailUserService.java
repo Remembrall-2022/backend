@@ -24,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -42,6 +44,14 @@ public class EmailUserService {
     private final DongdongService dongdongService;
 
     @Transactional
+    public void sendAuthCode(EmailUserAuthRequestDto requestDto) {
+        checkEmailUserExists(requestDto.getEmail());
+        String authCode = createCode();
+        saveOrUpdateEmailAuth(requestDto, authCode);
+        emailAuthService.sendAuthCodeEmail(authCode, requestDto.getEmail());
+    }
+
+    @Transactional
     public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
         checkEmailDuplicate(saveRequestDto.getEmail());
         String redisKey = UUID.randomUUID().toString();
@@ -52,6 +62,13 @@ public class EmailUserService {
     private void checkEmailDuplicate(String email) {
         boolean isUserDuplicate = userRepository.existsByEmail(email);
         if(isUserDuplicate) throw new MemberException(MyErrorCode.DUPLICATED_EMAIL);
+    }
+
+    @Transactional
+    public void registerUser(EmailUserSaveRequestDto requestDto) {
+        User user = requestDto.toEntity();
+        saveUser(user);
+        dongdongService.createDongdong(user);
     }
 
     @Transactional

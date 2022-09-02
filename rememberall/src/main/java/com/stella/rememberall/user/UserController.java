@@ -8,9 +8,12 @@ import com.stella.rememberall.security.dto.TokenRequestDto;
 import com.stella.rememberall.user.emailAuth.dto.EmailUserAuthRequestDto;
 import com.stella.rememberall.user.emailAuth.dto.EmailUserPasswordUpdateRequestDto;
 import com.stella.rememberall.user.emailAuth.dto.EmailUserValidRequestDto;
+import com.stella.rememberall.user.exception.MemberException;
+import com.stella.rememberall.user.exception.MyErrorCode;
 import com.stella.rememberall.user.kakao.KakaoProfile;
 import com.stella.rememberall.user.kakao.KakaoUserService;
 import com.stella.rememberall.user.kakao.KakaoSignService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,11 +30,29 @@ public class UserController {
     private final KakaoSignService kakaoSignService;
     private final UserService userService;
 
-    @PostMapping("/signup/email")
-    public EmailSendResponseDto join(@RequestBody @Valid EmailUserSaveRequestDto dto) {
-        emailUserService.validateSignUpWithEmail(dto);
-        return EmailSendResponseDto.of(dto.getEmail(), "이메일 전송에 성공했습니다.");
+    @PostMapping("/signup/email/authcode/send")
+    public EmailSendResponseDto sendEmail(@RequestBody @Valid EmailUserAuthRequestDto requestDto) {
+        emailUserService.sendAuthCode(requestDto);
+        return EmailSendResponseDto.of(requestDto.getEmail(), "이메일 전송에 성공했습니다.");
     }
+
+    @GetMapping("/signup/email/authcode/{authcode}")
+    public OnlyResponseString authEmail(@RequestBody @Valid EmailUserValidRequestDto requestDto){
+        return emailUserService.validEmail(requestDto);
+    }
+
+    @PostMapping("/signup/email")
+    public OnlyResponseString join(@RequestBody @Valid EmailUserSaveRequestDto dto) {
+        emailUserService.registerUser(dto);
+        return new OnlyResponseString("회원가입에 성공했습니다.");
+    }
+
+//    redis 버전
+//    @PostMapping("/signup/email")
+//    public EmailSendResponseDto join(@RequestBody @Valid EmailUserSaveRequestDto dto) {
+//        emailUserService.validateSignUpWithEmail(dto);
+//        return EmailSendResponseDto.of(dto.getEmail(), "이메일 전송에 성공했습니다.");
+//    }
 
     @PostMapping("/signup/kakao")
     public TokenDto join(@RequestBody Map<String, String> kakaoTokenMap) {
