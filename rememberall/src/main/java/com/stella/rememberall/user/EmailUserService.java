@@ -6,7 +6,7 @@ import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.dongdong.DongdongService;
 import com.stella.rememberall.user.domain.EmailAuth;
 import com.stella.rememberall.user.emailAuth.EmailAuthService;
-import com.stella.rememberall.common.redis.RedisUtil;
+//import com.stella.rememberall.common.redis.RedisUtil;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.dto.EmailUserLoginRequestDto;
@@ -24,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -38,15 +40,22 @@ public class EmailUserService {
     private final EmailAuthService emailAuthService;
     private final EmailAuthRepository emailAuthRepository;
     private final PasswordEncoder pwdEncorder;
-    private final RedisUtil redisUtil;
+//    private final RedisUtil redisUtil;
     private final DongdongService dongdongService;
+
+    @Transactional
+    public void sendAuthCode(EmailUserAuthRequestDto requestDto) {
+        String authCode = createCode();
+        saveOrUpdateEmailAuth(requestDto, authCode);
+        emailAuthService.sendAuthCodeEmail(authCode, requestDto.getEmail());
+    }
 
     @Transactional
     public void validateSignUpWithEmail(EmailUserSaveRequestDto saveRequestDto) throws MemberException {
         checkEmailDuplicate(saveRequestDto.getEmail());
         String redisKey = UUID.randomUUID().toString();
         emailAuthService.sendSignUpAuthEmail(redisKey, saveRequestDto.getEmail());
-        redisUtil.set(redisKey, saveRequestDto, 5);
+//        redisUtil.set(redisKey, saveRequestDto, 5);
     }
 
     private void checkEmailDuplicate(String email) {
@@ -55,19 +64,28 @@ public class EmailUserService {
     }
 
     @Transactional
-    public void registerUser(String key) {
-        EmailUserSaveRequestDto foundUserInRedis = checkUserExistsInRedis(key);
-        User savedUser = foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder);
-        saveUser(savedUser);
-        dongdongService.createDongdong(savedUser);
-        deleteUserFromRedis(key);
+    public void registerUser(EmailUserSaveRequestDto requestDto) {
+        checkEmailDuplicate(requestDto.getEmail());
+        checkEmailAuthed(requestDto.getEmail());
+        User user = requestDto.toEntityWithEncodedPassword(pwdEncorder);
+        saveUser(user);
+        dongdongService.createDongdong(user);
     }
 
-    private EmailUserSaveRequestDto checkUserExistsInRedis(String key) {
-        EmailUserSaveRequestDto user = (EmailUserSaveRequestDto) redisUtil.get(key);
-        if(user==null) throw new MemberException(MyErrorCode.USER_NOT_FOUND_FROM_REDIS);
-        return user;
-    }
+//    @Transactional
+//    public void registerUser(String key) {
+//        EmailUserSaveRequestDto foundUserInRedis = checkUserExistsInRedis(key);
+//        User savedUser = foundUserInRedis.toEntityWithEncodedPassword(pwdEncorder);
+//        saveUser(savedUser);
+//        dongdongService.createDongdong(savedUser);
+//        deleteUserFromRedis(key);
+//    }
+//
+//    private EmailUserSaveRequestDto checkUserExistsInRedis(String key) {
+//        EmailUserSaveRequestDto user = (EmailUserSaveRequestDto) redisUtil.get(key);
+//        if(user==null) throw new MemberException(MyErrorCode.USER_NOT_FOUND_FROM_REDIS);
+//        return user;
+//    }
 
     private User saveUser(User foundUserInRedis) {
         try {
@@ -78,9 +96,9 @@ public class EmailUserService {
         }
     }
 
-    private void deleteUserFromRedis(String key) {
-        redisUtil.delete(key);
-    }
+//    private void deleteUserFromRedis(String key) {
+//        redisUtil.delete(key);
+//    }
 
     @Transactional
     public TokenDto login(EmailUserLoginRequestDto requestDto) throws MemberException {
@@ -155,7 +173,6 @@ public class EmailUserService {
         String requestedEmail = requestDto.getEmail();
         String requestedAuthCode = requestDto.getAuthCode();
 
-        checkEmailUserExists(requestedEmail);
         EmailAuth emailAuth = getEmailAuth(requestedEmail);
         updateAuthedIfAuthCodeIsCorrect(emailAuth, requestedAuthCode);
         return new OnlyResponseString("이메일 인증에 성공했습니다.");
