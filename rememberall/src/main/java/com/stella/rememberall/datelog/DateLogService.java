@@ -12,6 +12,8 @@ import com.stella.rememberall.datelog.repository.QuestionRepository;
 import com.stella.rememberall.dongdong.DongdongReward;
 import com.stella.rememberall.dongdong.DongdongService;
 import com.stella.rememberall.placelog.*;
+import com.stella.rememberall.placelog.exception.PlaceLogErrorCode;
+import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
@@ -322,12 +324,16 @@ public class DateLogService {
     }
 
     @Transactional
-    public void updatePlaceLogIndex(Long dateLogId, PlaceLogIndexUpdateRequestDto indexInfo) {
+    public void updatePlaceLogIndex(Long dateLogId, PlaceLogIndexUpdateRequestDto indexInfo) throws PlaceLogException, DateLogException {
         DateLog dateLog = getDateLog(dateLogId);
         List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
         List<PlaceLog> responseList = new ArrayList<>();
+
         Map<String, Integer> indexAndPlaceLogIdMap = indexInfo.getIndexAndPlaceLogIds();
+        indexAndPlaceLogIdMap.keySet();
+
         checkPlaceLogUpdateRequestCountMatches(indexInfo, placeLogList);
+        checkPlaceLogIdValid(placeLogList, indexInfo.getPlaceLogIdList());
 
         ArrayList<Integer> indexes = new ArrayList<>(indexAndPlaceLogIdMap.values());
         checkIndexInfoValid(indexes);
@@ -337,6 +343,13 @@ public class DateLogService {
     private void checkPlaceLogUpdateRequestCountMatches(PlaceLogIndexUpdateRequestDto indexInfo, List<PlaceLog> placeLogList) {
         if(indexInfo.getIndexAndPlaceLogIds().size() != placeLogList.size()){
             throw new DateLogException(DateLogExCode.COUNT_NOT_MATCH, "요청한 인덱스 수정 리스트의 사이즈와 실제 관광지별 일기의 개수가 일치하지 않습니다.");
+        }
+    }
+
+    private void checkPlaceLogIdValid(List<PlaceLog> placeLogList, List<Long> placeLogIdList) {
+        for(PlaceLog placeLog:placeLogList){
+            if(!placeLogIdList.contains(placeLog.getId()))
+                throw new PlaceLogException(PlaceLogErrorCode.PLACELOG_NOT_BELONG_TO_DATELOG);
         }
     }
 
