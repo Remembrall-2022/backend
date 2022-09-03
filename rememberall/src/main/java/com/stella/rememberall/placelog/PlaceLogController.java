@@ -46,7 +46,7 @@ public class PlaceLogController {
     public OnlyResponseString updatePlaceLog(
             @PathVariable Long placeLogId,
             @RequestBody @Valid PlaceSaveRequestDto requestDto){
-        placeLogService.updatePlace(requestDto);
+        placeLogService.updatePlace(placeLogId, requestDto);
         return new OnlyResponseString("관광지별 일기의 관광지 정보를 수정했습니다.");
     }
 
