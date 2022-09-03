@@ -16,7 +16,8 @@ public enum DateLogExCode {
     NO_AUTHORIZATION("접근 권한이 없습니다."),
     DATELOG_NOT_BELONG_TO_TRIPLOG("해당 날짜별 일기는 해당 일기장에 속하지 않습니다."),
     INVALID_DATE("요청한 날짜가 일기장에 설정된 시작 날짜와 끝 날짜를 벗어납니다."),
-    INDEX_ERROR("요청한 인덱스에 문제가 있습니다.");
+    INDEX_ERROR("요청한 인덱스에 문제가 있습니다."),
+    COMMENT_LENGTH_EXCEED("코멘트는 255자 이하만 작성 가능합니다.");
 
     private String defaultMessage;
 }

@@ -33,11 +33,16 @@ public class PlaceLogService {
 
     @Transactional
     public Long savePlaceLog(Long dateLogId, PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
+        checkCommentLength(requestDto.getComment());
         DateLog dateLog = getDateLog(dateLogId);
         placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
         PlaceLog placeLog = savePlaceLogWithDateLog(requestDto, dateLog);
         userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
         return placeLog.getId();
+    }
+
+    private void checkCommentLength(String comment) {
+        if(comment.length()>255) throw new DateLogException(DateLogExCode.COMMENT_LENGTH_EXCEED);
     }
 
     private DateLog getDateLog(Long dateLogId) {
@@ -47,6 +52,7 @@ public class PlaceLogService {
     }
 
     private PlaceLog savePlaceLogWithDateLog(PlaceLogSaveRequestDto requestDto, DateLog dateLog) {
+        checkCommentLength(requestDto.getComment());
         PlaceLog toEntity = requestDto.toEntity();
         toEntity.setDateLog(dateLog);
         toEntity.setIndex(dateLog.getPlaceLogList().size());
@@ -56,6 +62,7 @@ public class PlaceLogService {
 
     @Transactional
     public void savePlaceLog(int index, PlaceLogSaveRequestDto requestDto, DateLog dateLog, MultipartFile multipartFile){
+        checkCommentLength(requestDto.getComment());
         Place place = placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
         PlaceLog placeLog = requestDto.toEntity();
         placeLog.setPlace(place);
