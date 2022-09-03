@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @StartAndEndDateCheck(startDate = "tripStartDate", endDate = "tripEndDate")
@@ -22,10 +23,12 @@ public class TripLogSaveRequestDto {
     @NotEmpty(message = "일기장의 title은 빈값일 수 없습니다.")
     private String title;
 
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate tripStartDate;
 
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate tripEndDate;
