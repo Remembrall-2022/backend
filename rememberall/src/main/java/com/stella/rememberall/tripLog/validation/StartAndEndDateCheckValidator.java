@@ -1,10 +1,12 @@
 package com.stella.rememberall.tripLog.validation;
 
+import com.stella.rememberall.tripLog.exception.NotBlankException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ServerErrorException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.constraints.NotBlank;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 
@@ -44,6 +46,11 @@ public class StartAndEndDateCheckValidator implements ConstraintValidator<StartA
             dateField = clazz.getDeclaredField(fieldName);
             dateField.setAccessible(true);
             Object target = dateField.get(object);
+
+            if(target == null || target == ""){
+                throw new NotBlankException("날짜는 빈 값일 수 없습니다.");
+            }
+
             if (!(target instanceof LocalDate)) {
                 throw new ClassCastException("casting exception");
             }
