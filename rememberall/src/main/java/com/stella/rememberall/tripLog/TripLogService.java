@@ -10,6 +10,7 @@ import com.stella.rememberall.tripLog.exception.TripLogException;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.tripLog.exception.TripLogErrorCode;
+import com.stella.rememberall.userLogImg.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class TripLogService {
     private final TripLogRepository tripLogRepository;
     private final UserService userService;
     private final DateLogService dateLogService;
+    private final S3Util s3Util;
 
     @Transactional
     public Long saveTripLog(TripLogSaveRequestDto saveRequestDto){
@@ -97,7 +99,7 @@ public class TripLogService {
     // 이미지를 인덱스별로 지정
     private List<TripLogSimpleResponseDto> mapEntityListToDtoListWithDefaultImg(List<TripLog> foundTripLogList) {
         List<TripLogSimpleResponseDto> responseDtoList = new ArrayList<>();
-        TripLogDefaultImageUtil imageUtil = new TripLogDefaultImageUtil();
+        TripLogDefaultImageUtil imageUtil = new TripLogDefaultImageUtil(s3Util);
         for(int i=0;i<foundTripLogList.size();i++){
             String imgUrl = imageUtil.getImgUrl(i % imageUtil.getImgListSize());
             TripLogSimpleResponseDto responseDto = TripLogSimpleResponseDto.of(foundTripLogList.get(i));
