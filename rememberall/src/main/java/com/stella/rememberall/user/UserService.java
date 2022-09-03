@@ -1,23 +1,32 @@
 package com.stella.rememberall.user;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
+import com.stella.rememberall.domain.AuthType;
+import com.stella.rememberall.dongdong.DongdongRepository;
 import com.stella.rememberall.security.JwtProvider;
 import com.stella.rememberall.security.SecurityUtil;
 import com.stella.rememberall.security.dto.TokenDto;
 import com.stella.rememberall.security.dto.TokenRequestDto;
 import com.stella.rememberall.security.exception.AuthErrorCode;
 import com.stella.rememberall.security.exception.AuthException;
+import com.stella.rememberall.tripLog.TripLog;
+import com.stella.rememberall.tripLog.TripLogService;
+import com.stella.rememberall.user.domain.EmailAuth;
 import com.stella.rememberall.user.domain.RefreshToken;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.dto.UserInfoResponseDto;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
+import com.stella.rememberall.user.repository.EmailAuthRepository;
+import com.stella.rememberall.user.repository.RefreshTokenRepository;
 import com.stella.rememberall.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +36,10 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final DongdongRepository dongdongRepository;
+    private final EmailAuthRepository emailAuthRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final TripLogService tripLogService;
 
     public User getLoginedUser(){
         return SecurityUtil.getCurrentUserPk().flatMap(userRepository::findById)
@@ -107,4 +120,38 @@ public class UserService {
         return new OnlyResponseString("약관 동의 설정 수정에 성공했습니다.");
     }
 
+    @Transactional
+    public void signout() {
+        User loginedUser = getLoginedUser();
+
+        // dongdong
+        dongdongRepository.delete(loginedUser.getDongdong());
+
+        // role
+        userRepository.deleteRoleByUserUserId(loginedUser.getId());
+
+        // email auth : 이메일 회원이었으면
+        if(loginedUser.getAuthType()== AuthType.EMAIL){
+            EmailAuth emailAuth = emailAuthRepository.findByEmail(loginedUser.getEmail())
+                    .orElseThrow(() -> new MemberException(MyErrorCode.INVALID_REQUEST));
+            emailAuthRepository.delete(emailAuth);
+        }
+
+        // refresh_token : 필수는 아님
+        RefreshToken refreshToken = refreshTokenRepository.findByUserPk(loginedUser.getId())
+                .orElseThrow(() -> new MemberException(MyErrorCode.INVALID_REQUEST));
+        refreshTokenRepository.delete(refreshToken);
+
+        // item_purchase_by_user
+
+
+        // trip_log
+        List<TripLog> tripLogList = loginedUser.getTripLogList();
+        for(TripLog tripLog:tripLogList){
+            tripLogService.deleteTripLog(tripLog.getId());
+        }
+
+        userRepository.delete(loginedUser);
+
+    }
 }
