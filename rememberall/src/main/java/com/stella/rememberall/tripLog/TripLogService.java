@@ -7,9 +7,11 @@ import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.tripLog.dto.*;
 import com.stella.rememberall.tripLog.exception.TripLogException;
+import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.tripLog.exception.TripLogErrorCode;
+import com.stella.rememberall.userLogImg.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +28,13 @@ import java.util.stream.Collectors;
 public class TripLogService {
 
     private final TripLogRepository tripLogRepository;
-    private final UserService userService;
+    private final LoginedUserService loginedUserService;
     private final DateLogService dateLogService;
+    private final S3Util s3Util;
 
     @Transactional
     public Long saveTripLog(TripLogSaveRequestDto saveRequestDto){
-        User loginedUser = userService.getLoginedUser();
+        User loginedUser = loginedUserService.getLoginedUser();
         TripLog savedTripLog = saveTripLogWithUser(saveRequestDto, loginedUser); // TODO : save 예외 잡기는 했는데 더 좋은 방법이 없을까? save fail은 500이고 find fail은 400 에러인디
         // TODO : 디폴트 이미지 지정 방법 논의 후 이미지 setter
         return savedTripLog.getId();
@@ -88,7 +91,7 @@ public class TripLogService {
 
     @Transactional
     public List<TripLogSimpleResponseDto> findTripLogList(){
-        User loginedUser = userService.getLoginedUser();
+        User loginedUser = loginedUserService.getLoginedUser();
         List<TripLog> entityList = tripLogRepository.findAllByUser(loginedUser);
         Collections.sort(entityList, new RecentCreatedDateListComparator());
         return mapEntityListToDtoListWithDefaultImg(entityList);
@@ -97,7 +100,7 @@ public class TripLogService {
     // 이미지를 인덱스별로 지정
     private List<TripLogSimpleResponseDto> mapEntityListToDtoListWithDefaultImg(List<TripLog> foundTripLogList) {
         List<TripLogSimpleResponseDto> responseDtoList = new ArrayList<>();
-        TripLogDefaultImageUtil imageUtil = new TripLogDefaultImageUtil();
+        TripLogDefaultImageUtil imageUtil = new TripLogDefaultImageUtil(s3Util);
         for(int i=0;i<foundTripLogList.size();i++){
             String imgUrl = imageUtil.getImgUrl(i % imageUtil.getImgListSize());
             TripLogSimpleResponseDto responseDto = TripLogSimpleResponseDto.of(foundTripLogList.get(i));
@@ -109,7 +112,7 @@ public class TripLogService {
 
     @Transactional
     public Long updateTripLog(TripLogUpdateRequestDto updateRequestDto, Long tripLogId){
-        User loginedUser = userService.getLoginedUser();
+        User loginedUser = loginedUserService.getLoginedUser();
         checkUserAuthorityToUpdateTripLog(loginedUser, findTripLogById(tripLogId));
         TripLog updatedTripLog = updateTripLogWithUser(updateRequestDto, loginedUser, tripLogId);
         // TODO : 디폴트 이미지 지정 방법 논의 후 이미지 setter

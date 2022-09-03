@@ -17,6 +17,7 @@ import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
+import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.userLogImg.UserLogImg;
@@ -48,7 +49,7 @@ public class DateLogService {
     private final TripLogRepository tripLogRepository;
     private final QuestionRepository questionRepository;
     private final PlaceLogService placeLogService;
-    private final UserService userService;
+    private final LoginedUserService loginedUserService;
     private final UserLogImgService userLogImgService;
     private final DongdongService dongdongService;
 
@@ -135,7 +136,7 @@ public class DateLogService {
     }
 
     private void checkLoginedUserIsTripLogOwner(User tripLogOwner) {
-        if(!tripLogOwner.equals(userService.getLoginedUser()))
+        if(!tripLogOwner.equals(loginedUserService.getLoginedUser()))
             throw new DateLogException(DateLogExCode.NO_AUTHORIZATION);
     }
 

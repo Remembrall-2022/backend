@@ -1,9 +1,11 @@
 package com.stella.rememberall.dongdong;
 
+import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
+import com.stella.rememberall.userLogImg.S3Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,11 +20,12 @@ import static com.stella.rememberall.dongdong.DongdongImg.*;
 public class DongdongService {
 
     private final DongdongRepository dongdongRepository;
-    private final UserService userService;
+    private final LoginedUserService loginedUserService;
+    private final S3Util s3Util;
 
     @Transactional
     public DongdongResponseDto readDongdong() {
-        Dongdong dongdongEntity = userService.getLoginedUser().getDongdong();
+        Dongdong dongdongEntity = loginedUserService.getLoginedUser().getDongdong();
         DongdongLevelRule rule = createLevelRule(dongdongEntity.getExp());
 
         return DongdongResponseDto.builder()
@@ -51,7 +54,7 @@ public class DongdongService {
     /**리워드 지급*/
     @Transactional
     public DongdongResponseDto reward(DongdongReward dongdongReward) {
-        User loginedUser = userService.getLoginedUser();
+        User loginedUser = loginedUserService.getLoginedUser();
         Dongdong dongdong = dongdongRepository.findById(loginedUser.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
@@ -96,28 +99,33 @@ public class DongdongService {
         DongdongLevelRule rule;
 
         if (exp >= 2800)
-            rule = new DongdongLevelRule(10, 2800L, STEP3.getImgUrl());
+            rule = new DongdongLevelRule(10, 2800L, getImgUrl(STEP3.getImgKey()));
         else if (exp >= 2400)
-            rule = new DongdongLevelRule(9, 2400L, STEP2.getImgUrl());
+            rule = new DongdongLevelRule(9, 2400L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 2200)
-            rule = new DongdongLevelRule(8, 2200L, STEP2.getImgUrl());
+            rule = new DongdongLevelRule(8, 2200L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 2000)
-            rule = new DongdongLevelRule(7, 2000L, STEP2.getImgUrl());
+            rule = new DongdongLevelRule(7, 2000L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 1800)
-            rule = new DongdongLevelRule(6, 1800L, STEP2.getImgUrl());
+            rule = new DongdongLevelRule(6, 1800L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 1600)
-            rule = new DongdongLevelRule(5, 1600L, STEP2.getImgUrl());
+            rule = new DongdongLevelRule(5, 1600L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 1400)
-            rule = new DongdongLevelRule(4, 1400L, STEP1.getImgUrl());
+            rule = new DongdongLevelRule(4, 1400L, getImgUrl(STEP1.getImgKey()));
         else if (exp >= 1200)
-            rule = new DongdongLevelRule(3, 1200L, STEP1.getImgUrl());
+            rule = new DongdongLevelRule(3, 1200L, getImgUrl(STEP1.getImgKey()));
         else if (exp >= 600)
-            rule = new DongdongLevelRule(2, 600L, STEP1.getImgUrl());
+            rule = new DongdongLevelRule(2, 600L, getImgUrl(STEP1.getImgKey()));
         else if (exp >= 300)
-            rule = new DongdongLevelRule(1, 300L, STEP1.getImgUrl());
+            rule = new DongdongLevelRule(1, 300L, getImgUrl(STEP1.getImgKey()));
         else
-            rule = new DongdongLevelRule(0, 0L, STEP0.getImgUrl());
+            rule = new DongdongLevelRule(0, 0L, getImgUrl(STEP0.getImgKey()));
 
         return rule;
     }
+
+    public String getImgUrl(String imgKey){
+        return s3Util.getUrl(imgKey);
+    }
+
 }

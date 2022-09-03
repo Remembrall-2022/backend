@@ -18,4 +18,11 @@ public class TripLogExceptionAdvice {
         log.error("TripLog Exception({}) - {}", e.getErrorCode(), e.getErrorMessage());
         return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage()); // TODO : e.getResponseCode()로 개선 필요
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity notBlankException(NotBlankException e) {
+        log.error("Not Blank Exception({}) - {}", e.getErrorName(), e.getMsg());
+        return new ErrorEntity(e.getErrorName(), e.getMsg()); // TODO : e.getResponseCode()로 개선 필요
+    }
 }

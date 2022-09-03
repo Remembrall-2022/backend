@@ -118,4 +118,10 @@ public class UserController {
         return emailUserService.updatePasswordIfEmailAuthed(requestDto);
     }
 
+    @DeleteMapping("/user/signout")
+    public OnlyResponseString deleteUser(){
+        userService.signout();
+        return new OnlyResponseString("회원 탈퇴에 성공했습니다.");
+    }
+
 }
