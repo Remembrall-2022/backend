@@ -56,7 +56,7 @@ public class KakaoSignService {
     }
 
     private void checkKakaoDuplicate(Long kakaoId){
-        if(userRepository.existsByKakaoIdAndAuthType(kakaoId, AuthType.EMAIL))
+        if(userRepository.existsByKakaoIdAndAuthType(kakaoId, AuthType.KAKAO))
             throw new MemberException(MyErrorCode.DUPLICATED_KAKAO);
     }
 
