@@ -31,6 +31,7 @@ public class DongdongService {
         return DongdongResponseDto.builder()
                 .userId(dongdongEntity.getId())
                 .exp(dongdongEntity.getExp())
+                .maxExp(rule.getMaxExp())
                 .point(dongdongEntity.getPoint())
                 .level(rule.getLevel())
                 .dongdongImgUrl(rule.getDongdongImgUrl())
@@ -99,27 +100,27 @@ public class DongdongService {
         DongdongLevelRule rule;
 
         if (exp >= 2800)
-            rule = new DongdongLevelRule(10, 2800L, getImgUrl(STEP3.getImgKey()));
+            rule = new DongdongLevelRule(10, 2800L, 2800L, getImgUrl(STEP3.getImgKey()));
         else if (exp >= 2400)
-            rule = new DongdongLevelRule(9, 2400L, getImgUrl(STEP2.getImgKey()));
+            rule = new DongdongLevelRule(9, 2400L, 2800L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 2200)
-            rule = new DongdongLevelRule(8, 2200L, getImgUrl(STEP2.getImgKey()));
+            rule = new DongdongLevelRule(8, 2200L, 2400L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 2000)
-            rule = new DongdongLevelRule(7, 2000L, getImgUrl(STEP2.getImgKey()));
+            rule = new DongdongLevelRule(7, 2000L, 2200L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 1800)
-            rule = new DongdongLevelRule(6, 1800L, getImgUrl(STEP2.getImgKey()));
+            rule = new DongdongLevelRule(6, 1800L, 2000L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 1600)
-            rule = new DongdongLevelRule(5, 1600L, getImgUrl(STEP2.getImgKey()));
+            rule = new DongdongLevelRule(5, 1600L, 1800L, getImgUrl(STEP2.getImgKey()));
         else if (exp >= 1400)
-            rule = new DongdongLevelRule(4, 1400L, getImgUrl(STEP1.getImgKey()));
+            rule = new DongdongLevelRule(4, 1400L, 1600L, getImgUrl(STEP1.getImgKey()));
         else if (exp >= 1200)
-            rule = new DongdongLevelRule(3, 1200L, getImgUrl(STEP1.getImgKey()));
+            rule = new DongdongLevelRule(3, 1200L, 1400L,getImgUrl(STEP1.getImgKey()));
         else if (exp >= 600)
-            rule = new DongdongLevelRule(2, 600L, getImgUrl(STEP1.getImgKey()));
+            rule = new DongdongLevelRule(2, 600L,1200L, getImgUrl(STEP1.getImgKey()));
         else if (exp >= 300)
-            rule = new DongdongLevelRule(1, 300L, getImgUrl(STEP1.getImgKey()));
+            rule = new DongdongLevelRule(1, 300L, 600L, getImgUrl(STEP1.getImgKey()));
         else
-            rule = new DongdongLevelRule(0, 0L, getImgUrl(STEP0.getImgKey()));
+            rule = new DongdongLevelRule(0, 0L, 300L, getImgUrl(STEP0.getImgKey()));
 
         return rule;
     }

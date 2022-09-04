@@ -9,6 +9,7 @@ public class DongdongLevelRule {
 
     private Integer level;
     private Long minExp;
+    private Long maxExp;
     private String dongdongImgUrl;
 
 
