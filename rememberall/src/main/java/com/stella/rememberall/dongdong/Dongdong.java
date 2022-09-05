@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "dongdong")
@@ -26,12 +27,10 @@ public class Dongdong {
     @Setter
     private Long exp;
 
-<<<<<<< HEAD
     @Setter
     private LocalDate attendance;
 
-=======
->>>>>>> 283228830340bc48930e0da76a3f055ec44de625
+
     public Dongdong (User user) {
         this.user = user;
         this.point = 0L;
