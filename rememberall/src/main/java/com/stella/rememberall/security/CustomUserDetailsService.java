@@ -19,6 +19,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
         return userRepository.findById(Long.parseLong(userPk))
-                .orElseThrow(CUserNotFoundException::new);
+                .orElseThrow(() -> new UsernameNotFoundException("회원 pk가 유효하지 않습니다."));
     }
 }
