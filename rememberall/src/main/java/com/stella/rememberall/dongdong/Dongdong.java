@@ -28,12 +28,12 @@ public class Dongdong {
     private Long exp;
 
     @Setter
-    private LocalDate currentDateOfAttendance;
+    private LocalDate attendance;
 
     public Dongdong (User user) {
         this.user = user;
         this.point = 0L;
         this.exp = 0L;
-        this.currentDateOfAttendance = LocalDate.now().minusDays(2);
+        this.attendance = LocalDate.now().minusDays(2);
     }
 }
