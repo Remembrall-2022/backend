@@ -24,8 +24,9 @@ public class DongdongService {
     private final S3Util s3Util;
 
     @Transactional
-    public DongdongResponseDto readDongdong() {
-        Dongdong dongdongEntity = loginedUserService.getLoginedUser().getDongdong();
+    public DongdongResponseDto readDongdong(User user) {
+//        Dongdong dongdongEntity = loginedUserService.getLoginedUser().getDongdong();
+        Dongdong dongdongEntity = user.getDongdong();
         DongdongLevelRule rule = createLevelRule(dongdongEntity.getExp());
 
         return DongdongResponseDto.builder()
