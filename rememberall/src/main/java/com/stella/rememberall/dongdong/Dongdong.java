@@ -30,5 +30,6 @@ public class Dongdong {
         this.user = user;
         this.point = 0L;
         this.exp = 0L;
+        this.currentDateOfAttendance = LocalDate.now().minusDays(2);
     }
 }
