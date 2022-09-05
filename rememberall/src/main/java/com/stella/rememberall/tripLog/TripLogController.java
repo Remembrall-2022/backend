@@ -2,7 +2,9 @@ package com.stella.rememberall.tripLog;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.tripLog.dto.*;
+import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,8 +17,8 @@ public class TripLogController {
     private final TripLogService tripLogService;
 
     @PostMapping("/tripLog/new")
-    public Long create(@RequestBody @Valid TripLogSaveRequestDto requestDto){
-        return tripLogService.saveTripLog(requestDto);
+    public Long create(@RequestBody @Valid TripLogSaveRequestDto requestDto, @AuthenticationPrincipal User user){
+        return tripLogService.saveTripLog(requestDto, user);
     }
 
     @GetMapping("/tripLog/{id}/onlyId")
@@ -30,13 +32,13 @@ public class TripLogController {
     }
 
     @GetMapping("/tripLog/list")
-    public List<TripLogSimpleResponseDto> findTripLogList(){
-        return tripLogService.findTripLogList();
+    public List<TripLogSimpleResponseDto> findTripLogList(@AuthenticationPrincipal User user){
+        return tripLogService.findTripLogList(user);
     }
 
     @PostMapping("/tripLog/{id}")
-    public Long update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id){
-        return tripLogService.updateTripLog(requestDto, id);
+    public Long update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id, @AuthenticationPrincipal User user){
+        return tripLogService.updateTripLog(requestDto, id, user);
     }
 
     @DeleteMapping("/tripLog/{id}")

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthExceptionController {
 
     @GetMapping("/entryPoint")
-    public void entrypointException() { throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT); }
+    public void entrypointException() { throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT, "권한을 가진 회원이 아닙니다."); }
 
     @GetMapping("/accessDenied")
     public void accessDeniedException() { throw new AuthException(AuthErrorCode.ACCESS_DENIED); }

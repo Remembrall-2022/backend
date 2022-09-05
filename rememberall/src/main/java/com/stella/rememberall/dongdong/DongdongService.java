@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-import java.time.LocalDate;
-
 import static com.stella.rememberall.dongdong.DongdongImg.*;
 
 @Service
@@ -26,8 +24,9 @@ public class DongdongService {
     private final S3Util s3Util;
 
     @Transactional
-    public DongdongResponseDto readDongdong() {
-        Dongdong dongdongEntity = loginedUserService.getLoginedUser().getDongdong();
+    public DongdongResponseDto readDongdong(User user) {
+//        Dongdong dongdongEntity = loginedUserService.getLoginedUser().getDongdong();
+        Dongdong dongdongEntity = user.getDongdong();
         DongdongLevelRule rule = createLevelRule(dongdongEntity.getExp());
 
         return DongdongResponseDto.builder()
@@ -61,16 +60,11 @@ public class DongdongService {
         Dongdong dongdong = dongdongRepository.findById(loginedUser.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
-        if(dongdongReward==DongdongReward.ATTENDANCE && dongdong.getCurrentDateOfAttendance().isEqual(LocalDate.now())) {
-            throw new DongdongException(DongdongExCode.DONGDONG_ALREADY_REWARDED);
-        }
-
         Long updatedExp = dongdong.getExp() + dongdongReward.getExp();
         Long updatedPoint = dongdong.getPoint() + dongdongReward.getPoint();
 
         dongdong.setExp(updatedExp);
         dongdong.setPoint(updatedPoint);
-        dongdong.setCurrentDateOfAttendance(LocalDate.now());
 
         DongdongLevelRule levelRule = createLevelRule(updatedExp);
 

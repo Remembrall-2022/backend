@@ -12,10 +12,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -79,12 +82,18 @@ public class JwtProvider {
         return refreshToken;
     }
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) throws IOException {
         Claims claims = parseClaims(token);
         if (claims.get(ROLES) == null) {
             throw new AuthException(AuthErrorCode.AUTHENTICATION_ENTRYPOINT);
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        UserDetails userDetails = null;
+        try {
+            userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        } catch (UsernameNotFoundException e) {
+            log.error("UsernameNotFoundException");
+            if(userDetails == null) return null;
+        }
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
