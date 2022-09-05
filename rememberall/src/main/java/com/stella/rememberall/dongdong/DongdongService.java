@@ -61,7 +61,7 @@ public class DongdongService {
         Dongdong dongdong = dongdongRepository.findById(loginedUser.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
-        if(dongdong.getCurrentDateOfAttendance().isEqual(LocalDate.now())) {
+        if(dongdongReward==DongdongReward.ATTENDANCE && dongdong.getCurrentDateOfAttendance().isEqual(LocalDate.now())) {
             throw new DongdongException(DongdongExCode.DONGDONG_ALREADY_REWARDED);
         }
 
