@@ -28,7 +28,7 @@ public class Dongdong {
     private Long exp;
 
     @Setter
-    private LocalDate currentAttend;
+    private LocalDate currentDateOfAttendance;
 
     public Dongdong (User user) {
         this.user = user;
