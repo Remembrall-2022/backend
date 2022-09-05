@@ -1,5 +1,6 @@
-package com.stella.rememberall.domain;
+package com.stella.rememberall.item;
 
+import com.stella.rememberall.item.Item;
 import com.stella.rememberall.user.domain.User;
 
 import javax.persistence.*;

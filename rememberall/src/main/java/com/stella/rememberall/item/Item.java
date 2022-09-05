@@ -1,4 +1,4 @@
-package com.stella.rememberall.domain;
+package com.stella.rememberall.item;
 
 import javax.persistence.*;
 import java.util.ArrayList;
