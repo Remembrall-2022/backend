@@ -1,7 +1,6 @@
 package com.stella.rememberall.dongdong;
 
 import com.stella.rememberall.user.LoginedUserService;
-import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
@@ -40,6 +39,13 @@ public class DongdongService {
                 .dongdongImgUrl(rule.getDongdongImgUrl())
                 .level(rule.getLevel())
                 .build();
+    }
+
+    @Transactional
+    public DongdongMessageResponseDto checkAttendance(User user) {
+        Dongdong dongdong = user.getDongdong();
+        if (dongdong.getAttendance().isEqual(LocalDate.now())) return new DongdongMessageResponseDto("출석");
+        else return new DongdongMessageResponseDto("미정");
     }
 
     /**
