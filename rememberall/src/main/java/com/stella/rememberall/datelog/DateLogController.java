@@ -4,7 +4,9 @@ import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.datelog.dto.*;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
 import com.stella.rememberall.placelog.SpotResponseDto;
+import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,9 +23,10 @@ public class DateLogController {
     public Long createDateLog(
             @PathVariable("tripLogId") Long tripLogId,
             @RequestPart @Valid DateLogSaveRequestDto saveRequestDto,
-            @RequestPart(value = "file") List<MultipartFile> multipartFiles
+            @RequestPart(value = "file") List<MultipartFile> multipartFiles,
+            @AuthenticationPrincipal User user
             ) {
-        return dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles);
+        return dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles, user);
     }
 
     @PostMapping("/dateLog/{dateLogId}/date")
@@ -52,33 +55,33 @@ public class DateLogController {
     }
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
-    public DateLogResponseDto readDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
-        return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId);
+    public DateLogResponseDto readDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId, @AuthenticationPrincipal User user) {
+        return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId, user);
     }
 
     //별자리 지도 api -> 지워도 됨
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}/spots")
-    public List<SpotResponseDto> readSpotListFromDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
-        return dateLogService.getSpotListFromDateLog(tripLogId, dateLogId);
+    public List<SpotResponseDto> readSpotListFromDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId, @AuthenticationPrincipal User user) {
+        return dateLogService.getSpotListFromDateLog(tripLogId, dateLogId, user);
     }
 
     @GetMapping("/tripLog/{tripLogId}/spots")
-    public List<SpotResponseDto> readSpotListFromTripLog(@PathVariable Long tripLogId) {
-        return dateLogService.getSpotListFromTripLog(tripLogId);
+    public List<SpotResponseDto> readSpotListFromTripLog(@PathVariable Long tripLogId, @AuthenticationPrincipal User user) {
+        return dateLogService.getSpotListFromTripLog(tripLogId, user);
     }
 
     @GetMapping("/tripLog/{tripLogId}/spots/distinct")
-    public List<SpotResponseDto> readDistinctSpotListFromTripLog(@PathVariable Long tripLogId) {
-        return dateLogService.getDistinctSpotListFromTripLog(tripLogId);
+    public List<SpotResponseDto> readDistinctSpotListFromTripLog(@PathVariable Long tripLogId, @AuthenticationPrincipal User user) {
+        return dateLogService.getDistinctSpotListFromTripLog(tripLogId, user);
     }
 
 
     //별자리 지도 api 끝
 
     @DeleteMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")
-    public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId) {
-        dateLogService.deleteDateLog(dateLogId, tripLogId);
+    public OnlyResponseString deleteDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId, @AuthenticationPrincipal User user) {
+        dateLogService.deleteDateLog(dateLogId, tripLogId, user);
         return new OnlyResponseString("날짜별 일기를 삭제했습니다.");
     }
 

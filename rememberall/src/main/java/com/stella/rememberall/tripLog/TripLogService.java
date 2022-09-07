@@ -7,7 +7,6 @@ import com.stella.rememberall.datelog.domain.DateLog;
 import com.stella.rememberall.datelog.dto.DateLogResponseDto;
 import com.stella.rememberall.tripLog.dto.*;
 import com.stella.rememberall.tripLog.exception.TripLogException;
-import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.tripLog.exception.TripLogErrorCode;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 public class TripLogService {
 
     private final TripLogRepository tripLogRepository;
-    private final LoginedUserService loginedUserService;
     private final DateLogService dateLogService;
     private final S3Util s3Util;
 
@@ -49,35 +47,35 @@ public class TripLogService {
 
     // 오래된 날짜 순으로 정렬
     @Transactional
-    public TripLogWithPlaceLogIdListResponseDto findTripLogWithPlaceLogIdList(Long id){
+    public TripLogWithPlaceLogIdListResponseDto findTripLogWithPlaceLogIdList(Long id, User logindedUser){
         TripLogWithPlaceLogIdListResponseDto responseDto = TripLogWithPlaceLogIdListResponseDto.of(findTripLogById(id));
 
         //별자리지도 setting
-        responseDto.setConstellationMapFromTripLog(dateLogService.getSpotListFromTripLog(id));
-        responseDto.setDistinctConstellationMapFromTripLog(dateLogService.getDistinctSpotListFromTripLog(id));
+        responseDto.setConstellationMapFromTripLog(dateLogService.getSpotListFromTripLog(id, logindedUser));
+        responseDto.setDistinctConstellationMapFromTripLog(dateLogService.getDistinctSpotListFromTripLog(id, logindedUser));
         return responseDto;
     }
 
     // 오래된 날짜 순으로 정렬
     @Transactional
-    public TripLogWithWholePlaceLogListResponseDto findTripLogWithWholePlaceLogList(Long tripLogId){
+    public TripLogWithWholePlaceLogListResponseDto findTripLogWithWholePlaceLogList(Long tripLogId, User logindedUser){
         TripLog tripLogById = findTripLogById(tripLogId);
         TripLogWithWholePlaceLogListResponseDto responseDto = TripLogWithWholePlaceLogListResponseDto.of(tripLogById);
-        List<DateLogResponseDto> dateLogResponseDtoList = getDateLogResponseDtoList(tripLogId, tripLogById);
+        List<DateLogResponseDto> dateLogResponseDtoList = getDateLogResponseDtoList(tripLogId, tripLogById, logindedUser);
         responseDto.setDateLogResponseDtoList(dateLogResponseDtoList);
 
         //별자리지도 setting
-        responseDto.setConstellationMapFromTripLog(dateLogService.getSpotListFromTripLog(tripLogId));
-        responseDto.setDistinctConstellationMapFromTripLog(dateLogService.getDistinctSpotListFromTripLog(tripLogId));
+        responseDto.setConstellationMapFromTripLog(dateLogService.getSpotListFromTripLog(tripLogId, logindedUser));
+        responseDto.setDistinctConstellationMapFromTripLog(dateLogService.getDistinctSpotListFromTripLog(tripLogId, logindedUser));
 
         return responseDto;
     }
 
-    private List<DateLogResponseDto> getDateLogResponseDtoList(Long tripLogId, TripLog tripLogById) {
+    private List<DateLogResponseDto> getDateLogResponseDtoList(Long tripLogId, TripLog tripLogById, User logindedUser) {
         Collections.sort(tripLogById.getDateLogList(), new OldCreatedDateListComparator());
         List<DateLogResponseDto> dateLogResponseDtoList = new ArrayList<>();
         for(DateLog dateLog: tripLogById.getDateLogList()) {
-            dateLogResponseDtoList.add(dateLogService.readDateLogFromTripLog(dateLog.getId(), tripLogId));
+            dateLogResponseDtoList.add(dateLogService.readDateLogFromTripLog(dateLog.getId(), tripLogId, logindedUser));
         }
         return dateLogResponseDtoList;
     }
@@ -131,12 +129,12 @@ public class TripLogService {
     }
 
     @Transactional
-    public void deleteTripLog(Long tripLogId) {
+    public void deleteTripLog(Long tripLogId, User loginedUser) {
         // datelog 삭제
         TripLog tripLogById = findTripLogById(tripLogId);
         List<DateLog> dateLogList = tripLogById.getDateLogList();
         for(DateLog dateLog:dateLogList){
-            dateLogService.deleteDateLog(dateLog.getId(), tripLogId);
+            dateLogService.deleteDateLog(dateLog.getId(), tripLogId, loginedUser);
         }
         // triplog 삭제
         tripLogRepository.deleteById(tripLogId);

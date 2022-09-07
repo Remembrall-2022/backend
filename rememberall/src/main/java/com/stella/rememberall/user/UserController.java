@@ -1,6 +1,7 @@
 package com.stella.rememberall.user;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
+import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.dto.*;
 import com.stella.rememberall.user.emailAuth.dto.EmailSendResponseDto;
 import com.stella.rememberall.security.dto.TokenDto;
@@ -15,6 +16,7 @@ import com.stella.rememberall.user.kakao.KakaoUserService;
 import com.stella.rememberall.user.kakao.KakaoSignService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -83,23 +85,23 @@ public class UserController {
 //    }
 
     @GetMapping("/user/info")
-    public UserInfoResponseDto getUserInfo(){
-        return userService.getUserInfo();
+    public UserInfoResponseDto getUserInfo(@AuthenticationPrincipal User user){
+        return userService.getUserInfo(user);
     }
 
     @PostMapping("/user/name")
-    public OnlyResponseString updateUsername(@RequestBody @Valid NameUpdateRequestDto newName){
-        return userService.updateMyName(newName.getName());
+    public OnlyResponseString updateUsername(@RequestBody @Valid NameUpdateRequestDto newName, @AuthenticationPrincipal User user){
+        return userService.updateMyName(newName.getName(), user);
     }
 
     @PostMapping("/user/alarm/agree")
-    public OnlyResponseString updateAlarmAgree(@RequestBody @Valid AgreeUpdateRequestDto newAlarmAgree){
-        return userService.updateAlarmAgree(newAlarmAgree.getAgree());
+    public OnlyResponseString updateAlarmAgree(@RequestBody @Valid AgreeUpdateRequestDto newAlarmAgree, @AuthenticationPrincipal User user){
+        return userService.updateAlarmAgree(newAlarmAgree.getAgree(), user);
     }
 
     @PostMapping("/user/term/agree")
-    public OnlyResponseString updateTermAgree(@RequestBody @Valid AgreeUpdateRequestDto newTermAgree){
-        return userService.updateTermAgree(newTermAgree.getAgree());
+    public OnlyResponseString updateTermAgree(@RequestBody @Valid AgreeUpdateRequestDto newTermAgree, @AuthenticationPrincipal User user){
+        return userService.updateTermAgree(newTermAgree.getAgree(), user);
     }
 
     @PostMapping("/user/password/request")
@@ -119,8 +121,8 @@ public class UserController {
     }
 
     @DeleteMapping("/user/signout")
-    public OnlyResponseString deleteUser(){
-        userService.signout();
+    public OnlyResponseString deleteUser(@AuthenticationPrincipal User user){
+        userService.signout(user);
         return new OnlyResponseString("회원 탈퇴에 성공했습니다.");
     }
 
