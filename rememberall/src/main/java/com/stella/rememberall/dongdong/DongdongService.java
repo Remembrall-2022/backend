@@ -88,21 +88,16 @@ public class DongdongService {
 
     /**포인트 지불*/
     @Transactional
-    public DongdongResponseDto payPoint(User user, Long point) {
+    public Long payPoint(User user, Long point) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
         Long updatedPoint = dongdong.getPoint();
         if (updatedPoint >= point) {
             updatedPoint = dongdong.getPoint() - point;
             dongdong.setPoint(updatedPoint);
-        }
-        else
+        } else
             throw new DongdongException(DongdongExCode.DONGDONG_LACK_OF_POINT);
-        return DongdongResponseDto.builder()
-                .userId(user.getId())
-                .exp(dongdong.getExp())
-                .point(updatedPoint)
-                .build();
+        return updatedPoint;
     }
 
     /**둥둥이 조회시 호출, 서비스 내에서만 사용*/
