@@ -23,4 +23,9 @@ public class DongdongController {
     public DongdongResponseDto requestReward(@AuthenticationPrincipal User user) {
         return dongdongService.reward(DongdongReward.ATTENDANCE);
     }
+
+    @GetMapping("/dongdong/attendance")
+    public DongdongMessageResponseDto checkAttendance(@AuthenticationPrincipal User user) {
+        return dongdongService.checkAttendance(user);
+    }
 }
