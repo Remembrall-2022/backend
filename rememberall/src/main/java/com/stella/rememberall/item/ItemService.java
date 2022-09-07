@@ -25,7 +25,7 @@ public class ItemService {
 
     @Transactional
     public Long buyItem(Long itemId, User user) {
-        Item item = itemRepository.findById(itemId).orElseThrow();
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
         dongdongService.payPoint(user, item.getId());
         itemPurchasedByUserRepository.save(ItemPurchasedByUser.builder()
                 .item(item)
@@ -33,7 +33,6 @@ public class ItemService {
                 .price(item.getPrice())
                 .build());
         // TODO: 유저별로 보유하고 있는 아이템 리스트 필요한지 고민
-        // TODO: 아이템 아이디로 찾을 수 없는 경우 예외 처리
         return itemId;
     }
 }
