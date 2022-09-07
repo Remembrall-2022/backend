@@ -17,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByKakaoIdAndAuthType(Long kakaoId, AuthType authType);
 
     @Modifying
-    @Query(value = "delete FROM USER_ROLES where user_user_id=?1", nativeQuery = true)
+    @Query(value = "delete from user_roles where user_user_id=?1", nativeQuery = true)
     void deleteRoleByUserUserId(Long id);
 }

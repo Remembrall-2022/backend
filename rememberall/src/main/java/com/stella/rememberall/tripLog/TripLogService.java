@@ -33,10 +33,8 @@ public class TripLogService {
     private final S3Util s3Util;
 
     @Transactional
-    public Long saveTripLog(TripLogSaveRequestDto saveRequestDto){
-        User loginedUser = loginedUserService.getLoginedUser();
+    public Long saveTripLog(TripLogSaveRequestDto saveRequestDto, User loginedUser){
         TripLog savedTripLog = saveTripLogWithUser(saveRequestDto, loginedUser); // TODO : save 예외 잡기는 했는데 더 좋은 방법이 없을까? save fail은 500이고 find fail은 400 에러인디
-        // TODO : 디폴트 이미지 지정 방법 논의 후 이미지 setter
         return savedTripLog.getId();
     }
 
@@ -90,8 +88,7 @@ public class TripLogService {
     }
 
     @Transactional
-    public List<TripLogSimpleResponseDto> findTripLogList(){
-        User loginedUser = loginedUserService.getLoginedUser();
+    public List<TripLogSimpleResponseDto> findTripLogList(User loginedUser){
         List<TripLog> entityList = tripLogRepository.findAllByUser(loginedUser);
         Collections.sort(entityList, new RecentCreatedDateListComparator());
         return mapEntityListToDtoListWithDefaultImg(entityList);
@@ -111,8 +108,7 @@ public class TripLogService {
     }
 
     @Transactional
-    public Long updateTripLog(TripLogUpdateRequestDto updateRequestDto, Long tripLogId){
-        User loginedUser = loginedUserService.getLoginedUser();
+    public Long updateTripLog(TripLogUpdateRequestDto updateRequestDto, Long tripLogId, User loginedUser){
         checkUserAuthorityToUpdateTripLog(loginedUser, findTripLogById(tripLogId));
         TripLog updatedTripLog = updateTripLogWithUser(updateRequestDto, loginedUser, tripLogId);
         // TODO : 디폴트 이미지 지정 방법 논의 후 이미지 setter
