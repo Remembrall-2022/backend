@@ -35,8 +35,9 @@ public class PlaceLogService {
     public Long savePlaceLog(Long dateLogId, PlaceLogSaveRequestDto requestDto, List<MultipartFile> multipartFileList){
         checkCommentLength(requestDto.getComment());
         DateLog dateLog = getDateLog(dateLogId);
-        placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
+        Place place = placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
         PlaceLog placeLog = savePlaceLogWithDateLog(requestDto, dateLog);
+        placeLog.setPlace(place);
         userLogImgService.saveUserLogImgList(placeLog, multipartFileList);
         return placeLog.getId();
     }
