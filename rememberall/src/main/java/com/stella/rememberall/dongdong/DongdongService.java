@@ -63,8 +63,10 @@ public class DongdongService {
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
 
-        if(dongdongReward==DongdongReward.ATTENDANCE && dongdong.getAttendance().isEqual(LocalDate.now())) {
-            throw new DongdongException(DongdongExCode.DONGDONG_ALREADY_REWARDED);
+        if(dongdongReward==DongdongReward.ATTENDANCE) {
+            if(dongdong.getAttendance().isEqual(LocalDate.now()))
+                throw new DongdongException(DongdongExCode.DONGDONG_ALREADY_REWARDED);
+            else dongdong.setAttendance(LocalDate.now());
         }
 
         Long updatedExp = dongdong.getExp() + dongdongReward.getExp();
@@ -72,7 +74,6 @@ public class DongdongService {
 
         dongdong.setExp(updatedExp);
         dongdong.setPoint(updatedPoint);
-        dongdong.setAttendance(LocalDate.now());
 
 
         DongdongLevelRule levelRule = createLevelRule(updatedExp);
