@@ -14,9 +14,10 @@ import javax.persistence.*;
 public class Place {
     @Id
     @Column(name = "place_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "place_name")
+    @Column(name = "place_name", unique = true)
     private String name;
 
     @Column(name = "place_address")
@@ -33,6 +34,13 @@ public class Place {
         this.address = address;
         this.longitude = longitude;
         this.latitude = latitude;
+    }
+
+    public Place updatePlaceInfo(String address, Double longitude, Double latitude){
+        this.address = address;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        return this;
     }
 
 }

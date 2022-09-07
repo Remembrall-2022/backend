@@ -17,7 +17,6 @@ import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
-import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.userLogImg.UserLogImg;
 import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
@@ -26,15 +25,12 @@ import com.stella.rememberall.userLogImg.exception.EmptyFileException;
 import com.stella.rememberall.userLogImg.exception.FileErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,7 +63,7 @@ public class DateLogService {
 
         if(placeLogList != null) {
             checkPlaceLogCountExceeds(placeLogList);
-            checkPlaceIdDuplicate(placeLogList);
+            checkPlaceNameDuplicate(placeLogList);
         }
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
@@ -170,10 +166,10 @@ public class DateLogService {
             throw new DateLogException(DateLogExCode.INVALID_DATE);
     }
 
-    private void checkPlaceIdDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
-        ArrayList<Long> placeLogIdList = new ArrayList<>();
-        for(PlaceLogSaveRequestDto dto:placeLogList) placeLogIdList.add(dto.getPlaceInfo().getPlaceId());
-        Set<Long> set = new HashSet<>(placeLogIdList);
+    private void checkPlaceNameDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
+        ArrayList<String> placeLogNameList = new ArrayList<>();
+        for(PlaceLogSaveRequestDto dto:placeLogList) placeLogNameList.add(dto.getPlaceInfo().getName());
+        Set<String> set = new HashSet<>(placeLogNameList);
         if (set.size() != placeLogList.size()) {
             throw new DateLogException(DateLogExCode.DUPLICATED_PLACEID);
         }
