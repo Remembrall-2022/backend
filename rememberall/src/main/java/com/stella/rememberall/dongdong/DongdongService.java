@@ -1,7 +1,5 @@
 package com.stella.rememberall.dongdong;
 
-import com.stella.rememberall.user.UserService;
-import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
