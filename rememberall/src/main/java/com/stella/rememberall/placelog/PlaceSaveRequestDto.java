@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlaceSaveRequestDto {
-    @NotNull(message = "관광지 고유번호는 빈값일 수 없습니다.") private Long placeId;
+//    @NotNull(message = "관광지 고유번호는 빈값일 수 없습니다.") private Long placeId;
     @NotEmpty(message = "관광지 이름은 빈값일 수 없습니다.") private String name;
     private String address;
     private Double longitude;
@@ -19,7 +19,7 @@ public class PlaceSaveRequestDto {
 
     public Place toEntity(){
         return Place.builder()
-                .id(placeId)
+//                .id(placeId)
                 .name(name)
                 .address(address)
                 .longitude(longitude)

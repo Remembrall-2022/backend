@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -16,21 +18,31 @@ public class PlaceService {
 
     @Transactional
     public Place saveOrUpdatePlace(PlaceSaveRequestDto requestDto){
-        return placeRepository.save(requestDto.toEntity());
+        // 동일한 이름이 있으면 update, 없으면 save
+        Place savedPlace = new Place();
+        Optional<Place> foundPlace = placeRepository.findByName(requestDto.getName());
+        if(foundPlace.isEmpty()) savedPlace = placeRepository.save(requestDto.toEntity());
+        else{
+            savedPlace = foundPlace.get();
+            savedPlace = savedPlace.updatePlaceInfo(requestDto.getAddress(), requestDto.getLongitude(), requestDto.getLatitude());
+        }
+        return savedPlace;
     }
 
     @Transactional
-    public Place getPlace(Long placeId){
-        return placeRepository.findById(placeId)
+    public Place getPlace(String placeName){
+        return placeRepository.findByName(placeName)
                 .orElseThrow(()->new PlaceLogException(PlaceLogErrorCode.NOT_FOUND));
     }
 
     @Transactional
-    public void deletePlaceIfNotReferenced(Long placeId){
-        Place place = placeRepository.findById(placeId)
+    public void deletePlaceIfNotReferenced(String placeName){
+        Place place = placeRepository.findByName(placeName)
                 .orElseThrow(() -> new PlaceLogException(PlaceLogErrorCode.NOT_FOUND));
-        if(isNotReferencedInPlaceLog(place))
-            placeRepository.deleteById(placeId);
+        if(isNotReferencedInPlaceLog(place)) {
+            Long aLong = placeRepository.deleteByName(placeName);
+            log.info("place id"+aLong.toString()+"을 삭제했습니다.");
+        }
     }
 
     private boolean isNotReferencedInPlaceLog(Place place) {

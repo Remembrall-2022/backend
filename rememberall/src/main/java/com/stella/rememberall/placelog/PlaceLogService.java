@@ -149,9 +149,9 @@ public class PlaceLogService {
     @Transactional
     public Long deletePlaceLog(Long placeLogId) throws PlaceLogException{
         PlaceLog placeLog = findPlaceLog(placeLogId);
-        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
         userLogImgService.deleteUserLogImg(placeLog);
         placeLogRepository.deleteById(placeLogId);
+//        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getName());
         return placeLogId;
     }
 
@@ -159,7 +159,7 @@ public class PlaceLogService {
     public Long deletePlaceLog(PlaceLog placeLog) throws PlaceLogException{
         userLogImgService.deleteUserLogImg(placeLog);
         placeLogRepository.deleteById(placeLog.getId());
-        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getId());
+//        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getName());
         return placeLog.getId();
     }
 }

@@ -98,31 +98,30 @@ public class UserService {
     }
 
     @Transactional
-    public UserInfoResponseDto getUserInfo(){
-        return UserInfoResponseDto.of(getLoginedUser());
+    public UserInfoResponseDto getUserInfo(User loginedUser){
+        return UserInfoResponseDto.of(loginedUser);
     }
 
     @Transactional
-    public OnlyResponseString updateMyName(String newName){
-        getLoginedUser().updateName(newName);
+    public OnlyResponseString updateMyName(String newName, User loginedUser){
+        loginedUser.updateName(newName);
         return new OnlyResponseString("이름 수정에 성공했습니다.");
     }
 
     @Transactional
-    public OnlyResponseString updateAlarmAgree(Boolean alarmAgree){
-        getLoginedUser().updateAlarmAgree(alarmAgree);
+    public OnlyResponseString updateAlarmAgree(Boolean alarmAgree, User loginedUser){
+        loginedUser.updateAlarmAgree(alarmAgree);
         return new OnlyResponseString("알람 설정 수정에 성공했습니다.");
     }
 
     @Transactional
-    public OnlyResponseString updateTermAgree(Boolean termAgree){
-        getLoginedUser().updateTermAgree(termAgree);
+    public OnlyResponseString updateTermAgree(Boolean termAgree, User loginedUser){
+        loginedUser.updateTermAgree(termAgree);
         return new OnlyResponseString("약관 동의 설정 수정에 성공했습니다.");
     }
 
     @Transactional
-    public void signout() {
-        User loginedUser = getLoginedUser();
+    public void signout(User loginedUser) {
 
         // dongdong
         dongdongRepository.delete(loginedUser.getDongdong());
@@ -148,7 +147,7 @@ public class UserService {
         // trip_log
         List<TripLog> tripLogList = loginedUser.getTripLogList();
         for(TripLog tripLog:tripLogList){
-            tripLogService.deleteTripLog(tripLog.getId());
+            tripLogService.deleteTripLog(tripLog.getId(), loginedUser);
         }
 
         userRepository.delete(loginedUser);

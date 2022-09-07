@@ -22,13 +22,13 @@ public class TripLogController {
     }
 
     @GetMapping("/tripLog/{id}/onlyId")
-    public TripLogWithPlaceLogIdListResponseDto findOneOnlyId(@PathVariable Long id){
-        return tripLogService.findTripLogWithPlaceLogIdList(id);
+    public TripLogWithPlaceLogIdListResponseDto findOneOnlyId(@PathVariable Long id, @AuthenticationPrincipal User user){
+        return tripLogService.findTripLogWithPlaceLogIdList(id, user);
     }
 
     @GetMapping("/tripLog/{id}")
-    public TripLogWithWholePlaceLogListResponseDto findOneWholeData(@PathVariable Long id){
-        return tripLogService.findTripLogWithWholePlaceLogList(id);
+    public TripLogWithWholePlaceLogListResponseDto findOneWholeData(@PathVariable Long id, @AuthenticationPrincipal User user){
+        return tripLogService.findTripLogWithWholePlaceLogList(id, user);
     }
 
     @GetMapping("/tripLog/list")
@@ -42,8 +42,8 @@ public class TripLogController {
     }
 
     @DeleteMapping("/tripLog/{id}")
-    public OnlyResponseString deleteTripLog(@PathVariable Long id){
-        tripLogService.deleteTripLog(id);
+    public OnlyResponseString deleteTripLog(@PathVariable Long id, @AuthenticationPrincipal User user){
+        tripLogService.deleteTripLog(id, user);
         return new OnlyResponseString("일기장 삭제에 성공했습니다.");
     }
 

@@ -17,8 +17,6 @@ import com.stella.rememberall.placelog.exception.PlaceLogException;
 import com.stella.rememberall.tripLog.TripLog;
 import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.exception.TripLogException;
-import com.stella.rememberall.user.LoginedUserService;
-import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.userLogImg.UserLogImg;
 import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
@@ -33,8 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,14 +45,13 @@ public class DateLogService {
     private final TripLogRepository tripLogRepository;
     private final QuestionRepository questionRepository;
     private final PlaceLogService placeLogService;
-    private final LoginedUserService loginedUserService;
     private final UserLogImgService userLogImgService;
     private final DongdongService dongdongService;
 
     @Transactional
-    public Long createDateLog(Long tripLogId, DateLogSaveRequestDto dateLogSaveRequestDto, List<MultipartFile> multipartFileList) {
+    public Long createDateLog(Long tripLogId, DateLogSaveRequestDto dateLogSaveRequestDto, List<MultipartFile> multipartFileList, User loginedUser) {
         TripLog tripLog = getTripLog(tripLogId);
-        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        checkLoginedUserIsTripLogOwner(tripLog.getUser(), loginedUser);
 
         LocalDate date = dateLogSaveRequestDto.getDate();
         validateUniqueDateLog(tripLog, date);
@@ -68,32 +63,32 @@ public class DateLogService {
 
         if(placeLogList != null) {
             checkPlaceLogCountExceeds(placeLogList);
-            checkPlaceIdDuplicate(placeLogList);
+            checkPlaceNameDuplicate(placeLogList);
         }
 
         DateLog dateLog = dateLogRepository.save(getDateLog(dateLogSaveRequestDto, tripLog, question));
         savePlaceLogs(multipartFileList, placeLogList, dateLog);
 
-        chooseRewards(dateLogSaveRequestDto);
+        chooseRewards(dateLogSaveRequestDto, loginedUser);
 
         return dateLog.getId();
     }
 
-    private void chooseRewards(DateLogSaveRequestDto dateLogSaveRequestDto) {
+    private void chooseRewards(DateLogSaveRequestDto dateLogSaveRequestDto, User loginedUser) {
         // 리워드 지급
         Optional<String> answerOptional = Optional.ofNullable(dateLogSaveRequestDto.getAnswer());
         if (getAnswerAcceptsNull(dateLogSaveRequestDto).length() < 150)
-            dongdongService.reward(DongdongReward.DATELOG_S);
+            dongdongService.reward(DongdongReward.DATELOG_S, loginedUser);
         else
-            dongdongService.reward(DongdongReward.DATELOG);
+            dongdongService.reward(DongdongReward.DATELOG, loginedUser);
     }
 
-    public List<SpotResponseDto> getSpotListFromTripLog(Long tripLogId) {
+    public List<SpotResponseDto> getSpotListFromTripLog(Long tripLogId, User loginedUser) {
         TripLog tripLog = getTripLog(tripLogId);
-        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        checkLoginedUserIsTripLogOwner(tripLog.getUser(), loginedUser);
         List<SpotResponseDto> tripLogResult = new ArrayList<>();
         for (DateLog dateLog : tripLog.getDateLogList()) {
-            List<SpotResponseDto> spotListFromDateLog = getSpotListFromDateLog(tripLogId, dateLog.getId());
+            List<SpotResponseDto> spotListFromDateLog = getSpotListFromDateLog(tripLogId, dateLog.getId(), loginedUser);
             tripLogResult = Stream.of(tripLogResult, spotListFromDateLog)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());
@@ -101,9 +96,9 @@ public class DateLogService {
         return tripLogResult;
     }
 
-    public List<SpotResponseDto> getDistinctSpotListFromTripLog(Long tripLogId) {
+    public List<SpotResponseDto> getDistinctSpotListFromTripLog(Long tripLogId, User loginedUser) {
         //중복 존재하는 별자리지도 찍기
-        List<SpotResponseDto> spotListFromTripLog = getSpotListFromTripLog(tripLogId);
+        List<SpotResponseDto> spotListFromTripLog = getSpotListFromTripLog(tripLogId, loginedUser);
 
         //중복제거
         return spotListFromTripLog.stream().distinct().collect(Collectors.toList());
@@ -111,9 +106,9 @@ public class DateLogService {
 
 
 
-    public List<SpotResponseDto> getSpotListFromDateLog(Long tripLogId, Long dateLogId) {
+    public List<SpotResponseDto> getSpotListFromDateLog(Long tripLogId, Long dateLogId, User loginedUser) {
         TripLog tripLog = getTripLog(tripLogId);
-        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        checkLoginedUserIsTripLogOwner(tripLog.getUser(), loginedUser);
         DateLog dateLog = getDateLog(dateLogId);
         checkDateLogBelongToTripLog(dateLog, tripLog);
 
@@ -135,8 +130,8 @@ public class DateLogService {
         return tripLog;
     }
 
-    private void checkLoginedUserIsTripLogOwner(User tripLogOwner) {
-        if(!tripLogOwner.equals(loginedUserService.getLoginedUser()))
+    private void checkLoginedUserIsTripLogOwner(User tripLogOwner, User loginedUser) {
+        if(!tripLogOwner.equals(loginedUser))
             throw new DateLogException(DateLogExCode.NO_AUTHORIZATION);
     }
 
@@ -171,10 +166,10 @@ public class DateLogService {
             throw new DateLogException(DateLogExCode.INVALID_DATE);
     }
 
-    private void checkPlaceIdDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
-        ArrayList<Long> placeLogIdList = new ArrayList<>();
-        for(PlaceLogSaveRequestDto dto:placeLogList) placeLogIdList.add(dto.getPlaceInfo().getPlaceId());
-        Set<Long> set = new HashSet<>(placeLogIdList);
+    private void checkPlaceNameDuplicate(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
+        ArrayList<String> placeLogNameList = new ArrayList<>();
+        for(PlaceLogSaveRequestDto dto:placeLogList) placeLogNameList.add(dto.getPlaceInfo().getName());
+        Set<String> set = new HashSet<>(placeLogNameList);
         if (set.size() != placeLogList.size()) {
             throw new DateLogException(DateLogExCode.DUPLICATED_PLACEID);
         }
@@ -219,15 +214,15 @@ public class DateLogService {
     }
 
     @Transactional
-    public DateLogResponseDto readDateLogFromTripLog(Long dateLogId, Long tripLogId) {
+    public DateLogResponseDto readDateLogFromTripLog(Long dateLogId, Long tripLogId, User loginedUser) {
         TripLog tripLog = getTripLog(tripLogId);
-        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        checkLoginedUserIsTripLogOwner(tripLog.getUser(), loginedUser);
         DateLog dateLog = getDateLog(dateLogId);
         checkDateLogBelongToTripLog(dateLog, tripLog);
 
         //별자리지도 setting
         DateLogResponseDto dateLogResponseDto = getDateLogResponseDto(dateLog);
-        dateLogResponseDto.setConstellationMapFromDateLog(getSpotListFromDateLog(tripLogId, dateLogId));
+        dateLogResponseDto.setConstellationMapFromDateLog(getSpotListFromDateLog(tripLogId, dateLogId, loginedUser));
 
         return dateLogResponseDto;
     }
@@ -289,9 +284,9 @@ public class DateLogService {
     }
 
     @Transactional
-    public void deleteDateLog(Long dateLogId, Long tripLogId) {
+    public void deleteDateLog(Long dateLogId, Long tripLogId, User loginedUser) {
         TripLog tripLog = getTripLog(tripLogId);
-        checkLoginedUserIsTripLogOwner(tripLog.getUser());
+        checkLoginedUserIsTripLogOwner(tripLog.getUser(), loginedUser);
         DateLog dateLog = getDateLog(dateLogId);
         checkDateLogBelongToTripLog(dateLog, tripLog);
 

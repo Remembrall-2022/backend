@@ -1,5 +1,6 @@
 package com.stella.rememberall.dongdong;
 
+import com.stella.rememberall.user.UserService;
 import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
@@ -21,7 +22,6 @@ import static com.stella.rememberall.dongdong.DongdongImg.*;
 public class DongdongService {
 
     private final DongdongRepository dongdongRepository;
-    private final LoginedUserService loginedUserService;
     private final S3Util s3Util;
 
     @Transactional
@@ -63,8 +63,7 @@ public class DongdongService {
 
     /**리워드 지급*/
     @Transactional
-    public DongdongResponseDto reward(DongdongReward dongdongReward) {
-        User loginedUser = loginedUserService.getLoginedUser();
+    public DongdongResponseDto reward(DongdongReward dongdongReward, User loginedUser) {
         Dongdong dongdong = dongdongRepository.findById(loginedUser.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
