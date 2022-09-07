@@ -1,6 +1,7 @@
 package com.stella.rememberall.dongdong;
 
 import com.stella.rememberall.user.UserService;
+import com.stella.rememberall.user.LoginedUserService;
 import com.stella.rememberall.user.domain.User;
 import com.stella.rememberall.user.exception.MemberException;
 import com.stella.rememberall.user.exception.MyErrorCode;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import java.time.LocalDate;
 
 import static com.stella.rememberall.dongdong.DongdongImg.*;
 
@@ -38,6 +41,13 @@ public class DongdongService {
                 .build();
     }
 
+    @Transactional
+    public DongdongMessageResponseDto checkAttendance(User user) {
+        Dongdong dongdong = user.getDongdong();
+        if (dongdong.getAttendance().isEqual(LocalDate.now())) return new DongdongMessageResponseDto("출석");
+        else return new DongdongMessageResponseDto("미정");
+    }
+
     /**
      * 서버에서 내부적으로 호출할 둥둥이 로직들, 컨트롤러에서 호출금지
      * 사실 분리하는게 더 좋을 것 같음
@@ -57,11 +67,19 @@ public class DongdongService {
         Dongdong dongdong = dongdongRepository.findById(loginedUser.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
 
+
+        if(dongdongReward==DongdongReward.ATTENDANCE) {
+            if(dongdong.getAttendance().isEqual(LocalDate.now()))
+                throw new DongdongException(DongdongExCode.DONGDONG_ALREADY_REWARDED);
+            else dongdong.setAttendance(LocalDate.now());
+        }
+
         Long updatedExp = dongdong.getExp() + dongdongReward.getExp();
         Long updatedPoint = dongdong.getPoint() + dongdongReward.getPoint();
 
         dongdong.setExp(updatedExp);
         dongdong.setPoint(updatedPoint);
+
 
         DongdongLevelRule levelRule = createLevelRule(updatedExp);
 
@@ -76,21 +94,16 @@ public class DongdongService {
 
     /**포인트 지불*/
     @Transactional
-    public DongdongResponseDto payPoint(User user, Long point) {
+    public Long payPoint(User user, Long point) {
         Dongdong dongdong = dongdongRepository.findById(user.getId())
                 .orElseThrow(() -> new MemberException(MyErrorCode.USER_NOT_FOUND));
         Long updatedPoint = dongdong.getPoint();
         if (updatedPoint >= point) {
             updatedPoint = dongdong.getPoint() - point;
             dongdong.setPoint(updatedPoint);
-        }
-        else
+        } else
             throw new DongdongException(DongdongExCode.DONGDONG_LACK_OF_POINT);
-        return DongdongResponseDto.builder()
-                .userId(user.getId())
-                .exp(dongdong.getExp())
-                .point(updatedPoint)
-                .build();
+        return updatedPoint;
     }
 
     /**둥둥이 조회시 호출, 서비스 내에서만 사용*/

@@ -1,4 +1,6 @@
-package com.stella.rememberall.domain;
+package com.stella.rememberall.item;
+
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -6,6 +8,7 @@ import java.util.List;
 
 @Table(name = "item")
 @Entity
+@Getter
 public class Item {
 
     @Id
