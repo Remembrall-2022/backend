@@ -19,13 +19,18 @@ public class PlaceService {
     @Transactional
     public Place saveOrUpdatePlace(PlaceSaveRequestDto requestDto){
         // 동일한 이름이 있으면 update, 없으면 save
-        Place savedPlace = new Place();
+        Place savedPlace;
         Optional<Place> foundPlace = placeRepository.findByName(requestDto.getName());
-        if(foundPlace.isEmpty()) savedPlace = placeRepository.save(requestDto.toEntity());
-        else{
-            savedPlace = foundPlace.get();
-            savedPlace = savedPlace.updatePlaceInfo(requestDto.getAddress(), requestDto.getLongitude(), requestDto.getLatitude());
+        if(foundPlace.isEmpty()) {
+            log.info("새로운 Place를 저장합니다.");
+            savedPlace = placeRepository.save(requestDto.toEntity());
         }
+        else{
+            log.info("기존 Place를 수정합니다.");
+            savedPlace = foundPlace.get();
+            savedPlace.updatePlaceInfo(requestDto.getAddress(), requestDto.getLongitude(), requestDto.getLatitude());
+        }
+        log.info("Place name : "+savedPlace.getName());
         return savedPlace;
     }
 
