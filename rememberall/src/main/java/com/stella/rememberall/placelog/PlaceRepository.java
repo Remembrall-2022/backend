@@ -6,6 +6,6 @@ import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByName(String placeName);
-    Long deleteByName(String placeName);
+    void deleteByName(String placeName);
 
 }

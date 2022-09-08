@@ -22,15 +22,12 @@ public class PlaceService {
         Place savedPlace;
         Optional<Place> foundPlace = placeRepository.findByName(requestDto.getName());
         if(foundPlace.isEmpty()) {
-            log.info("새로운 Place를 저장합니다.");
             savedPlace = placeRepository.save(requestDto.toEntity());
         }
         else{
-            log.info("기존 Place를 수정합니다.");
             savedPlace = foundPlace.get();
             savedPlace.updatePlaceInfo(requestDto.getAddress(), requestDto.getLongitude(), requestDto.getLatitude());
         }
-        log.info("Place name : "+savedPlace.getName());
         return savedPlace;
     }
 
@@ -41,17 +38,15 @@ public class PlaceService {
     }
 
     @Transactional
-    public void deletePlaceIfNotReferenced(String placeName){
-        Place place = placeRepository.findByName(placeName)
-                .orElseThrow(() -> new PlaceLogException(PlaceLogErrorCode.NOT_FOUND));
+    public void deletePlaceIfNotReferenced(Place place){
         if(isNotReferencedInPlaceLog(place)) {
-            Long aLong = placeRepository.deleteByName(placeName);
-            log.info("place id"+aLong.toString()+"을 삭제했습니다.");
+            placeRepository.delete(place);
         }
     }
 
     private boolean isNotReferencedInPlaceLog(Place place) {
         return placeLogRepository.findAllByPlace(place).size() == 0;
     }
+
 
 }
