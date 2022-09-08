@@ -291,9 +291,9 @@ public class DateLogService {
         checkDateLogBelongToTripLog(dateLog, tripLog);
 
         List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
-        for(PlaceLog placeLog:placeLogList){
-            placeLogService.deletePlaceLog(placeLog);
-        }
+//        for(PlaceLog placeLog:placeLogList){
+//            placeLogService.deletePlaceLog(placeLog.getId());
+//        }
 
         dateLogRepository.deleteById(dateLogId);
     }

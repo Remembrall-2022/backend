@@ -137,8 +137,9 @@ public class PlaceLogService {
 
     @Transactional
     public Long updatePlace(Long placeLogId, PlaceSaveRequestDto requestDto){
-//        findPlaceLog(placeLogId).setPlace(placeService.getPlace(requestDto.getPlaceId()));
-        return placeService.saveOrUpdatePlace(requestDto).getId();
+        Place updatedplace = placeService.saveOrUpdatePlace(requestDto);
+        findPlaceLog(placeLogId).setPlace(updatedplace);
+        return updatedplace.getId();
     }
 
     @Transactional
@@ -151,16 +152,11 @@ public class PlaceLogService {
     public Long deletePlaceLog(Long placeLogId) throws PlaceLogException{
         PlaceLog placeLog = findPlaceLog(placeLogId);
         userLogImgService.deleteUserLogImg(placeLog);
-        placeLogRepository.deleteById(placeLogId);
-//        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getName());
+        placeLogRepository.delete(placeLog);
+        placeLogRepository.flush();
+//        placeService.deletePlaceIfNotReferenced(placeLog.getPlace());
         return placeLogId;
     }
 
-    @Transactional
-    public Long deletePlaceLog(PlaceLog placeLog) throws PlaceLogException{
-        userLogImgService.deleteUserLogImg(placeLog);
-        placeLogRepository.deleteById(placeLog.getId());
-//        placeService.deletePlaceIfNotReferenced(placeLog.getPlace().getName());
-        return placeLog.getId();
-    }
+
 }
