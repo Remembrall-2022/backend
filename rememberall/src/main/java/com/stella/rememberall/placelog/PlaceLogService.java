@@ -137,8 +137,9 @@ public class PlaceLogService {
 
     @Transactional
     public Long updatePlace(Long placeLogId, PlaceSaveRequestDto requestDto){
-//        findPlaceLog(placeLogId).setPlace(placeService.getPlace(requestDto.getPlaceId()));
-        return placeService.saveOrUpdatePlace(requestDto).getId();
+        Place updatedplace = placeService.saveOrUpdatePlace(requestDto);
+        findPlaceLog(placeLogId).setPlace(updatedplace);
+        return updatedplace.getId();
     }
 
     @Transactional
