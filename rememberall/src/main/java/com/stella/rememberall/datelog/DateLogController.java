@@ -6,11 +6,13 @@ import com.stella.rememberall.datelog.repository.QuestionRepository;
 import com.stella.rememberall.placelog.SpotResponseDto;
 import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -58,6 +60,14 @@ public class DateLogController {
     public DateLogResponseDto readDateLog(@PathVariable Long tripLogId, @PathVariable Long dateLogId, @AuthenticationPrincipal User user) {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId, user);
     }
+
+    @GetMapping("/tripLog/{tripLogId}/{date}")
+    public DateExistResponseDto checkDateDuplicateInTripLog(
+            @PathVariable Long tripLogId,
+            @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date){
+        return new DateExistResponseDto(dateLogService.checkDateDuplicateInTripLog(tripLogId, date));
+    }
+
 
     //별자리 지도 api -> 지워도 됨
 

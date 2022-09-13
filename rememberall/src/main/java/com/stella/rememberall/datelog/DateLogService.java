@@ -150,6 +150,12 @@ public class DateLogService {
             throw new DateLogException(DateLogExCode.DUPLICATED_DATELOG);
     }
 
+    public Boolean checkDateDuplicateInTripLog(Long tripLogId, LocalDate date) {
+        TripLog tripLog = getTripLog(tripLogId);
+        if(dateLogRepository.existsByTripLogAndDate(tripLog, date)) return true;
+        else return false;
+    }
+
     private void checkPlaceLogCountExceeds(ArrayList<PlaceLogSaveRequestDto> placeLogList) {
         if(placeLogList.size() > 10) throw new DateLogException(DateLogExCode.COUNT_EXCEED);
     }
