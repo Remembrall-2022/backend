@@ -56,7 +56,7 @@ public class DateLogService {
         LocalDate date = dateLogSaveRequestDto.getDate();
         validateUniqueDateLog(tripLog, date);
         checkMultipartFileListCountExceeds(multipartFileList);
-        checkRequestDateIsBetweenTripLogDate(tripLog, date);
+//        checkRequestDateIsBetweenTripLogDate(tripLog, date);
 
         Question question = getQuestionAcceptsNull(dateLogSaveRequestDto.getQuestionId());
         ArrayList<PlaceLogSaveRequestDto> placeLogList = dateLogSaveRequestDto.getPlaceLogList();
