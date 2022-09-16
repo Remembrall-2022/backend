@@ -114,12 +114,14 @@ public class UserService {
     @Transactional
     public OnlyResponseString updateAlarmAgree(Boolean alarmAgree, User loginedUser){
         loginedUser.updateAlarmAgree(alarmAgree);
+        userRepository.save(loginedUser);
         return new OnlyResponseString("알람 설정 수정에 성공했습니다.");
     }
 
     @Transactional
     public OnlyResponseString updateTermAgree(Boolean termAgree, User loginedUser){
         loginedUser.updateTermAgree(termAgree);
+        userRepository.save(loginedUser);
         return new OnlyResponseString("약관 동의 설정 수정에 성공했습니다.");
     }
 
