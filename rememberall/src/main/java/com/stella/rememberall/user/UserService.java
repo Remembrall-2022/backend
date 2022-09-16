@@ -10,6 +10,7 @@ import com.stella.rememberall.security.dto.TokenRequestDto;
 import com.stella.rememberall.security.exception.AuthErrorCode;
 import com.stella.rememberall.security.exception.AuthException;
 import com.stella.rememberall.tripLog.TripLog;
+import com.stella.rememberall.tripLog.TripLogRepository;
 import com.stella.rememberall.tripLog.TripLogService;
 import com.stella.rememberall.user.domain.EmailAuth;
 import com.stella.rememberall.user.domain.RefreshToken;
@@ -40,6 +41,7 @@ public class UserService {
     private final EmailAuthRepository emailAuthRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TripLogService tripLogService;
+    private final TripLogRepository tripLogRepository;
 
     public User getLoginedUser(){
         return SecurityUtil.getCurrentUserPk().flatMap(userRepository::findById)
@@ -146,7 +148,7 @@ public class UserService {
 
 
         // trip_log
-        List<TripLog> tripLogList = loginedUser.getTripLogList();
+        List<TripLog> tripLogList = tripLogRepository.findAllByUser(loginedUser);
         for(TripLog tripLog:tripLogList){
             tripLogService.deleteTripLog(tripLog.getId(), loginedUser);
         }
