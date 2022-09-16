@@ -208,6 +208,7 @@ public class EmailUserService {
         User requestUser = findEmailUser(requestedEmail);
         String encodedNewPassword = pwdEncorder.encode(requestDto.getNewPassword());
         requestUser.updatePassword(encodedNewPassword);
+        userRepository.save(requestUser);
         return new OnlyResponseString("비밀번호 변경에 성공했습니다.");
     }
 
