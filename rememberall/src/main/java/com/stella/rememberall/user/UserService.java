@@ -105,6 +105,7 @@ public class UserService {
     @Transactional
     public OnlyResponseString updateMyName(String newName, User loginedUser){
         loginedUser.updateName(newName);
+        userRepository.save(loginedUser);
         return new OnlyResponseString("이름 수정에 성공했습니다.");
     }
 
