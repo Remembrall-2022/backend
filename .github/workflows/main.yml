@@ -1,4 +1,4 @@
-name: bookclub
+name: rememberall
 
 on:
   push:
