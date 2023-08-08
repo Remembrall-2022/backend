@@ -1,0 +1,63 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.2'
+	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+	id 'java'
+}
+
+group = 'com.stella'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// spring web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// spring data jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// h2 db
+	implementation 'com.h2database:h2:1.4.199'
+
+	// maria db
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
+
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// spring security 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.3'
+	// jwt 의존성
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+	// 객체 유효성 검증
+	 implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// 이메일
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// Json을 결과로 매핑하기 위한 의존성
+	implementation 'com.google.code.gson:gson:2.8.8'
+
+	// AWS 의존성
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
