@@ -5,7 +5,7 @@ on:
     branches: [main]
 env:
   S3_BUCKET_NAME: rememberall
-  PROJECT_NAME: rememberall
+  PROJECT_NAME: deploy
   
 jobs:
   bulid:
