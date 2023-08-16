@@ -4,7 +4,6 @@ import com.stella.rememberall.datelog.domain.Question;
 import com.stella.rememberall.datelog.dto.QuestionVo;
 import com.stella.rememberall.datelog.exception.QuestionExCode;
 import com.stella.rememberall.datelog.exception.QuestionException;
-import com.stella.rememberall.datelog.repository.QuestionCategoryRepository;
 import com.stella.rememberall.datelog.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

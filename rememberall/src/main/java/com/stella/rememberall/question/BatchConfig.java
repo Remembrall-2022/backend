@@ -11,6 +11,8 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JpaItemWriter;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -18,19 +20,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+import javax.persistence.EntityManagerFactory;
+
 @Slf4j
 @Configuration
 @EnableBatchProcessing
 @RequiredArgsConstructor
 public class BatchConfig {
 
+    private final EntityManagerFactory entityManagerFactory;
     private final QuestionRepository questionRepository;
     private final StepBuilderFactory stepBuilderFactory;
     private final JobBuilderFactory jobBuilderFactory;
 
     @Bean
     public FlatFileItemReader<QuestionItem> reader() {
-        log.info("[Batch reader] Batch process writer.");
+        log.info("[Batch reader] Batch process reader.");
         return new FlatFileItemReaderBuilder<QuestionItem>()
                 .name("questionItemReader")
                 .resource(new ClassPathResource("questions.csv"))
@@ -44,20 +49,22 @@ public class BatchConfig {
 
     @Bean
     public QuestionItemProcessor processor() {
-        log.info("[Batch processor] Batch process writer.");
+        log.info("[Batch processor] Batch process processor.");
         return new QuestionItemProcessor();
     }
 
     @Bean
-    public ItemWriter<Question> writer() {
-        return categories -> {
-            log.info("[Batch writer] Batch process writer.");
-            questionRepository.saveAll(categories);
-        };
+    public ItemWriter<Question> writer() throws Exception {
+        log.info("[Batch writer] Batch process writer.");
+        JpaItemWriter<Question> itemWriter = new JpaItemWriterBuilder<Question>()
+                .entityManagerFactory(entityManagerFactory)
+                .build();
+        itemWriter.afterPropertiesSet();
+        return itemWriter;
     }
 
     @Bean
-    public Step step1() {
+    public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
                 .<QuestionItem, Question>chunk(10)
                 .reader(reader())
@@ -67,7 +74,7 @@ public class BatchConfig {
     }
 
     @Bean
-    public Job job1() {
+    public Job job1() throws Exception {
         return jobBuilderFactory.get("job1")
                 .incrementer(new RunIdIncrementer())
                 .start(step1())
