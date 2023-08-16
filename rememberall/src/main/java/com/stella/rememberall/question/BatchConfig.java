@@ -13,14 +13,14 @@ import org.springframework.core.io.ClassPathResource;
 public class BatchConfig {
 
     @Bean
-    public FlatFileItemReader<QuestionData> reader() {
-        return new FlatFileItemReaderBuilder<QuestionData>()
-                .name("questionDataReader")
+    public FlatFileItemReader<QuestionItem> reader() {
+        return new FlatFileItemReaderBuilder<QuestionItem>()
+                .name("questionItemReader")
                 .resource(new ClassPathResource("questions.csv"))
                 .delimited()
                 .names("topic", "questionCategory")
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-                    setTargetType(QuestionData.class);
+                    setTargetType(QuestionItem.class);
                 }})
                 .build();
     }
