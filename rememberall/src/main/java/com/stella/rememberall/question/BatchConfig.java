@@ -1,5 +1,7 @@
 package com.stella.rememberall.question;
 
+import com.stella.rememberall.datelog.repository.QuestionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
@@ -23,5 +25,10 @@ public class BatchConfig {
                     setTargetType(QuestionItem.class);
                 }})
                 .build();
+    }
+
+    @Bean
+    public QuestionItemProcessor processor() {
+        return new QuestionItemProcessor();
     }
 }

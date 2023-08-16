@@ -15,11 +15,15 @@ public class Question {
     @Column(name = "question_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="question_category_id")
-    private QuestionCategory questionCategory;
+//    @ManyToOne
+    @JoinColumn(name="question_category")
+    private QuestionCategoryName questionCategory;
 
     @Column(name = "topic")
     private String topic;
 
+    public Question(QuestionCategoryName questionCategory, String topic) {
+        this.questionCategory = questionCategory;
+        this.topic = topic;
+    }
 }
