@@ -13,13 +13,19 @@ import javax.persistence.*;
 public class Question {
     @Id
     @Column(name = "question_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="question_category_id")
-    private QuestionCategory questionCategory;
+//    @ManyToOne  TODO: 없애기
+    @Enumerated(EnumType.STRING)
+    @JoinColumn(name="question_category")
+    private QuestionCategoryName questionCategory;
 
     @Column(name = "topic")
     private String topic;
 
+    public Question(QuestionCategoryName questionCategory, String topic) {
+        this.questionCategory = questionCategory;
+        this.topic = topic;
+    }
 }
