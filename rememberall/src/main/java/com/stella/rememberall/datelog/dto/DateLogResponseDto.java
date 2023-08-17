@@ -1,22 +1,14 @@
 package com.stella.rememberall.datelog.dto;
 
 import com.stella.rememberall.datelog.domain.DateLog;
-import com.stella.rememberall.datelog.domain.Question;
 import com.stella.rememberall.datelog.domain.WeatherInfo;
-import com.stella.rememberall.placelog.PlaceLog;
 import com.stella.rememberall.placelog.PlaceLogResponseDto;
 import com.stella.rememberall.placelog.SpotResponseDto;
-import com.stella.rememberall.userLogImg.UserLogImg;
-import com.stella.rememberall.userLogImg.UserLogImgResponseDto;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @NoArgsConstructor
