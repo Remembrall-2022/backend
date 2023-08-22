@@ -19,9 +19,9 @@ public class PlaceLogController {
     public OnlyResponseString createPlaceLog(
             @PathVariable Long dateLogId,
             @RequestPart(value = "file") List<MultipartFile> multipartFile,
-            @RequestPart @Valid PlaceLogSaveRequestDto placeLogSaveRequestDto
-    ){
-        return new OnlyResponseString("장소항목을 생성했습니다. id: " + placeLogService.savePlaceLog(dateLogId, placeLogSaveRequestDto, multipartFile));
+            @RequestPart @Valid PlaceLogSaveRequestDto placeLogSaveRequestDto ){
+        Long placeLogId = placeLogService.savePlaceLog(dateLogId, placeLogSaveRequestDto, multipartFile);
+        return new OnlyResponseString("장소항목을 생성했습니다. id: " + placeLogId);
     }
 
     @GetMapping("/placeLog/{placeLogId}")
@@ -31,7 +31,8 @@ public class PlaceLogController {
 
     @DeleteMapping("/placeLog/{placeLogId}")
     public OnlyResponseString deletePlaceLog(@PathVariable Long placeLogId){
-        return new OnlyResponseString("해당 장소를 삭제했습니다.");
+        placeLogService.deletePlaceLog(placeLogId);
+        return new OnlyResponseString("장소 항목을 삭제했습니다.");
     }
 
     @PostMapping("/placeLog/{placeLogId}/comment")
