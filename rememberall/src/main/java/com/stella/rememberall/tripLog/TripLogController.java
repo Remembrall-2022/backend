@@ -17,8 +17,8 @@ public class TripLogController {
     private final TripLogService tripLogService;
 
     @PostMapping("/tripLog/new")
-    public Long create(@RequestBody @Valid TripLogSaveRequestDto requestDto, @AuthenticationPrincipal User user){
-        return tripLogService.saveTripLog(requestDto, user);
+    public OnlyResponseString create(@RequestBody @Valid TripLogSaveRequestDto requestDto, @AuthenticationPrincipal User user){
+        return new OnlyResponseString("일기장을 생성했습니다. id: " + tripLogService.saveTripLog(requestDto, user));
     }
 
     @GetMapping("/tripLog/{id}/onlyId")
@@ -37,8 +37,8 @@ public class TripLogController {
     }
 
     @PostMapping("/tripLog/{id}")
-    public Long update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id, @AuthenticationPrincipal User user){
-        return tripLogService.updateTripLog(requestDto, id, user);
+    public OnlyResponseString update(@RequestBody @Valid TripLogUpdateRequestDto requestDto, @PathVariable Long id, @AuthenticationPrincipal User user){
+        return new OnlyResponseString("일기장을 수정했습니다. id: " + tripLogService.updateTripLog(requestDto, id, user));
     }
 
     @DeleteMapping("/tripLog/{id}")

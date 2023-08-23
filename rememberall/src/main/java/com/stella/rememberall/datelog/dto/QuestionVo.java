@@ -9,11 +9,12 @@ import lombok.Getter;
 public class QuestionVo {
 
     private Long id;
+    private String category;
     private String questionName;
 
     public static QuestionVo of(Question question) {
         if (question != null)
-            return new QuestionVo(question.getId(), question.getTopic());
+            return new QuestionVo(question.getId(), question.getQuestionCategory().getKor(), question.getTopic());
         else
             return null;
     }
