@@ -22,13 +22,13 @@ public class DateLogController {
     private final DateLogService dateLogService;
 
     @PostMapping("/tripLog/{tripLogId}/dateLog/new")
-    public Long createDateLog(
+    public OnlyResponseString createDateLog(
             @PathVariable("tripLogId") Long tripLogId,
             @RequestPart @Valid DateLogSaveRequestDto saveRequestDto,
             @RequestPart(value = "file") List<MultipartFile> multipartFiles,
-            @AuthenticationPrincipal User user
-            ) {
-        return dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles, user);
+            @AuthenticationPrincipal User user) {
+        Long dateLogId = dateLogService.createDateLog(tripLogId, saveRequestDto, multipartFiles, user);
+        return new OnlyResponseString("일기를 생성했습니다. id: " + dateLogId);
     }
 
     @PostMapping("/dateLog/{dateLogId}/date")
