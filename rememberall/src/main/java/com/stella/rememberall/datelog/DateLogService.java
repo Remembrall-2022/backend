@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -218,6 +219,29 @@ public class DateLogService {
     private String getAnswerAcceptsNull(DateLogSaveRequestDto dateLogSaveRequestDto) {
         return Optional.ofNullable(dateLogSaveRequestDto.getAnswer()).orElse("");
     }
+
+    @Transactional
+    public DateLogResponseDto readTodayDateLog(User loginedUser) {
+        DateLog dateLog = getMostCurrentDateLog(loginedUser);
+
+        DateLogResponseDto dateLogResponseDto = getDateLogResponseDto(dateLog);
+        dateLogResponseDto.setConstellationMapFromDateLog(
+                getSpotListFromDateLog(dateLog.getTripLog().getId(), dateLog.getId(), loginedUser)
+        );
+
+        return dateLogResponseDto;
+    }
+
+    private DateLog getMostCurrentDateLog(User loginedUser) {
+        List<DateLog> todayDateLogs = dateLogRepository.findAllByUserAndDate(loginedUser, LocalDate.now());
+        todayDateLogs.sort((d1, d2) -> -(Duration.between(d1.getCreatedDate(), d2.getCreatedDate()).getNano()));
+
+        if (todayDateLogs.isEmpty())
+            throw new DateLogException(DateLogExCode.DATELOG_NOT_WRITTEN_YET);
+
+        return todayDateLogs.get(0);
+    }
+
 
     @Transactional
     public DateLogResponseDto readDateLogFromTripLog(Long dateLogId, Long tripLogId, User loginedUser) {
