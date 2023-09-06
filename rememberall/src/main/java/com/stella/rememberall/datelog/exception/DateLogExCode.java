@@ -11,6 +11,7 @@ public enum DateLogExCode {
     DUPLICATED_PLACEID("하나의 날짜별 일기 안에서 중복된 관광지를 요청할 수 없습니다."),
     DUPLICATED_PLACE_INDEX("관광지별 일기의 인덱스가 중복되어 수정할 수 없습니다."),
     DATELOG_NOT_FOUND("해당 일기를 찾을 수 없습니다."),
+    DATELOG_NOT_WRITTEN_YET("아직 오늘의 일기를 작성하지 않았습니다."),
     COUNT_EXCEED("관광지 일기는 최대 10개까지 쓸 수 있습니다."),
     COUNT_NOT_MATCH("이미지 파일 개수와 관광지 일기 개수가 일치하지 않습니다."),
     NO_AUTHORIZATION("접근 권한이 없습니다."),
