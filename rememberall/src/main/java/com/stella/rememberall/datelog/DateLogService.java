@@ -32,6 +32,7 @@ import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -331,6 +332,10 @@ public class DateLogService {
     @Transactional
     public void updateDate(Long dateLogId, DateUpdateRequestDto requestDto) {
         DateLog dateLog = getDateLog(dateLogId);
+        updateDate(dateLog, requestDto);
+    }
+
+    private void updateDate(DateLog dateLog, DateUpdateRequestDto requestDto) {
         validateUniqueDateLog(dateLog.getTripLog(), requestDto.getDate());
         checkRequestDateIsBetweenTripLogDate(dateLog.getTripLog(), requestDto.getDate());
         dateLog.updateDate(requestDto.getDate());
@@ -352,6 +357,10 @@ public class DateLogService {
     @Transactional
     public void updatePlaceLogIndex(Long dateLogId, PlaceLogIndexUpdateRequestDto indexInfo) throws PlaceLogException, DateLogException {
         DateLog dateLog = getDateLog(dateLogId);
+        updatePlaceLogIndex(indexInfo, dateLog);
+    }
+
+    private void updatePlaceLogIndex(PlaceLogIndexUpdateRequestDto indexInfo, DateLog dateLog) {
         List<PlaceLog> placeLogList = dateLog.getPlaceLogList();
         List<PlaceLog> responseList = new ArrayList<>();
 
@@ -418,4 +427,39 @@ public class DateLogService {
         }
     }
 
+    @Transactional
+    public void updateDateLog(Long dateLogId, DateLogUpdateRequestDto updateRequestDto) {
+        DateLog foundDateLog = getDateLog(dateLogId);
+
+        // 날짜별 일기 정보 수정
+        if (!foundDateLog.getDate().equals(updateRequestDto.getDate())) {
+            updateDate(foundDateLog, new DateUpdateRequestDto(updateRequestDto.getDate()));
+        }
+        if (foundDateLog.getQuestion().getId().compareTo(updateRequestDto.getQuestionId()) != 0) {
+            foundDateLog.updateQuestion(getQuestionAcceptsNull(updateRequestDto.getQuestionId()));
+        }
+        if (foundDateLog.getAnswer().compareTo(updateRequestDto.getAnswer()) != 0) {
+            foundDateLog.updateAnswer(updateRequestDto.getAnswer());
+        }
+        if (!foundDateLog.getWeatherInfo().equals(updateRequestDto.getWeatherInfo())) {
+            foundDateLog.updateWeatherInfo(updateRequestDto.getWeatherInfo());
+        }
+
+        // 관광지별 일기 수정
+        List<PlaceLog> foundPlaceLogList = foundDateLog.getPlaceLogList();
+        for (PlaceLogUpdateRequestDto placeLogDto: updateRequestDto.getPlaceLogList()) {
+            Optional<PlaceLog> foundPlaceLog = foundPlaceLogList.stream().filter(placeLog -> placeLog.getId() == placeLogDto.getPlaceLogId()).findFirst();
+            PlaceLog placeLog = foundPlaceLog.orElseThrow(() -> new PlaceLogException(PlaceLogErrorCode.NOT_FOUND, "존재하지 않는 관광지 일기 정보입니다."));
+            placeLogService.updatePlaceLog(placeLog, placeLogDto);
+        }
+
+        // 인덱스 수정
+        Map<String, Integer> indexAndPlaceLogIds = new HashMap<>();
+        for (PlaceLogUpdateRequestDto placeLogDto: updateRequestDto.getPlaceLogList()) {
+            indexAndPlaceLogIds.put(Long.toString(placeLogDto.getPlaceLogId()), placeLogDto.getPlaceLogIndex());
+        }
+        PlaceLogIndexUpdateRequestDto dto = new PlaceLogIndexUpdateRequestDto(indexAndPlaceLogIds);
+        updatePlaceLogIndex(dto, foundDateLog);
+
+    }
 }
