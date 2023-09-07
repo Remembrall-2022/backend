@@ -2,7 +2,6 @@ package com.stella.rememberall.datelog;
 
 import com.stella.rememberall.common.response.OnlyResponseString;
 import com.stella.rememberall.datelog.dto.*;
-import com.stella.rememberall.datelog.repository.QuestionRepository;
 import com.stella.rememberall.placelog.SpotResponseDto;
 import com.stella.rememberall.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +53,12 @@ public class DateLogController {
     public OnlyResponseString updatePlaceLogIndex(@PathVariable Long dateLogId, @RequestBody @Valid PlaceLogIndexUpdateRequestDto indexInfo){
         dateLogService.updatePlaceLogIndex(dateLogId, indexInfo);
         return new OnlyResponseString("날짜별 일기의 관광지별 일기 인덱스를 수정했습니다.");
+    }
+
+    @PostMapping("/dateLog/{dateLogId}")
+    public OnlyResponseString updatePlaceLog(@PathVariable Long dateLogId, @RequestBody @Valid DateLogUpdateRequestDto updateRequestDto){
+        dateLogService.updateDateLog(dateLogId, updateRequestDto);
+        return new OnlyResponseString("날짜별 일기와 그에 속한 관광지별 일기 정보를 수정했습니다.");
     }
 
     @GetMapping("/tripLog/{tripLogId}/dateLog/{dateLogId}")

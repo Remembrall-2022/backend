@@ -1,5 +1,6 @@
 package com.stella.rememberall.datelog.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 public class PlaceLogIndexUpdateRequestDto {
     Map<String, Integer> indexAndPlaceLogIds;
 

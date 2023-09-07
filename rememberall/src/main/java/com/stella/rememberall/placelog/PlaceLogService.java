@@ -143,9 +143,11 @@ public class PlaceLogService {
     }
 
     @Transactional
-    public Long updatePlaceLog(Long placeLogId, PlaceLogSaveRequestDto requestDto){
-        placeService.saveOrUpdatePlace(requestDto.getPlaceInfo());
-        return placeLogRepository.save(requestDto.toEntityWithId(placeLogId)).getId();
+    public Long updatePlaceLog(PlaceLog placeLog, PlaceLogUpdateRequestDto requestDto){
+        placeLog.updateComment(requestDto.getComment());
+        placeLog.updateIndex(requestDto.getPlaceLogIndex());
+        placeLog.setPlace(placeService.saveOrUpdatePlace(requestDto.getPlace()));
+        return placeLog.getId();
     }
     
     @Transactional
