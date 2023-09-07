@@ -61,6 +61,11 @@ public class DateLogController {
         return dateLogService.readDateLogFromTripLog(dateLogId, tripLogId, user);
     }
 
+    @GetMapping("/dateLog/today")
+    public DateLogResponseDto readTodayDateLog(@AuthenticationPrincipal User user) {
+        return dateLogService.readTodayDateLog(user);
+    }
+
     @GetMapping("/tripLog/{tripLogId}/{date}")
     public DateExistResponseDto checkDateDuplicateInTripLog(
             @PathVariable Long tripLogId,
