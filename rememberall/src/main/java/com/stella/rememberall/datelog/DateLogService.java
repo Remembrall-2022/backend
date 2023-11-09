@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -234,7 +236,11 @@ public class DateLogService {
     }
 
     private DateLog getMostCurrentDateLog(User loginedUser) {
-        List<DateLog> todayDateLogs = dateLogRepository.findAllByUserAndDate(loginedUser, LocalDate.now());
+        List<DateLog> todayDateLogs = dateLogRepository.findAllByUserAndCreatedDate(
+                loginedUser,
+                toLocalDateTime(LocalDate.now()),
+                toLocalDateTime(LocalDate.now().plusDays(1))
+        );
         todayDateLogs.sort((d1, d2) -> -(Duration.between(d1.getCreatedDate(), d2.getCreatedDate()).getNano()));
 
         if (todayDateLogs.isEmpty())
@@ -243,6 +249,9 @@ public class DateLogService {
         return todayDateLogs.get(0);
     }
 
+    private LocalDateTime toLocalDateTime(LocalDate date) {
+        return LocalDateTime.of(date, LocalTime.MIN);
+    }
 
     @Transactional
     public DateLogResponseDto readDateLogFromTripLog(Long dateLogId, Long tripLogId, User loginedUser) {
