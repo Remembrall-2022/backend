@@ -16,7 +16,7 @@ import java.util.Collections;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmailUserSaveRequestDto {
-    @Email String email;
+    @Email(message = "email 형식이 유효하지 않습니다.") String email;
     @NotEmpty(message = "회원의 password는 빈값일 수 없습니다.") String password;
     @NotEmpty(message = "회원의 name은 빈값일 수 없습니다.") String name;
 
